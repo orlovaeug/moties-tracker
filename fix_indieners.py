@@ -41,11 +41,11 @@ LEDEN_PARTIJ = {
     # Volt
     "Koekkoek": "Volt",
     # DENK
-    "Azarkan": "DENK", "Ergin": "DENK", "Stephan van Baarle": "DENK",
+    "Azarkan": "DENK", "Ergin": "DENK", "van Baarle": "DENK",
     # FvD
-    "Van Houwelingen": "FvD", "Baudet": "FvD", "Chris Jansen": "FvD", "Van der Maas": "FvD",
+    "Van Houwelingen": "FvD", "Baudet": "FvD", "Chris Jansen": "FvD", "Van der Maas": "FvD","de Vos": "FvD",
     # JA21
-    "Eerdmans": "JA21", "Van Meijeren": "JA21", "Aartsen": "JA21", "Jumelet": "JA21",
+    "Eerdmans": "JA21", "Van Meijeren": "JA21", "Aartsen": "JA21", "Jumelet": "JA21","Nanninga": "JA21",
     # 50PLUS
     "Boelsma-Hoekstra": "50PLUS", "Jagtenberg": "50PLUS",
     # Gr.Markuszower
