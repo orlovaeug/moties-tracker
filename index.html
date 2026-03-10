@@ -422,12 +422,10 @@ button,input,select,textarea{font-family:inherit}button{cursor:pointer}a{text-de
       <button class="xb" id="fx">&#215;</button>
     </div>
     <div class="fbd">
-      <div class="fnote">&#128279; Klik op <strong>Live ophalen</strong> om tweedekamer.nl te doorzoeken met AI en nieuwe moties te vinden. Of voeg moties handmatig toe via &ldquo;+ Motie toevoegen&rdquo;.</div>
       <div id="fcon"></div>
     </div>
     <div id="fftr" class="mft" style="display:none">
       <button class="bcan" id="fcan">Annuleren</button>
-      <button class="bpri" onclick="aiLiveFetch()" style="background:#2C5F3A;border-color:#2C5F3A;margin-right:auto;order:-1">&#127757; Live ophalen</button>
       <button class="bsav" id="fimp" onclick="doImport()">Importeren</button>
     </div>
   </div>
@@ -825,101 +823,112 @@ function doDel(){
   saveDB();closeDel();closeModal();renderMoties();toast("Verwijderd");
 }
 function buildFetch(){
-  var ex={};for(var i=0;i<moties.length;i++)ex[moties[i].id]=true;
-  var avail=NIEUW.filter(function(m){return!ex[m.id];});
-  var fcon=g("fcon");var fftr=g("fftr");
-  if(!avail.length){
-    fcon.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--mid)"><div style="font-size:32px;margin-bottom:12px">\u2714</div><p>Geen nieuwe moties gevonden.</p></div>';
-    if(fftr)fftr.style.display="none";
-    return;
-  }
-  var html='<div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--mid)">'+avail.length+' nieuwe moties gevonden via AI</span><div style="display:flex;gap:8px"><button onclick="selAll(true)" style="font-size:11px;padding:4px 10px;border:1px solid var(--bo);border-radius:100px;background:transparent">Alles</button><button onclick="selAll(false)" style="font-size:11px;padding:4px 10px;border:1px solid var(--bo);border-radius:100px;background:transparent">Niets</button></div></div>';
-  html+=avail.map(function(m){
-    var chk=fetchSel[m.id]?"checked":"";
-    return'<label class="fri"><input type="checkbox" '+chk+' onchange="togFRI('+m.id+')"><div class="frit"><div class="frin">'+esc(m.titel)+'</div><div class="fris">'+bdg(m.status,SC)+' '+bdg(m.alignment,AC)+' \u00b7 '+esc(m.indiener||"")+" \u00b7 "+esc(m.datum||"")+'</div></div></label>';
-  }).join("");
-  fcon.innerHTML=html;
-  if(fftr)fftr.style.display="flex";
-  updateFBtn(avail);
-}
-function aiLiveFetch(){
-  var fc=g("fcon");
-  g("fftr").style.display="none";
-
-  // Check if GitHub Actions has populated NIEUW with fresh moties
-  var existingIds={};
-  for(var i=0;i<moties.length;i++) existingIds[moties[i].id]=true;
-  var avail=NIEUW.filter(function(m){ return !existingIds[m.id]; });
-
-  if(!avail.length){
-    fc.innerHTML='<div class="fnote" style="background:#E8F5ED;border-color:#A8D5B5">'
-      +'&#9989; <strong>Alles up-to-date</strong> &mdash; GitHub Actions heeft geen nieuwe moties gevonden. '
-      +'Nieuwe moties worden dagelijks automatisch opgehaald van tweedekamer.nl.</div>';
-    return;
-  }
-
-  g("fftr").style.display="flex";
+  var existIds={};
+  for(var i=0;i<moties.length;i++) existIds[moties[i].id]=true;
+  var avail=(NIEUW||[]).filter(function(m){return !existIds[m.id];});
+  var fcon=g("fcon"), fftr=g("fftr");
   fetchSel={};
-  for(var i=0;i<avail.length;i++) fetchSel[avail[i].id]=true;
-  updateFBtn(avail);
 
-  var out='<div class="frh"><span>&#127961; '+avail.length+' nieuwe moties gevonden</span>'
-    +'<div class="fsel"><button onclick="selAll(true)">Alles</button><button onclick="selAll(false)">Geen</button></div></div>';
-  for(var i=0;i<avail.length;i++){
-    var m2=avail[i],ac2=AC[m2.alignment]||{c:"#ccc"},on2=!!fetchSel[m2.id];
-    out+='<div class="fri'+(on2?" on":"")+" ai-fri"+(on2?" on":"")
-      +'" id="fri-'+m2.id+'" onclick="togFRI2('+JSON.stringify(m2.id)+')" >'
-      +'<div class="frii"><div class="fris" style="background:'+(ac2?ac2.c:"#ccc")+'"></div>'
-      +'<div class="frib"><div class="frim"><span class="mdt">'+esc(m2.datum)+'</span>'
-      +'<span class="mi">'+esc(m2.indiener)+'</span><span class="mth">'+esc(m2.thema)+'</span></div>'
-      +'<div class="frit">'+esc(m2.titel)+'</div>'
-      +'<div style="display:flex;gap:5px;margin-bottom:4px">'+bdg(m2.status,SC)+" "+bdg(m2.alignment,AC)+'</div>'
-      +(m2.toelichting?'<div class="frtoe">'+esc(m2.toelichting)+'</div>':"")
-      +'</div><div class="frichk"><div class="chk'+(on2?" on":"")+'">&#10003;</div></div></div></div>';
+  if(avail.length){
+    // GitHub Actions found new moties
+    for(var i=0;i<avail.length;i++) fetchSel[avail[i].id]=true;
+    window._aiFetchResults=avail;
+    var out='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+      +'<span style="font-size:12px;font-weight:700;color:var(--mid)">'+avail.length+' nieuwe motie'+(avail.length!==1?'s':'')+' gevonden</span>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button onclick="selAll(true)" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--bo2);border-radius:100px;background:var(--w);cursor:pointer">Alles</button>'
+      +'<button onclick="selAll(false)" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--bo2);border-radius:100px;background:var(--w);cursor:pointer">Geen</button>'
+      +'</div></div>';
+    for(var i=0;i<avail.length;i++){
+      var m=avail[i], ac=AC[m.alignment]||{c:"#ccc"};
+      var fid=String(m.id).replace(/"/g,'');
+      out+="<div class=\"fri on\" id=\"fri-"+fid+"\" data-fid=\""+fid+"\" onclick=\"togItem(this)\" style=\"cursor:pointer\">"
+        +"<div class=\"frii\">"
+        +"<div class=\"fris\" style=\"background:"+ac.c+";min-height:50px\"></div>"
+        +"<div class=\"frib\">"
+        +"<div class=\"frim\"><span class=\"mdt\">"+esc(m.datum)+"</span><span class=\"msep\">&middot;</span><span class=\"mi\">"+esc(m.indiener)+"</span><span class=\"mth\">"+esc(m.thema)+"</span></div>"
+        +"<div class=\"frit\">"+esc(m.titel)+"</div>"
+        +"<div style=\"display:flex;gap:5px;margin:3px 0\">"+bdg(m.status,SC)+" "+bdg(m.alignment,AC)+"</div>"
+        +(m.toelichting?"<div class=\"frtoe\">"+esc(m.toelichting.slice(0,120))+"</div>":"")
+        +"</div>"
+        +"<div class=\"frichk\"><div class=\"chk on\" id=\"chk-"+fid+"\">&#10003;</div></div>"
+        +"</div></div>";
+    }
+    if(fcon) fcon.innerHTML=out;
+    if(fftr){fftr.style.display="flex"; updateFBtn(avail);}
+  } else {
+    // Nothing from GitHub Actions yet — show helpful empty state
+    if(fcon) fcon.innerHTML=
+      '<div style="background:var(--cr);border:1.5px solid var(--bo);border-radius:var(--rads);padding:18px 20px;line-height:1.75">'
+      +'<div style="font-size:22px;margin-bottom:6px">&#127761;</div>'
+      +'<strong style="font-size:14px">Automatische updates via GitHub Actions</strong>'
+      +'<p style="font-size:13px;color:var(--mid);margin-top:6px">'
+      +'Elke dag om 10:00 haalt de workflow nieuwe moties op van '
+      +'<a href="https://www.tweedekamer.nl/kamerstukken/moties" target="_blank" style="color:var(--ink);font-weight:700">tweedekamer.nl</a>. '
+      +'Zodra er iets nieuws is, kun je het hier met &eacute;&eacute;n klik importeren.'
+      +'</p>'
+      +'<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">'
+      +'<a href="https://www.tweedekamer.nl/kamerstukken/stemmingsuitslagen" target="_blank" '
+      +'style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:var(--ink);color:#fff;border-radius:100px;font-size:12px;font-weight:700;text-decoration:none">'
+      +'&#127761; TK stemmingsuitslagen &rarr;</a>'
+      +'<button onclick="closeFetch();setTimeout(function(){openModal(null);},100)" '
+      +'style="padding:9px 16px;border:1.5px solid var(--bo2);background:var(--w);border-radius:100px;font-size:12px;font-weight:700;cursor:pointer">'
+      +'+ Motie handmatig toevoegen</button>'
+      +'</div></div>';
+    if(fftr) fftr.style.display="none";
   }
-  window._aiFetchResults=avail;
-  fc.innerHTML=out;
 }
-function togFRI2(id){
+
+function togItem(el, id){
+  if(id===undefined) id=el.getAttribute('data-fid');
   fetchSel[id]=!fetchSel[id];
-  var item=document.getElementById("fri-"+id);
-  if(!item) return;
-  var chk=item.querySelector(".chk");
-  item.classList.toggle("on",!!fetchSel[id]);
-  if(chk){ chk.classList.toggle("on",!!fetchSel[id]); chk.innerHTML=fetchSel[id]?"&#10003;":""; }
-  var avail=window._aiFetchResults||[];
-  updateFBtn(avail);
+  el.classList.toggle("on",!!fetchSel[id]);
+  var chk=document.getElementById("chk-"+id);
+  if(chk){chk.classList.toggle("on",!!fetchSel[id]); chk.innerHTML=fetchSel[id]?"&#10003;":"";}
+  updateFBtn(window._aiFetchResults||[]);
 }
 
-function togFRI(id){fetchSel[id]=!fetchSel[id];buildFetch();}
+function togFRI(id){var el=document.getElementById("fri-"+id); if(el) togItem(el,id);}
+function togFRI2(id){togFRI(id);}
+function aiLiveFetch(){buildFetch();}
+
 function selAll(v){
-  var source=window._aiFetchResults||NIEUW;
-  var ex={};for(var i=0;i<moties.length;i++)ex[moties[i].id]=true;
-  for(var i=0;i<source.length;i++) if(!ex[source[i].id]) fetchSel[source[i].id]=v;
-  var avail=source.filter(function(m){return !ex[m.id];});
-  // Re-render the checkboxes
-  avail.forEach(function(m){
-    var item=document.getElementById("fri-"+m.id);
-    if(!item) return;
-    var chk=item.querySelector(".chk");
-    item.classList.toggle("on",v);
-    if(chk){chk.classList.toggle("on",v);chk.innerHTML=v?"&#10003;":"";}
+  var source=window._aiFetchResults||[];
+  var existIds={};
+  for(var i=0;i<moties.length;i++) existIds[moties[i].id]=true;
+  source.forEach(function(m){
+    if(existIds[m.id]) return;
+    fetchSel[m.id]=v;
+    var el=document.getElementById("fri-"+m.id);
+    var chk=document.getElementById("chk-"+m.id);
+    if(el) el.classList.toggle("on",v);
+    if(chk){chk.classList.toggle("on",v); chk.innerHTML=v?"&#10003;":"";}
   });
-  updateFBtn(avail);
+  updateFBtn(source.filter(function(m){return !existIds[m.id];}));
 }
-function updateFBtn(avail){var n=0;for(var i=0;i<avail.length;i++)if(fetchSel[avail[i].id])n++;var btn=g("fimp");if(btn){btn.textContent=n+" motie"+(n!==1?"s":"")+" importeren \u2192";btn.disabled=(n===0);}}
+
+function updateFBtn(avail){
+  var n=0;
+  for(var i=0;i<avail.length;i++) if(fetchSel[avail[i].id]) n++;
+  var btn=g("fimp");
+  if(btn){btn.textContent=n+" motie"+(n!==1?"s":"")+" importeren \u2192"; btn.disabled=(n===0);}
+}
 function doImport(){
-  var src=window._aiFetchResults||NIEUW;
-  var ex={};for(var i=0;i<moties.length;i++)ex[moties[i].id]=true;
+  var source=window._aiFetchResults||NIEUW||[];
+  var existIds={};
+  for(var i=0;i<moties.length;i++) existIds[moties[i].id]=true;
   var imp=[];
-  for(var i=0;i<src.length;i++){
-    var mot=src[i];
-    if(fetchSel[mot.id]&&!ex[mot.id]&&!ex[mot.titel]){imp.push(mot);ex[mot.id]=true;}
+  for(var i=0;i<source.length;i++){
+    if(fetchSel[source[i].id]&&!existIds[source[i].id]){
+      imp.push(source[i]); existIds[source[i].id]=true;
+    }
   }
-  for(var i=0;i<imp.length;i++)moties.push(imp[i]);
+  for(var i=0;i<imp.length;i++) moties.push(imp[i]);
   window._aiFetchResults=null;
-  saveDB();closeFetch();renderMoties();toast("\u2713 "+imp.length+" motie"+(imp.length!==1?"s":"")+" toegevoegd");
+  saveDB(); closeFetch(); renderMoties();
+  toast("✓ "+imp.length+" motie"+(imp.length!==1?"s":"")+" toegevoegd");
 }
+
 function openFetch(){buildFetch();g("ovf").style.display="flex";}
 function closeFetch(){g("ovf").style.display="none";}
 
@@ -988,6 +997,13 @@ g("btn-add2").addEventListener("click",function(){openModal(null);});
 
 window.toggleCard=function(id){id=Number(id);openId=(openId===id)?null:id;renderMoties();};
 window.openModal=openModal;
+window.togFRI=togFRI;
+window.togFRI2=togFRI2;
+window.togItem=togItem;
+window.selAll=selAll;
+window.aiLiveFetch=aiLiveFetch;
+window.openModal=openModal;
+window.toggleCard=function(id){id=Number(id);openId=(openId===id)?null:id;renderMoties();};
 })();
 </script>
 </body>
