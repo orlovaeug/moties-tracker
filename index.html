@@ -830,53 +830,118 @@ function buildFetch(){
   fetchSel={};
 
   if(avail.length){
-    // GitHub Actions found new moties
-    for(var i=0;i<avail.length;i++) fetchSel[avail[i].id]=true;
-    window._aiFetchResults=avail;
-    var out='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
-      +'<span style="font-size:12px;font-weight:700;color:var(--mid)">'+avail.length+' nieuwe motie'+(avail.length!==1?'s':'')+' gevonden</span>'
-      +'<div style="display:flex;gap:6px">'
-      +'<button onclick="selAll(true)" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--bo2);border-radius:100px;background:var(--w);cursor:pointer">Alles</button>'
-      +'<button onclick="selAll(false)" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--bo2);border-radius:100px;background:var(--w);cursor:pointer">Geen</button>'
-      +'</div></div>';
-    for(var i=0;i<avail.length;i++){
-      var m=avail[i], ac=AC[m.alignment]||{c:"#ccc"};
-      var fid=String(m.id).replace(/"/g,'');
-      out+="<div class=\"fri on\" id=\"fri-"+fid+"\" data-fid=\""+fid+"\" onclick=\"togItem(this)\" style=\"cursor:pointer\">"
-        +"<div class=\"frii\">"
-        +"<div class=\"fris\" style=\"background:"+ac.c+";min-height:50px\"></div>"
-        +"<div class=\"frib\">"
-        +"<div class=\"frim\"><span class=\"mdt\">"+esc(m.datum)+"</span><span class=\"msep\">&middot;</span><span class=\"mi\">"+esc(m.indiener)+"</span><span class=\"mth\">"+esc(m.thema)+"</span></div>"
-        +"<div class=\"frit\">"+esc(m.titel)+"</div>"
-        +"<div style=\"display:flex;gap:5px;margin:3px 0\">"+bdg(m.status,SC)+" "+bdg(m.alignment,AC)+"</div>"
-        +(m.toelichting?"<div class=\"frtoe\">"+esc(m.toelichting.slice(0,120))+"</div>":"")
-        +"</div>"
-        +"<div class=\"frichk\"><div class=\"chk on\" id=\"chk-"+fid+"\">&#10003;</div></div>"
-        +"</div></div>";
-    }
-    if(fcon) fcon.innerHTML=out;
-    if(fftr){fftr.style.display="flex"; updateFBtn(avail);}
+    showFetchItems(avail);
   } else {
-    // Nothing from GitHub Actions yet — show helpful empty state
+    // Empty state — show refresh button + manual add
     if(fcon) fcon.innerHTML=
-      '<div style="background:var(--cr);border:1.5px solid var(--bo);border-radius:var(--rads);padding:18px 20px;line-height:1.75">'
-      +'<div style="font-size:22px;margin-bottom:6px">&#127761;</div>'
-      +'<strong style="font-size:14px">Automatische updates via GitHub Actions</strong>'
+      '<div style="display:flex;flex-direction:column;gap:12px">'
+      +'<div style="background:var(--cr);border:1.5px solid var(--bo);border-radius:var(--rads);padding:18px 20px;line-height:1.75">'
+      +'<strong style="font-size:14px">&#127761; Nieuwe moties ophalen</strong>'
       +'<p style="font-size:13px;color:var(--mid);margin-top:6px">'
-      +'Elke dag om 10:00 haalt de workflow nieuwe moties op van '
-      +'<a href="https://www.tweedekamer.nl/kamerstukken/moties" target="_blank" style="color:var(--ink);font-weight:700">tweedekamer.nl</a>. '
-      +'Zodra er iets nieuws is, kun je het hier met &eacute;&eacute;n klik importeren.'
+      +'Klik op <strong>Nu ophalen</strong> om live moties te zoeken via AI, '
+      +'of voeg handmatig een motie toe.'
       +'</p>'
       +'<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">'
-      +'<a href="https://www.tweedekamer.nl/kamerstukken/stemmingsuitslagen" target="_blank" '
-      +'style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:var(--ink);color:#fff;border-radius:100px;font-size:12px;font-weight:700;text-decoration:none">'
-      +'&#127761; TK stemmingsuitslagen &rarr;</a>'
+      +'<button onclick="liveFetch()" '
+      +'style="display:inline-flex;align-items:center;gap:7px;padding:10px 18px;background:var(--ink);color:#fff;border:none;border-radius:100px;font-size:13px;font-weight:700;cursor:pointer">'
+      +'&#8635; Nu ophalen van tweedekamer.nl</button>'
       +'<button onclick="closeFetch();setTimeout(function(){openModal(null);},100)" '
-      +'style="padding:9px 16px;border:1.5px solid var(--bo2);background:var(--w);border-radius:100px;font-size:12px;font-weight:700;cursor:pointer">'
-      +'+ Motie handmatig toevoegen</button>'
-      +'</div></div>';
+      +'style="padding:10px 16px;border:1.5px solid var(--bo2);background:var(--w);border-radius:100px;font-size:13px;font-weight:600;cursor:pointer">'
+      +'+ Handmatig toevoegen</button>'
+      +'</div></div>'
+      +'<div style="font-size:11px;color:var(--mid);padding:0 4px">&#9432; GitHub Actions haalt ook automatisch moties op, dagelijks om 10:00.</div>'
+      +'</div>';
     if(fftr) fftr.style.display="none";
   }
+}
+
+function showFetchItems(avail){
+  var fcon=g("fcon"), fftr=g("fftr");
+  window._aiFetchResults=avail;
+  for(var i=0;i<avail.length;i++) fetchSel[avail[i].id]=true;
+  var out='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+    +'<span style="font-size:12px;font-weight:700;color:var(--mid)">'+avail.length+' nieuwe motie'+(avail.length!==1?'s':'')+' gevonden</span>'
+    +'<div style="display:flex;gap:6px">'
+    +'<button onclick="selAll(true)" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--bo2);border-radius:100px;background:var(--w);cursor:pointer">Alles</button>'
+    +'<button onclick="selAll(false)" style="font-size:11px;padding:3px 10px;border:1.5px solid var(--bo2);border-radius:100px;background:var(--w);cursor:pointer">Geen</button>'
+    +'</div></div>';
+  for(var i=0;i<avail.length;i++){
+    var m=avail[i], ac=AC[m.alignment]||{c:"#ccc"};
+    var fid=String(m.id).replace(/"/g,'');
+    out+="<div class=\"fri on\" id=\"fri-"+fid+"\" data-fid=\""+fid+"\" onclick=\"togItem(this)\" style=\"cursor:pointer\">"
+      +"<div class=\"frii\">"
+      +"<div class=\"fris\" style=\"background:"+ac.c+";min-height:50px\"></div>"
+      +"<div class=\"frib\">"
+      +"<div class=\"frim\"><span class=\"mdt\">"+esc(m.datum)+"</span><span class=\"msep\">&middot;</span><span class=\"mi\">"+esc(m.indiener)+"</span><span class=\"mth\">"+esc(m.thema)+"</span></div>"
+      +"<div class=\"frit\">"+esc(m.titel)+"</div>"
+      +"<div style=\"display:flex;gap:5px;margin:3px 0\">"+bdg(m.status,SC)+" "+bdg(m.alignment,AC)+"</div>"
+      +(m.toelichting?"<div class=\"frtoe\">"+esc(m.toelichting.slice(0,120))+"</div>":"")
+      +"</div>"
+      +"<div class=\"frichk\"><div class=\"chk on\" id=\"chk-"+fid+"\">&#10003;</div></div>"
+      +"</div></div>";
+  }
+  if(fcon) fcon.innerHTML=out;
+  if(fftr){fftr.style.display="flex"; updateFBtn(avail);}
+}
+
+function liveFetch(){
+  var fcon=g("fcon"), fftr=g("fftr");
+  if(fftr) fftr.style.display="none";
+  fcon.innerHTML=
+    '<div style="text-align:center;padding:36px 20px">'
+    +'<div class="spin"></div>'
+    +'<div style="font-size:13px;color:var(--mid);margin-top:16px">Moties ophalen van tweedekamer.nl via AI&hellip;</div>'
+    +'</div>';
+
+  var existingTitles=moties.map(function(m){return m.titel;});
+  var prompt="Zoek op tweedekamer.nl naar recente moties (na 23 februari 2026) van het kabinet-Jetten (coalitie D66, VVD, CDA). "
+    +"De volgende moties zijn al bekend (sla ze over):\n"
+    +existingTitles.slice(0,20).map(function(t,i){return(i+1)+". "+t;}).join("\n")
+    +"\n\nGeef ALLEEN een JSON-array terug (geen markdown, geen tekst erbuiten), maximaal 12 items:\n"
+    +'[{"titel":"...","indiener":"partijnaam","datum":"YYYY-MM-DD","thema":"een van: Bestaanszekerheid|Asiel & Migratie|Landbouw & Natuur|Veiligheid & Justitie|Zorg|Onderwijs & Wetenschap|Klimaat & Energie|Wonen & Bouwen|Financien|Buitenlandse Zaken & Europa|Defensie|Overheid & Bestuur|Democratie & Rechtsstaat|Nationale Veiligheid|Economie & Ondernemen|Digitalisering & AI|Bereikbaarheid & Mobiliteit|Sociale Cohesie|Overig","status":"aangenomen|verworpen|in_behandeling","alignment":"conform|neutraal|strijdig","toelichting":"1 zin context","vergadering":"naam debat","stemmen":{}}]';
+
+  fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:3000,
+      tools:[{"type":"web_search_20250305","name":"web_search"}],
+      messages:[{role:"user",content:prompt}]
+    })
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var text="";
+    if(data.content) for(var i=0;i<data.content.length;i++) if(data.content[i].type==="text") text+=data.content[i].text;
+    var arr=null;
+    try{arr=JSON.parse(text.trim());}catch(e){var m=text.match(/\[[\s\S]*\]/);if(m)try{arr=JSON.parse(m[0]);}catch(e2){}}
+    if(!arr||!arr.length){
+      fcon.innerHTML='<div class="fnote" style="color:var(--r)">&#9888; Geen moties gevonden. Probeer opnieuw of voeg handmatig toe.<br><small style="color:var(--mid)">'+esc((text||"geen respons").slice(0,150))+'</small></div>';
+      return;
+    }
+    var existIds={};
+    for(var i=0;i<moties.length;i++) existIds[moties[i].id]=true;
+    var newId=Date.now();
+    var avail=[];
+    for(var i=0;i<arr.length;i++){
+      var mot=arr[i];
+      if(!mot.titel) continue;
+      mot.id=mot.id||("live"+newId++);
+      mot.stemmen=mot.stemmen||{};
+      mot.tk_url=mot.tk_url||"https://www.tweedekamer.nl/kamerstukken/stemmingsuitslagen";
+      if(!existIds[mot.id]&&!existIds[mot.titel]) avail.push(mot);
+    }
+    if(!avail.length){
+      fcon.innerHTML='<div class="fnote" style="background:#E8F5ED;border-color:#A8D5B5">&#9989; Geen nieuwe moties &mdash; alles is al bijgewerkt!</div>';
+      return;
+    }
+    fetchSel={};
+    showFetchItems(avail);
+  })
+  .catch(function(err){
+    fcon.innerHTML='<div class="fnote" style="color:var(--r)">&#9888; Netwerkfout: '+esc(err.message)+'</div>';
+  });
 }
 
 function togItem(el, id){
@@ -997,7 +1062,7 @@ g("btn-add2").addEventListener("click",function(){openModal(null);});
 
 window.toggleCard=function(id){id=Number(id);openId=(openId===id)?null:id;renderMoties();};
 window.openModal=openModal;
-window.togFRI=togFRI;
+window.liveFetch=liveFetch; window.togFRI=togFRI;
 window.togFRI2=togFRI2;
 window.togItem=togItem;
 window.selAll=selAll;
