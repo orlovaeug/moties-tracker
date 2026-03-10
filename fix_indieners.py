@@ -3,7 +3,8 @@
 fix_indieners.py — eenmalig script om indieners te corrigeren in moties.json
 Run dit EENMALIG lokaal of als extra stap in GitHub Actions.
 """
-import json, re
+import json, re, urllib.request, html as html_module, time
+from datetime import date
 
 LEDEN_PARTIJ = {
     # D66 (26) — largest party, elected Oct 2025
@@ -84,6 +85,26 @@ LEDEN_PARTIJ = {
 PARTIJEN = ["PVV","VVD","NSC","BBB","D66","GL-PvdA","CDA","SP","PvdD","CU","SGP",
             "Volt","DENK","FvD","JA21","50PLUS","Gr.Markuszower"]
 
+COALITIE = {"D66","VVD","CDA","BBB","NSC"}
+
+STRIJDIG_KEYWORDS = [
+    "niet verhogen","van tafel","terugtrekken","geen bezuinig","verbod op","schrap",
+    "afschaffen","niet korten","niet verlagen","stop met","verzet zich","verwerpt",
+    "intrekken","geen steun","tegen het kabinet","wantrouwen",
+]
+
+CONFORM_KEYWORDS = [
+    "conform akkoord","uitvoering geven","wettelijk vastleggen","invoeren","oprichten",
+    "vaststellen","uitwerken","realiseren","uitvoeren","verankeren",
+]
+
+AKKOORD_THEMAS = {
+    "Defensie": "conform", "Wonen & Bouwen": "conform", "Klimaat & Energie": "conform",
+    "Asiel & Migratie": "conform", "Financien": "conform", "Bereikbaarheid & Mobiliteit": "conform",
+    "Landbouw & Natuur": "conform", "Democratie & Rechtsstaat": "neutraal",
+    "Bestaanszekerheid": "neutraal",
+}
+
 def detect_indiener(titel):
     m = re.search(r'(?:Gewijzigde\s+)?[Mm]otie\s+van\s+(?:het\s+lid|de\s+leden)\s+([A-Z][a-zA-Z\u00C0-\u017E\-]+(?:\s+[a-zA-Z\u00C0-\u017E\-]+){0,4}?)(?:\s+c\.s\.|\s+over\s|\s+en\s+[A-Z]|\s+-\s+[A-Z]|$)', titel)
     name_ctx = m.group(1).strip() if m else titel
@@ -108,9 +129,6 @@ def detect_alignment(titel, indiener, thema):
     if indiener in COALITIE:
         return AKKOORD_THEMAS.get(thema, "conform")
     return "neutraal"
-
-import urllib.request, html as html_module, time
-from datetime import date
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (compatible; MotieTracker/1.0)',
