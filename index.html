@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Motie Tracker &mdash; Kabinet-Jetten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--cr:#F5F1EB;--cr2:#EDE9E1;--w:#FFFFFF;--ink:#1C1C1A;--ink2:#3A3A36;--mid:#7A7A72;--li:#B8B4AA;--bo:#E2DED6;--bo2:#D4CFC5;--g:#3A7A4A;--gb:#EAF6EE;--gbd:#B8E0C5;--r:#A03030;--rb:#FBEEEE;--rbd:#EBBABA;--a:#8A5A00;--ab:#FEF6E8;--abd:#F5D898;--nb:#EFEFEB;--nbd:#CECEC8;--rad:20px;--rads:12px;--sh:0 4px 24px rgba(0,0,0,.07);--shl:0 12px 48px rgba(0,0,0,.12)}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:"DM Sans",sans-serif;background:var(--cr);color:var(--ink);min-height:100vh;font-size:15px;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit}button{cursor:pointer}a{text-decoration:none;color:inherit}li,span{list-style:none}
+/* NAV */
+#nav{background:var(--ink);position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.3)}
+#nv{max-width:1160px;margin:0 auto;padding:0 28px;display:flex;align-items:center;gap:16px;height:62px}
+#nb{font-family:"Playfair Display",serif;font-size:18px;font-weight:700;color:#fff;white-space:nowrap;flex-shrink:0}
+#nsep{width:1px;height:22px;background:rgba(255,255,255,.15);flex-shrink:0}
+#nsub{font-size:11px;color:rgba(255,255,255,.38);letter-spacing:.04em;flex-shrink:0;white-space:nowrap}
+#ntabs{display:flex;gap:10px;flex:1;justify-content:center}
+.nt{padding:8px 20px;border-radius:100px;border:none;background:transparent;color:rgba(255,255,255,.5);font-size:12px;font-weight:600;letter-spacing:.02em;transition:all .2s;white-space:nowrap}
+.nt.on{background:rgba(255,255,255,.15);color:#fff}.nt:hover:not(.on){color:rgba(255,255,255,.8)}
+#nright{display:flex;gap:8px;flex-shrink:0}
+.nbs{padding:7px 13px;border-radius:100px;border:1.5px solid rgba(255,255,255,.22);background:transparent;color:rgba(255,255,255,.75);font-size:12px;font-weight:600;transition:all .2s;white-space:nowrap}
+.nbs:hover{border-color:rgba(255,255,255,.55);color:#fff}
+.nbp{padding:7px 15px;border-radius:100px;border:none;background:#fff;color:var(--ink);font-size:12px;font-weight:700;transition:all .2s;white-space:nowrap}
+.nbp:hover{background:var(--cr2)}
+/* MAIN */
+#main{max-width:1160px;margin:0 auto;padding:28px 28px 56px}
+/* HERO */
+#hbar{background:var(--ink);border-radius:var(--rad);padding:28px 32px;margin-bottom:22px;display:grid;grid-template-columns:repeat(4,1fr)}
+.hs{padding:0 24px;border-right:1px solid rgba(255,255,255,.1)}.hs:first-child{padding-left:0}.hs:last-child{border-right:none}
+.hsl{font-size:10px;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:7px}
+.hsv{font-family:"Playfair Display",serif;font-size:48px;font-weight:700;line-height:.9;letter-spacing:-.02em;color:#fff}
+.hss{font-size:11px;color:rgba(255,255,255,.35);margin-top:7px}
+/* SEARCH */
+#srow{display:flex;gap:10px;margin-bottom:10px}
+#sw{position:relative;flex:1}#si{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--mid);pointer-events:none;font-size:15px}
+#sinp{width:100%;padding:12px 14px 12px 42px;border:1.5px solid var(--bo2);border-radius:100px;font-size:14px;outline:none;background:var(--w);transition:border .2s,box-shadow .2s}
+#sinp:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(28,28,26,.06)}#sinp::placeholder{color:var(--li)}
+.tbtn{padding:10px 18px;border-radius:100px;border:1.5px solid var(--bo2);background:var(--w);color:var(--ink2);font-size:12px;font-weight:600;letter-spacing:.04em;display:inline-flex;align-items:center;gap:6px;transition:all .2s;white-space:nowrap}
+.tbtn:hover,.tbtn.on{border-color:var(--ink);background:var(--ink);color:#fff}
+#fp{background:var(--w);border:1.5px solid var(--bo);border-radius:var(--rads);padding:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;box-shadow:var(--sh)}
+#fp select{padding:9px 30px 9px 13px;border:1.5px solid var(--bo);border-radius:100px;font-size:13px;background:var(--cr);outline:none;color:var(--ink);appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237A7A72'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+#fcount{font-size:12px;color:var(--mid);grid-column:1/-1;text-align:right;font-style:italic}
+/* MOTIE CARDS */
+#ml{display:flex;flex-direction:column;gap:10px}
+.mc{background:var(--w);border-radius:var(--rad);overflow:hidden;transition:box-shadow .2s;border:1.5px solid transparent}
+.mc:hover{box-shadow:var(--sh)}.mc.open{box-shadow:var(--shl);border-color:var(--bo)}
+.mh{display:flex;align-items:stretch;cursor:pointer;min-height:70px}
+.ms{width:5px;flex-shrink:0}.mb{flex:1;padding:15px 20px;min-width:0}
+.mm{display:flex;align-items:center;gap:7px;margin-bottom:6px;flex-wrap:wrap}
+.mdt{font-size:11px;color:var(--mid)}.msep{color:var(--bo2);font-size:11px}
+.mi{font-size:11px;font-weight:700;background:var(--ink);color:#fff;padding:3px 10px;border-radius:100px}
+.mth{font-size:11px;padding:3px 10px;background:var(--cr2);color:var(--ink2);border-radius:100px;border:1px solid var(--bo)}
+.mt{font-family:"Playfair Display",serif;font-size:16px;font-weight:600;line-height:1.35;margin-bottom:8px;color:var(--ink)}
+.mbg{display:flex;gap:6px;flex-wrap:wrap}
+.mch{display:flex;align-items:center;padding-right:20px;color:var(--li);font-size:12px;flex-shrink:0;transition:transform .2s}
+.mc.open .mch{transform:rotate(180deg)}
+.md{border-top:1.5px solid var(--cr2);padding:18px 20px 20px 25px;background:var(--cr)}
+.mvg{font-size:11px;color:var(--mid);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.mtl{font-size:14px;color:var(--ink2);line-height:1.75;border-left:3px solid var(--ink);padding-left:13px;margin-bottom:14px;font-style:italic}
+.tkl{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink);padding:7px 14px;border:1.5px solid var(--bo2);border-radius:100px;margin-bottom:13px;font-weight:600;background:var(--w);transition:all .2s}
+.tkl:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.da{display:flex;gap:8px;margin-top:14px}
+.be{padding:7px 16px;border:1.5px solid var(--bo2);background:var(--w);font-size:12px;font-weight:600;color:var(--ink);border-radius:100px;transition:all .2s}
+.be:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.bd{padding:7px 16px;border:1.5px solid var(--rbd);background:var(--w);font-size:12px;font-weight:600;color:var(--r);border-radius:100px;transition:all .2s}
+.bd:hover{background:var(--r);color:#fff}
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;font-size:11px;font-weight:600;border:1px solid;border-radius:100px}
+/* VOTES */
+.vs{margin-top:14px;padding-top:12px;border-top:1.5px solid var(--bo)}
+.vl{font-size:10px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.1em;margin-bottom:9px}
+.vg{display:flex;align-items:flex-start;gap:9px;margin-bottom:7px}
+.vp{font-size:11px;font-weight:700;padding:3px 10px;border:1px solid;white-space:nowrap;flex-shrink:0;border-radius:100px}
+.vc2{display:flex;flex-wrap:wrap;gap:4px}
+.vcp{font-size:11px;font-weight:500;padding:2px 8px;border:1px solid;border-radius:100px}
+.vem{font-size:13px;color:var(--mid);font-style:italic}
+/* EMPTY */
+#emsg{text-align:center;padding:72px 20px;color:var(--mid);background:var(--w);border-radius:var(--rad)}
+#emsg p{font-family:"Playfair Display",serif;font-size:20px;color:var(--ink);margin-bottom:6px}
+/* AKKOORD */
+#aktop{background:var(--ink);border-radius:var(--rad);padding:32px 36px;margin-bottom:20px}
+#aktop h2{font-family:"Playfair Display",serif;font-size:30px;font-weight:700;color:#fff;margin-bottom:4px}
+.aksub{font-size:13px;color:rgba(255,255,255,.45);margin-bottom:22px}
+.akklist{display:flex;flex-direction:column;gap:12px}
+.akcard{background:var(--w);border-radius:var(--rad);border:1.5px solid var(--bo);overflow:hidden;transition:box-shadow .2s}
+.akcard.akopen{box-shadow:var(--shl)}
+.akhead{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer;user-select:none}
+.akhead:active{background:var(--cr)}
+.akicon{font-size:20px;flex-shrink:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--cr2);border-radius:10px;border:1.5px solid var(--bo)}
+.akinfo{flex:1;min-width:0}
+.akname{font-family:"Playfair Display",serif;font-size:15px;font-weight:600;color:var(--ink)}
+.aksub2{font-size:11px;color:var(--mid);margin-top:2px}
+.akchev{font-size:10px;color:var(--li);flex-shrink:0;margin-left:4px}
+.akbdg{font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;border:1.5px solid;white-space:nowrap;flex-shrink:0}
+.akbdg-g{color:#3A7A4A;background:#EAF6EE;border-color:#B8E0C5}
+.akbdg-r{color:#A03030;background:#FBEEEE;border-color:#EBBABA}
+.akbody{padding:0 18px 18px;border-top:1.5px solid var(--bo)}
+.akptitle{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--mid);margin:14px 0 8px}
+.akplist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px}
+.akplist li{font-size:13px;color:var(--ink2);padding-left:18px;position:relative;line-height:1.5}
+.akplist li::before{content:"› ";position:absolute;left:0;color:var(--mid)}
+.akml2{display:flex;flex-direction:column;gap:8px}
+.akmc2{background:var(--cr);border-radius:var(--rads);padding:12px 14px;border:1px solid var(--bo)}
+.akmc2d{font-size:10px;color:var(--mid);margin-bottom:4px;font-weight:600}
+.akmc2t{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.akmc2b{display:flex;gap:6px;flex-wrap:wrap}
+.akkpi{display:grid;grid-template-columns:repeat(4,1fr)}.akk{padding:0 22px;border-right:1px solid rgba(255,255,255,.1)}.akk:first-child{padding-left:0}.akk:last-child{border-right:none}
+.akkl{font-size:10px;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:6px}
+.akkv{font-family:"Playfair Display",serif;font-size:36px;font-weight:700;color:#fff;line-height:.9;letter-spacing:-.02em}
+.pbw{margin-top:22px}.pbl{font-size:10px;color:rgba(255,255,255,.4);font-weight:600;margin-bottom:7px;text-transform:uppercase;letter-spacing:.08em}
+.pbt{height:5px;background:rgba(255,255,255,.12);border-radius:100px;overflow:hidden}.pbf{height:100%;background:#fff;border-radius:100px;transition:width .7s}.pbs{font-size:11px;color:rgba(255,255,255,.3);margin-top:6px}
+#tlist{display:flex;flex-direction:column;gap:8px}
+.tc{background:var(--w);border-radius:var(--rad);overflow:hidden;border:1.5px solid var(--bo);transition:box-shadow .2s}.tc.open{box-shadow:var(--shl);border-color:var(--bo2)}
+.tch{display:flex;align-items:center;gap:12px;padding:15px 20px;cursor:pointer;transition:background .15s}.tch:hover{background:var(--cr)}
+.tcs{width:5px;min-height:36px;border-radius:100px;flex-shrink:0;align-self:stretch}.tci{font-size:20px;flex-shrink:0}
+.tcif{flex:1;min-width:0}.tcn{font-family:"Playfair Display",serif;font-size:15px;font-weight:600;color:var(--ink);margin-bottom:2px}.tcsub{font-size:11px;color:var(--mid)}
+.tcr{display:flex;gap:5px;align-items:center;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}
+.tcch{font-size:12px;color:var(--li);margin-left:4px;transition:transform .2s;display:inline-block}.tc.open .tcch{transform:rotate(180deg)}
+.tcd{border-top:1.5px solid var(--cr2);padding:18px 20px 20px 25px;background:var(--cr)}
+.tcl{font-size:10px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px 18px;margin-bottom:14px}
+.pi{font-size:13px;color:var(--ink2);line-height:1.6;display:flex;align-items:baseline;gap:7px}.pi::before{content:"—";color:var(--li);flex-shrink:0;font-size:11px}
+.rmlist{display:flex;flex-direction:column;gap:6px}
+.rmi{background:var(--w);border:1.5px solid var(--bo);border-radius:var(--rads);padding:9px 13px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+/* STATS */
+#pns{background:var(--cr);padding:16px;display:flex;flex-direction:column;gap:12px;overflow-x:hidden}
+.dg{display:grid;gap:12px}.dg3{grid-template-columns:repeat(3,1fr)}.dg2{grid-template-columns:repeat(2,1fr)}.dgm{grid-template-columns:2fr 1fr}
+.dk{background:#fff;border-radius:16px;padding:22px 24px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06)}
+.dkl{background:#fff;border-radius:16px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06)}
+.dkt{font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;display:flex;align-items:center;gap:6px}
+.dktl{font-size:11px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.dbn{font-family:"Playfair Display",serif;font-size:56px;font-weight:700;color:var(--ink);line-height:1;letter-spacing:-.02em;margin-bottom:4px}
+.dbnl{font-size:42px;font-weight:700;line-height:1;letter-spacing:-.02em;margin-bottom:2px}
+.dun{font-size:14px;font-weight:500;color:var(--mid);margin-left:6px;font-family:inherit;letter-spacing:0}
+.dunl{font-size:13px;font-weight:500;margin-left:5px;opacity:.5}
+.ddl{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;margin-top:12px}
+.dup{background:var(--gb);color:var(--g)}.ddn{background:var(--rb);color:var(--r)}
+.dsub{font-size:11px;color:var(--mid);margin-top:8px}.dsubl{font-size:11px;color:var(--mid);margin-top:6px}
+.bch{margin-top:14px}.brow{display:flex;align-items:center;gap:10px;padding:5px 0}
+.blbl{font-size:11px;color:var(--ink2);width:160px;min-width:100px;flex-shrink:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btrk{flex:1;background:var(--cr2);border-radius:100px;height:8px;overflow:hidden}
+.bfill{height:100%;border-radius:100px;transition:width .6s cubic-bezier(.34,1.56,.64,1)}.bval{font-size:12px;font-weight:700;color:var(--ink);width:20px;text-align:right}
+.cch{display:flex;align-items:flex-end;gap:4px;height:90px;padding-top:10px;margin-top:8px;overflow-x:auto}
+.ccol{flex:1;min-width:28px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.ccbw{flex:1;width:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.ccb{border-radius:6px 6px 0 0;width:100%;min-height:4px;transition:height .5s}
+.ccl{font-size:9px;color:var(--mid);text-align:center;letter-spacing:.03em}
+.dnut{display:flex;align-items:center;gap:16px;margin-top:4px;flex-wrap:wrap}
+.dleg{display:flex;flex-direction:column;gap:9px;flex:1}.dli{display:flex;align-items:center;gap:8px}
+.dld{width:10px;height:10px;border-radius:50%;flex-shrink:0}.dll{font-size:12px;color:var(--ink2);flex:1}.dlv{font-size:13px;font-weight:700;color:var(--ink)}
+.alist{display:flex;flex-direction:column;gap:0;margin-top:4px}
+.ait{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--bo);align-items:flex-start}.ait:last-child{border-bottom:none}
+.adot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.atiT{font-size:13px;font-weight:600;color:var(--ink);line-height:1.35;margin-bottom:3px}
+.asb{font-size:11px;color:var(--mid)}
+.pgrd{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:12px}
+.pc{background:var(--cr);border-radius:12px;padding:12px;min-width:0}
+.pcn{font-size:10px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.pcv{font-size:24px;font-weight:700;line-height:1;margin-bottom:8px}
+.pcb{height:4px;background:var(--bo);border-radius:100px;overflow:hidden}
+.pcbf{height:100%;border-radius:100px;transition:width .5s}
+/* MODALS */
+.ov{position:fixed;inset:0;background:rgba(28,28,26,.5);z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal{background:var(--w);width:100%;max-width:550px;max-height:92vh;overflow:auto;box-shadow:var(--shl);border-radius:22px}
+.mhd{padding:26px 30px 18px;display:flex;justify-content:space-between;align-items:center}
+.mhd h2{font-family:"Playfair Display",serif;font-size:22px;font-weight:700}
+.xb{background:var(--cr2);border:none;width:34px;height:34px;border-radius:50%;font-size:18px;color:var(--mid);display:inline-flex;align-items:center;justify-content:center;transition:all .2s}
+.xb:hover{background:var(--ink);color:#fff}
+.mbd{padding:0 30px 10px;display:flex;flex-direction:column;gap:13px}
+.mg2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.fld label{font-size:10px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:5px}
+.fld input,.fld select,.fld textarea{width:100%;padding:10px 13px;border:1.5px solid var(--bo2);border-radius:var(--rads);font-size:14px;outline:none;background:var(--cr);color:var(--ink);transition:border .2s}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--ink);background:var(--w)}
+.fld textarea{min-height:78px;resize:vertical}
+.mft{padding:14px 30px 26px;display:flex;gap:10px}
+.bcan{flex:1;padding:12px;border:1.5px solid var(--bo2);background:var(--w);font-size:13px;font-weight:600;color:var(--mid);border-radius:100px;transition:all .2s}
+.bcan:hover{border-color:var(--ink);color:var(--ink)}
+.bsav{flex:2;padding:12px;border:none;background:var(--ink);color:#fff;font-size:13px;font-weight:700;border-radius:100px;transition:all .2s}
+.bsav:hover{background:var(--ink2)}
+.slbl{font-size:10px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.1em;margin-bottom:9px;display:block}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.scell label{font-size:9px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:2px}
+.scell select{width:100%;padding:5px 7px;border:1.5px solid var(--bo);border-radius:8px;font-size:12px;background:var(--cr);outline:none}
+.delm{background:var(--w);width:100%;max-width:360px;padding:38px 32px;text-align:center;border-radius:22px}
+.delm h3{font-family:"Playfair Display",serif;font-size:22px;font-weight:700;margin:10px 0 8px}
+.delm p{color:var(--mid);font-size:14px;margin-bottom:26px;line-height:1.6}
+.dbtns{display:flex;gap:9px}
+.bdc{flex:1;padding:12px;border:1.5px solid var(--bo2);background:var(--w);font-size:13px;font-weight:600;border-radius:100px;transition:all .2s}
+.bdc:hover{border-color:var(--ink)}
+.bdo{flex:1;padding:12px;border:none;background:var(--r);color:#fff;font-size:13px;font-weight:700;border-radius:100px}
+.fetchm{background:var(--w);width:100%;max-width:620px;max-height:90vh;overflow:auto;box-shadow:var(--shl);border-radius:22px}
+.fhd{padding:26px 30px 16px;display:flex;justify-content:space-between;align-items:flex-start}
+.fhd h2{font-family:"Playfair Display",serif;font-size:21px;font-weight:700}.fhd p{margin-top:3px;font-size:13px;color:var(--mid)}
+.fbd{padding:0 30px 10px;display:flex;flex-direction:column;gap:13px}
+.fnote{background:var(--cr);border:1.5px solid var(--bo);border-radius:var(--rads);padding:13px 15px;font-size:13px;color:var(--mid);line-height:1.65}
+.fnote a{color:var(--ink);font-weight:700}.fnote a:hover{text-decoration:underline}
+.frh{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.frh span{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--mid)}
+.fsel button{font-size:11px;background:none;border:none;cursor:pointer;color:var(--mid);font-weight:700;text-transform:uppercase;margin-left:10px;transition:color .15s}
+.fsel button:hover{color:var(--ink)}
+.fri{border:1.5px solid var(--bo);overflow:hidden;cursor:pointer;background:var(--w);border-radius:var(--rads);margin-bottom:7px;transition:all .2s}
+.fri.on{border-color:var(--ink);background:var(--cr)}
+.frii{display:flex;align-items:stretch}.fris{width:5px;flex-shrink:0;border-radius:var(--rads) 0 0 var(--rads)}.frib{flex:1;padding:11px 14px}
+.frim{display:flex;align-items:center;gap:5px;margin-bottom:5px;flex-wrap:wrap}
+.frit{font-family:"Playfair Display",serif;font-size:13px;font-weight:600;line-height:1.35;margin-bottom:5px}
+.frtoe{font-size:12px;color:var(--mid);border-left:3px solid var(--bo2);padding-left:9px;line-height:1.5;margin-top:4px}
+.frichk{display:flex;align-items:center;padding:0 16px 0 6px}
+.chk{width:21px;height:21px;border:2px solid var(--bo2);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;background:var(--w);transition:all .2s}
+.chk.on{background:var(--ink);border-color:var(--ink);color:#fff}
+/* SUPPORT */
+#supsec{background:var(--w);border-top:1.5px solid var(--bo);padding:48px 28px}
+#supin{max-width:1160px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}
+.suptxt h3{font-family:"Playfair Display",serif;font-size:24px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.suptxt p{font-size:14px;color:var(--mid);line-height:1.7;max-width:480px}
+.supcard{background:var(--ink);border-radius:20px;padding:28px 32px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:14px;min-width:260px;max-width:300px}
+.supct{font-size:11px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;text-align:center}
+.supcd{font-size:13px;color:rgba(255,255,255,.6);text-align:center;line-height:1.6;max-width:220px}
+.supbtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 24px;background:#fff;color:var(--ink);border:none;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;text-decoration:none;letter-spacing:.02em;width:100%}
+.supbtn:hover{background:var(--cr);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+/* FOOTER */
+#footer{background:var(--ink);padding:44px 28px 32px}
+#fotin{max-width:1160px;margin:0 auto}
+.ftop{display:grid;grid-template-columns:1fr auto;gap:36px;margin-bottom:28px;align-items:start}
+.ftbr h3{font-family:"Playfair Display",serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
+.ftbr p{font-size:13px;color:rgba(255,255,255,.42);line-height:1.75;max-width:420px}
+.ftbr a{color:rgba(255,255,255,.6)}.ftbr a:hover{color:#fff}
+.ftls{display:flex;flex-direction:column;gap:7px}
+.flink{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#fff;padding:8px 16px;border:1.5px solid rgba(255,255,255,.18);border-radius:100px;white-space:nowrap;transition:all .2s}
+.flink:hover{background:#fff;color:var(--ink)}
+.flnote{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;padding-left:4px;font-style:italic}
+.fbot{border-top:1px solid rgba(255,255,255,.08);padding-top:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:7px}
+.fbot p,.fbot a{font-size:11px;color:rgba(255,255,255,.22);letter-spacing:.04em}.fbot a:hover{color:rgba(255,255,255,.6)}
+.vpill{display:inline-flex;align-items:center;font-size:10px;font-weight:700;color:rgba(255,255,255,.65);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);padding:2px 9px;border-radius:100px;margin-left:5px;letter-spacing:.06em;text-transform:uppercase}
+/* TOAST */
+.spin{width:32px;height:32px;border:3px solid var(--bo);border-top-color:var(--ink);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);opacity:0;background:var(--ink);color:#fff;padding:12px 22px;font-size:13px;font-weight:600;z-index:999;box-shadow:0 8px 32px rgba(0,0,0,.2);white-space:nowrap;border-radius:100px;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+/* RESPONSIVE */
+@media(max-width:900px){.dg3{grid-template-columns:repeat(2,1fr)}.dgm{grid-template-columns:1fr}.dg2{grid-template-columns:1fr}.pgrd{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:12px}.akkpi{grid-template-columns:1fr 1fr;gap:14px}.akk{padding:0;border-right:none}}
+@media(max-width:768px){#nv{padding:0 16px;gap:10px}#nsep,#nsub{display:none}#main{padding:16px 16px 44px}#hbar{grid-template-columns:1fr 1fr;padding:20px;border-radius:var(--rads)}.hs{padding:0 0 14px;border-right:none;border-bottom:1px solid rgba(255,255,255,.1)}.hs:nth-child(odd){padding-right:10px;border-right:1px solid rgba(255,255,255,.1);border-bottom:none}.hs:nth-child(even){padding-left:10px;border-bottom:none}.hsv{font-size:38px}#fp{grid-template-columns:1fr}.ov{align-items:flex-end}.modal,.fetchm{border-radius:20px 20px 0 0;max-width:100%;max-height:95vh}.delm{border-radius:20px 20px 0 0;max-width:100%;width:100%}.mg2,.dg2{grid-template-columns:repeat(2,1fr)}.sgrid{grid-template-columns:repeat(2,1fr)}.pgrid{grid-template-columns:1fr}.ftop{grid-template-columns:1fr}.ftls{flex-direction:row;flex-wrap:wrap}#supin{flex-direction:column}.supcard{width:100%;max-width:100%}}
+@media(max-width:600px){#nv{flex-wrap:wrap;height:auto;padding:10px 16px 0;gap:0}#nb{flex:1}#nright{padding-bottom:10px}#ntabs{width:100%;justify-content:flex-start;gap:4px;padding:6px 0 8px;border-top:1px solid rgba(255,255,255,.1);margin-top:4px}.nt{padding:7px 14px;font-size:11px}}
+@media(max-width:480px){.dg3{grid-template-columns:1fr}.dg2{grid-template-columns:1fr}.dgm{grid-template-columns:1fr}.dbn{font-size:40px}.dbnl{font-size:34px}.pgrd{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:12px}.blbl{font-size:11px;color:var(--ink2);width:160px;min-width:100px;flex-shrink:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dnut{display:flex;align-items:center;gap:16px;margin-top:4px;flex-wrap:wrap}.cch{display:flex;align-items:flex-end;gap:4px;height:90px;padding-top:10px;margin-top:8px;overflow-x:auto}.bval{font-size:11px}#pns{background:var(--cr);padding:16px;display:flex;flex-direction:column;gap:12px;overflow-x:hidden}}
+
+/* news pane removed */
+.ntop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ntopics{display:flex;gap:8px;flex-wrap:wrap}
+.ntbtn{padding:7px 16px;border-radius:100px;border:1.5px solid var(--bo2);background:var(--w);color:var(--ink2);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.ntbtn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.nfetch{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:100px;border:none;background:var(--ink);color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.nfetch:hover{opacity:.85}
+.nfetch:disabled{opacity:.5;cursor:not-allowed}
+.nstate{text-align:center;padding:50px 20px;color:var(--mid);font-size:14px}
+.nlist{display:flex;flex-direction:column;gap:10px}
+.ncard{background:var(--w);border-radius:16px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06);cursor:pointer;transition:box-shadow .2s}
+.ncard:hover{box-shadow:0 4px 20px rgba(0,0,0,.12)}
+.nchead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+.nctag{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;flex-shrink:0}
+.nctitle{font-size:15px;font-weight:700;color:var(--ink);line-height:1.35;margin-bottom:6px}
+.ncsummary{font-size:13px;color:var(--ink2);line-height:1.55}
+.ncfoot{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.ncdate{font-size:11px;color:var(--mid)}
+.ncsrc{font-size:11px;color:var(--mid);font-weight:600}
+.nclink{font-size:11px;color:var(--g);font-weight:700;text-decoration:none;margin-left:auto}
+.nclink:hover{text-decoration:underline}
+.ntag-nat{background:#E8F5ED;color:#2C5F3A}
+.ntag-asiel{background:#FAEAEA;color:#7A1C1C}
+.ntag-ken{background:#FDF3E3;color:#6B4400}
+.nlast{font-size:11px;color:var(--mid);text-align:right;padding:4px 0}
+
+.ak-hero{background:var(--ink);border-radius:var(--rad);padding:20px 18px 16px;margin-bottom:16px;color:#fff}
+.ak-hero-row{display:flex;align-items:center;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.ak-hstat{flex:1;min-width:60px;text-align:center}
+.ak-hbig{font-family:"Playfair Display",serif;font-size:22px;font-weight:700;line-height:1;color:#fff;margin-bottom:3px}
+.ak-hlabel{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.45)}
+.ak-hsep{width:1px;height:32px;background:rgba(255,255,255,.12);flex-shrink:0}
+.ak-hero-bar{margin-top:2px}
+.ak-hero-barlabel{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:6px}
+.ak-hero-track{height:4px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;margin-bottom:5px}
+.ak-hero-fill{height:100%;background:#fff;border-radius:2px;transition:width .4s ease}
+.ak-hero-barsub{font-size:11px;color:rgba(255,255,255,.45)}
+.akbdgs{display:flex;gap:4px;flex-shrink:0;align-items:center}
+.akbdg-n{color:var(--mid);background:var(--nb);border-color:var(--nbd)}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div id="nv">
+    <span id="nb">Motie Tracker</span>
+    <div id="nsep"></div>
+    <span id="nsub">Kabinet-Jetten &middot; D66&ndash;VVD&ndash;CDA &middot; &ldquo;Aan de slag&rdquo;</span>
+    <div id="ntabs">
+      <button class="nt on" id="tab-m">&#128203; Moties</button>
+      <button class="nt" id="tab-a">&#128196; Akkoord</button>
+      <button class="nt" id="tab-s">&#128200; Statistieken</button>
+      
+    </div>
+    <div id="nright">
+
+      <button class="nbs" id="btn-fetch">&#8635; Nieuwe moties</button>
+      <button class="nbp" id="btn-add">+ Toevoegen</button>
+    </div>
+  </div>
+</nav>
+<div id="main">
+  <div id="pnm">
+    <div id="hbar"></div>
+    <div id="refresh-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;background:var(--w);border:1.5px solid var(--bo);border-radius:var(--rads);padding:12px 16px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:18px">&#128203;</span>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--ink)">Moties beheren</div>
+          <div id="last-checked" style="font-size:11px;color:var(--mid)">Controleer dagelijks op tweedekamer.nl</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a href="https://www.tweedekamer.nl/kamerstukken/stemmingsuitslagen" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:100px;border:1.5px solid var(--bo2);background:var(--w);color:var(--ink);font-size:11px;font-weight:700;text-decoration:none;transition:all .2s" onmouseover="this.style.background='var(--ink)';this.style.color='#fff'" onmouseout="this.style.background='var(--w)';this.style.color='var(--ink)'">&#127757; TK stemmingen</a>
+        <button class="tbtn" id="btn-fetch2" style="gap:6px;background:var(--ink);color:#fff;border-color:var(--ink);font-size:11px;padding:7px 13px">&#8635; Nieuwe moties importeren</button>
+        <button class="nbp" id="btn-add2" style="padding:7px 15px;font-size:11px">+ Motie toevoegen</button>
+      </div>
+    </div>
+    <div id="srow">
+      <div id="sw"><span id="si">&#128269;</span><input id="sinp" placeholder="Zoek op titel, indiener of thema&hellip;"/></div>
+      <button class="tbtn" id="fbtn">&#9881; Filter</button>
+    </div>
+    <div id="fp" style="display:none">
+      <select id="fst"><option value="">Alle statussen</option><option value="aangenomen">Aangenomen</option><option value="verworpen">Verworpen</option><option value="in_behandeling">In behandeling</option><option value="aangehouden">Aangehouden</option></select>
+      <select id="fal"><option value="">Alle conformiteit</option><option value="conform">Conform akkoord</option><option value="strijdig">Strijdig</option><option value="neutraal">Neutraal</option><option value="onduidelijk">Onduidelijk</option></select>
+      <select id="fth"><option value="">Alle thema&apos;s</option></select>
+      <div id="fcount"></div>
+    </div>
+    <div id="ml"></div>
+  </div>
+  <div id="pna" style="display:none"><div id="akwrap"></div></div>
+  <div id="pns" style="display:none"></div>
+  
+</div>
+<div id="supsec">
+  <div id="supin">
+    <div class="suptxt">
+      <h3 class="sup-title">&#9825; Steun dit project</h3>
+      <p class="sup-text">Motie Tracker is een onafhankelijk vrijwilligersproject. Geen advertenties, geen subsidie &mdash; alleen passie voor transparante democratie. Met jouw bijdrage blijft de tracker gratis en actueel.</p>
+    </div>
+    <div class="supcard">
+      <div class="supct">&#10024; Vrijwillige bijdrage</div>
+      <div class="supcd">Help de tracker draaiende te houden &mdash; elk bedrag telt. Veilig via Stripe.</div>
+      <a class="supbtn" href="https://buy.stripe.com/6oU7sM2sj68i6Ry8aD63K00" target="_blank" rel="noopener">&#128155; Doneer nu</a>
+    </div>
+  </div>
+</div>
+<footer id="footer">
+  <div id="fotin">
+    <div class="ftop">
+      <div class="ftbr">
+        <h3>Motie Tracker</h3>
+        <p>Een <span class="vpill">&#10024; vrijwilligersproject</span> dat parlementaire moties vergelijkt met het coalitieakkoord van Kabinet-Jetten (D66&ndash;VVD&ndash;CDA, 23 februari 2026). Controleer altijd via <a href="https://www.tweedekamer.nl" target="_blank" rel="noopener">tweedekamer.nl</a>.</p>
+        <p style="margin-top:9px;font-size:13px;color:rgba(255,255,255,.4)">Contact: <span id="cmail"></span></p>
+      </div>
+      <div class="ftls">
+        <div>
+          <a class="flink" href="https://t.me/tonandtijd" target="_blank" rel="noopener">&#9992; Telegram &mdash; Ton &amp; Tijd</a>
+          <div class="flnote">Russischtalig kanaal</div>
+        </div>
+        <div>
+          <a class="flink" href="https://janeorlova.substack.com" target="_blank" rel="noopener">&#128228; Substack &mdash; Jane Orlova</a>
+          <div class="flnote">&#127475;&#127473; Nederlands &middot; &#127468;&#127463; Engels</div>
+        </div>
+        <a class="flink" id="flink-mail" href="#">&#9993; E-mail contact</a>
+      </div>
+    </div>
+    <div class="fbot">
+      <p>Motie Tracker &copy; 2026 &middot; Vrijwilligersproject &middot; Geen offici&euml;le overheidswebsite</p>
+      <a href="https://www.tweedekamer.nl" target="_blank" rel="noopener">Tweede Kamer der Staten-Generaal &rarr;</a>
+    </div>
+  </div>
+</footer>
+<div id="toast"></div>
+<!-- Add/Edit Modal -->
+<div id="ovm" class="ov" style="display:none">
+  <div class="modal">
+    <div class="mhd"><h2 id="mttl">Motie toevoegen</h2><button class="xb" id="mx">&#215;</button></div>
+    <div class="mbd">
+      <div class="mg2">
+        <div class="fld"><label>Datum</label><input id="fdat" type="date"/></div>
+        <div class="fld"><label>Indiener</label><select id="find"></select></div>
+      </div>
+      <div class="fld"><label>Titel</label><input id="ftit" placeholder="Beschrijving van de motie"/></div>
+      <div class="mg2">
+        <div class="fld"><label>Thema</label><select id="fthm"></select></div>
+        <div class="fld"><label id="lbl-vergadering">Vergadering</label><input id="fverg" placeholder="bijv. Debat Defensiebegroting"/></div>
+      </div>
+      <div class="mg2">
+        <div class="fld"><label id="lbl-status">Status</label><select id="fsta"></select></div>
+        <div class="fld"><label>Relatie akkoord</label><select id="fali"></select></div>
+      </div>
+      <div class="fld"><label id="lbl-toelichting">Toelichting</label><textarea id="ftoe" placeholder="Relatie met coalitieakkoord..."></textarea></div>
+      <div class="fld"><label>Link tweedekamer.nl</label><input id="furl" placeholder="https://www.tweedekamer.nl/kamerstukken/moties/detail?id=..."/></div>
+      <div><span class="slbl">Stemming per fractie</span><div class="sgrid" id="sgrid"></div></div>
+    </div>
+    <div class="mft"><button class="bdel" id="mdel" style="display:none;margin-right:auto;background:#c0392b;color:#fff;border-color:#c0392b;padding:8px 16px;border-radius:100px;border:none;font-size:13px;font-weight:700;cursor:pointer">&#128465; Verwijderen</button><button class="bcan" id="mcan">Annuleren</button><button class="bsav" id="msav">Opslaan</button></div>
+  </div>
+</div>
+<!-- Delete Modal -->
+<div id="ovd" class="ov" style="display:none">
+  <div class="delm">
+    <div style="font-size:40px">&#128465;</div>
+    <h3>Motie verwijderen?</h3>
+    <p>Deze actie kan niet ongedaan worden gemaakt.</p>
+    <div class="dbtns"><button class="bdc" id="dcan">Annuleren</button><button class="bdo" id="dok">Verwijderen</button></div>
+  </div>
+</div>
+<!-- Fetch Modal -->
+<div id="ovf" class="ov" style="display:none">
+  <div class="fetchm">
+    <div class="fhd">
+      <div><h2>Nieuwe moties importeren</h2><p>Recente moties die raken aan het coalitieakkoord</p></div>
+      <button class="xb" id="fx">&#215;</button>
+    </div>
+    <div class="fbd">
+      <div class="fnote">&#128279; Klik op <strong>Live ophalen</strong> om tweedekamer.nl te doorzoeken met AI en nieuwe moties te vinden. Of voeg moties handmatig toe via &ldquo;+ Motie toevoegen&rdquo;.</div>
+      <div id="fcon"></div>
+    </div>
+    <div id="fftr" class="mft" style="display:none">
+      <button class="bcan" id="fcan">Annuleren</button>
+      <button class="bpri" onclick="aiLiveFetch()" style="background:#2C5F3A;border-color:#2C5F3A;margin-right:auto;order:-1">&#127757; Live ophalen</button>
+      <button class="bsav" id="fimp" onclick="doImport()">Importeren</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+var SK="motie-v17";
+var SC={
+  aangenomen:{l:"Aangenomen",i:"\u2713",c:"#3A7A4A",b:"#EAF6EE",bd:"#B8E0C5"},
+  verworpen:{l:"Verworpen",i:"\u2717",c:"#A03030",b:"#FBEEEE",bd:"#EBBABA"},
+  in_behandeling:{l:"In behandeling",i:"\u23f3",c:"#8A5A00",b:"#FEF6E8",bd:"#F5D898"},
+  aangehouden:{l:"Aangehouden",i:"\u23f8",c:"#777",b:"#F2F1EE",bd:"#D0CEC8"}
+};
+var AC={
+  conform:{l:"Conform akkoord",i:"\u2714",c:"#3A7A4A",b:"#EAF6EE",bd:"#B8E0C5"},
+  strijdig:{l:"Strijdig",i:"\u2716",c:"#A03030",b:"#FBEEEE",bd:"#EBBABA"},
+  neutraal:{l:"Neutraal",i:"\u25cb",c:"#777",b:"#F2F1EE",bd:"#D0CEC8"},
+  onduidelijk:{l:"Onduidelijk",i:"?",c:"#8A5A00",b:"#FEF6E8",bd:"#F5D898"}
+};
+var AKKOORD=[
+  {thema:"Wonen & Bouwen",emoji:"🏠",punten:["100.000 woningen per jaar bouwen (1 mrd/jaar extra rijksbijdrage)","30 grootschalige nieuwbouwlocaties van nationaal belang","Vereenvoudigingswet Woningmarkt: bezwaarprocedures beperken","Hypotheekrenteaftrek blijft ongewijzigd","1/3 van nieuwbouw betaalbare koop (onder 250.000 euro)","1/3 sociaal huur, 1/3 middenhuur","Doorstroomhypotheek voor senioren","VvE-verduurzamingsfonds uitbreiden","Woningsplitsing en optoppen vereenvoudigen","Flex-wonen vergemakkelijken","Startersvrijstelling overdrachtsbelasting behouden","Vermogenstoets voor nieuwe sociale huurders"]},
+  {thema:"Defensie",emoji:"🛡",punten:["Defensiebudget naar 3,5% bbp in 2035 wettelijk verankerd","Vrijheidsbijdrage ter financiering defensie-opbouw","Europese defensiesamenwerking via gezamenlijke aankopen","Minimaal 50% defensieaankopen bij Nederlandse en Europese industrie","NAVO-verplichtingen nakomen en versterken","Luchtverdedigingscapaciteit uitbreiden","Marinecapaciteit in Caribisch gebied versterken","Reservisten-programma uitbreiden","Cyberveiligheid als vijfde domein erkennen","Veteranenbeleid verbeteren","Crisisbeheersingsmissies alleen met mandaat"]},
+  {thema:"Klimaat & Groene Groei",emoji:"🌱",punten:["Minimaal vier nieuwe kerncentrales voor 2035","Stikstoffonds 20 mrd euro hersteld","Netcongestie aanpakken via crisiswet","SDE++-subsidies continueren voor hernieuwbaar","Klimaatnormen 2030 naleven","Warmtepompen stimuleren via subsidie","Duurzame luchtvaartbrandstoffen (SAF) verplicht","Circulaire economie 2030-doelstelling","Waterstofinfrastructuur uitbouwen","CO2-opslag Noordzee (CCS) versnellen","Energiearmoede-fonds kwetsbare huishoudens"]},
+  {thema:"Landbouw, Natuur & Stikstof",emoji:"🌾",punten:["Vrijwillige uitkoop piekbelasters nabij Natura 2000","Innovatieve stikstofmaatregelen stimuleren","Landbouwtransitie: 4 mrd investeringsfonds","Voedselprijzen betaalbaar houden","Boerenraad instellen als adviesorgaan","Wet Stikstofreductie aanpassen: realistische doelen","Kringlooplandbouw stimuleren","Exportpositie agrarische sector beschermen","Jonge boeren: bedrijfsovernamefonds","Waterbeheer: droogte en peilbeheer"]},
+  {thema:"Asiel, Migratie & Integratie",emoji:"🌍",punten:["Tweestatusstelsel: beperkte verblijfsvergunning vluchtelingen","IND-achterstanden binnen 2 jaar wegwerken","Opvangcapaciteit beperken via spreidingswet","Terugkeerbeleid versterken met bilaterale akkoorden","Gezinshereniging strenger reguleren","Naturalisatietermijn verlengen naar 10 jaar","Asielaanvragen buiten EU-grondgebied verkennen","GEAS implementeren","Statushouders sneller naar werk","Inburgeringseis verhogen naar B1","Parallelle samenlevingen tegengaan"]},
+  {thema:"Zorg & Preventie",emoji:"🏥",punten:["Eigen risico afschaffen en vervangen door eigen bijdragen per behandeling","Preventieakkoord II: gezonde leefstijl bevorderen","Wachtlijsten GGZ aanpakken: 500 mln investering","Ouderenzorg: meer personeel via arbeidsmarktakkoord","Geneesmiddelenbeleid: prijsonderhandeling versterken","Huisartsenzorg versterken: taakherschikking","Langdurige zorg (WLZ): indicatiestelling vereenvoudigen","Mentale gezondheid jongeren: nationaal actieplan","Digitale zorg: e-health uitbreiden","Medisch specialisten: loondienst als standaard","Alcoholpreventie: prijsmaatregelen"]},
+  {thema:"Onderwijs & Wetenschap",emoji:"📚",punten:["Basisvaardigheden: extra geld voor taal en rekenen","Lerarentekort: salarissen basisonderwijs op niveau VO","Schoolbesturen: transparantie en verantwoording verbeteren","Mbo-diplomawaardering verhogen","Hoger onderwijs: internationalisering beperken (NL-taal)","Wetenschap: fundamenteel onderzoek budget beschermen","Passend onderwijs hervormen: thuiszitters terugdringen","Vroeg- en voorschoolse educatie uitbreiden","Digitale vaardigheden: curriculum aanpassen","Privéscholen: overheidsbijdrage heroverwegen","Studiefinanciering: basisbeurs consolideren"]},
+  {thema:"Werk & Bestaanszekerheid",emoji:"💼",punten:["AOW-leeftijdverhoging: alternatief voor zware beroepen","350 mln euro structureel voor kwetsbare groepen","WW-duur terugbrengen van 2 naar 1 jaar","Bijstandsuitkeringen indexeren op minimumloon","Schuldhulpverlening verbeteren","Armoedegrens halveren t.o.v. 2015","Toeslagenstelsel hervormen","Zzp-wet: schijnzelfstandigheid aanpakken","Kinderopvang: bijna gratis voor werkende ouders","Arbeidsmarkt flexibilisering begrenzen"]},
+  {thema:"Economie & Ondernemen",emoji:"📈",punten:["Box 3 belastingheffing op werkelijk rendement per 2027","Vrijheidsbijdrage: nieuwe heffing voor defensie","Carry-back verliesverrekening verbeteren","Btw-nultarief groente en fruit","Overheidsschuld binnen EMU-normen","Digitale economie eerlijker belasten (Pillar 2)","Fraudebestrijding Belastingdienst","MKB-fonds: toegang tot kapitaal verbeteren","Vestigingsklimaat: regeldruk met 25% verminderen","Nederland als AI-hub positioneren"]},
+  {thema:"Europa & Buitenlandse Zaken",emoji:"🇪🇺",punten:["3 mrd meerjarige steun aan Oekraïne","GBVB en NAVO-verplichtingen versterken","Europese strategische autonomie bevorderen","Sanctiebeleid Rusland handhaven","Ontwikkelingssamenwerking: focus op migratiepartnerschappen","Nederlandse bijdrage EU-begroting controleren","Handelsbeleid: WTO-hervormingen steunen","Mensenrechtenbeleid: consistenter toepassen","Diasporabeleid: banden met herkomstlanden","Koninkrijksrelaties: autonomie Caribische landen"]},
+  {thema:"Democratie & Rechtsstaat",emoji:"⚖",punten:["Constitutionele toetsing invoeren","Informatiehuishouding verbeteren (WOO)","Gemeentelijke herindeling: vrijwillig principe","Kiesstelsel herzien","Mediapluriformiteit borgen","Rechterlijke onafhankelijkheid beschermen","Grondwet: modernisering grondrechten","Ombudsman: capaciteit uitbreiden","Staatscommissie parlementair stelsel opvolgen"]},
+  {thema:"Veiligheid & Justitie",emoji:"🚔",punten:["Politiesterkte uitbreiden met 2.000 fte","Minimumstraffen voor geweldsdelicten","Ondermijningsfonds verlengen","Cybercriminaliteit: nationaal centrum","TBS-capaciteit uitbreiden","Snellere rechtszaken via digitalisering","Crimineel vermogen afromen","Slachtofferrechten versterken","Reclassering: meer begeleiding na detentie"]},
+  {thema:"Slagvaardige Overheid",emoji:"🏛",punten:["Meer IT-talent in vaste dienst (Roemernorm 10%)","Uitvoerbaarheid centraal bij beleidsvorming","Toeslagenaffaire: afhandeling afronden voor 2027","Gemeenschapsfonds voor buurthuizen en dorpswinkels","Bezwaarprocedures overheid automatisch stoppen","Overheidsdata: open tenzij beschermd","Rijksdienst: inkrimpen externe inhuur","Interbestuurlijk toezicht vereenvoudigen","Decentrale overheden: meer financiële zekerheid"]},
+  {thema:"Nationale Veiligheid",emoji:"🔐",punten:["Nieuwe Wet inlichtingen- en veiligheidsdiensten","MIVD en AIVD: capaciteit met 40% vergroten","Offensieve en defensieve cybercapaciteiten","Terroristische content binnen 1 uur offline","Kritieke infrastructuur beschermen","Buitenlandse inmenging: wetgeving aanscherpen","Spionage: strafrechtelijk kader versterken","NCSC: nationale cybersecurityorganisatie versterken","Energievoorzieningszekerheid handhaven"]},
+  {thema:"Digitalisering & AI",emoji:"💻",punten:["Algoritmeregister: transparantie overheidsalgoritmen","AI-wet (EU): implementatie versnellen","Digitale overheid: e-ID voor alle Nederlanders","Datasoevereiniteit: Europese cloudinfrastructuur","Digitale geletterdheid: verplicht in curriculum","Open source software overheid","Cyberhygiëne: basisnormen voor bedrijven","Publieke AI-infrastructuur voor onderwijs en zorg"]},
+  {thema:"Bereikbaarheid & Mobiliteit",emoji:"🚆",punten:["Intercityverbindingen uitbreiden (o.a. Breda-Utrecht)","Onderhoud rijkswegen: inhaalslag","OV-chipkaart: account-based ticketing","Fietsinfrastructuur: 1 mrd extra","Lelystad Airport: militaire basis met civiel medegebruik","Zeehavens: duurzame corridors","Spoor: intercity direct uitbreiden","Schiphol: capaciteitsplafond handhaven"]},
+  {thema:"Overheidsfinancien",emoji:"💰",punten:["Begrotingsdiscipline: EMU-norm 3% tekort","Investeringsfonds economische structuurversterking","Auditdienst Rijk versterken","Ombudsman: capaciteit uitbreiden","Rijksuitgaven: doelmatigheidstoets","Belastingparadijs aanpak: substance-eisen aanscherpen","Staatsdeelnemingen: dividend beleid","Fonds tekortfinanciering afbouwen"]},
+  {thema:"Sociale Cohesie & Cultuur",emoji:"🎭",punten:["Nationaal Sportakkoord II uitvoeren","Cultuurbudget: geen verdere bezuinigingen","Vrijwilligersverzekering verbeteren","Omroepbestel hervormen: NPO toekomstbestendig","Discriminatiebestrijding: aanpak versterken","Inclusiviteit: toegankelijkheid publieke ruimte","Religieuze en levensbeschouwelijke diversiteit","Buurtgemeenschappen: wijkaanpak herstellen"]}
+];
+var INIT=[{"id": 6, "titel": "Defensiebudget wettelijk naar 3,5% bbp in 2035", "indiener": "VVD", "datum": "2026-03-05", "thema": "Defensie", "status": "in_behandeling", "alignment": "conform", "vergadering": "Debat Defensiebegroting 2026 (stemming 10 maart)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/wetsvoorstellen/detail?cfg=wetsvoorsteldetails&qry=wetsvoorstel:36800X", "toelichting": "Kernakkoordpunt: defensiebudget wettelijk verankerd naar 3,5% bbp in 2035. Ingediend bij begroting Defensie 2026. Stemming gepland 10 maart 2026.", "stemmen": {}}, {"id": 12, "titel": "Minimaal vier nieuwe kerncentrales bouwen voor 2035", "indiener": "VVD", "datum": "2026-03-05", "thema": "Klimaat & Groene Groei", "status": "in_behandeling", "alignment": "conform", "vergadering": "Debat Defensie/Energie 2026 (stemming 10 maart)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/wetsvoorstellen/detail?cfg=wetsvoorsteldetails&qry=wetsvoorstel:36800X", "toelichting": "Conform akkoordpunt: minimaal vier nieuwe kerncentrales voor 2035. Ingediend bij begroting Defensie. Stemming 10 maart.", "stemmen": {}}, {"id": 7, "titel": "Minimaal 50% defensieaankopen bij Nederlandse en Europese industrie", "indiener": "CDA", "datum": "2026-03-05", "thema": "Defensie", "status": "in_behandeling", "alignment": "conform", "vergadering": "Debat Defensiebegroting 2026 (stemming 10 maart)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/wetsvoorstellen/detail?cfg=wetsvoorsteldetails&qry=wetsvoorstel:36800X", "toelichting": "Conform akkoordpunt: 50% defensie-inkopen bij NL of EU-industrie. Ingediend bij begroting Defensie 2026. Stemming 10 maart.", "stemmen": {}}, {"id": 8, "titel": "Geen bezuinigingen op sociale zekerheid ter dekking van defensie", "indiener": "GL-PvdA", "datum": "2026-03-05", "thema": "Defensie", "status": "in_behandeling", "alignment": "strijdig", "vergadering": "Debat Defensiebegroting 2026 (stemming 10 maart)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/wetsvoorstellen/detail?cfg=wetsvoorsteldetails&qry=wetsvoorstel:36800X", "toelichting": "Strijdig met akkoord: dekking defensie via vrijheidsbijdrage, niet via sociale zekerheid. Ingediend door GL-PvdA. Stemming 10 maart.", "stemmen": {}}, {"id": 9, "titel": "Europese defensiesamenwerking verdiepen via gezamenlijke aankopen", "indiener": "D66", "datum": "2026-03-05", "thema": "Defensie", "status": "in_behandeling", "alignment": "conform", "vergadering": "Debat Defensiebegroting 2026 (stemming 10 maart)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/wetsvoorstellen/detail?cfg=wetsvoorsteldetails&qry=wetsvoorstel:36800X", "toelichting": "Conform akkoordpunt Europese defensiesamenwerking en GBVB versterken. Ingediend bij begroting Defensie 2026. Stemming 10 maart.", "stemmen": {}}, {"id": 11, "titel": "Crisiswet Netcongestie spoedbehandeling voor Q3 2026", "indiener": "D66", "datum": "2026-03-05", "thema": "Klimaat & Groene Groei", "status": "in_behandeling", "alignment": "conform", "vergadering": "Debat Defensie/Energie 2026", "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties", "toelichting": "Topakkoordpunt: netcongestie als nationale crisis aanpakken via spoedwetgeving. Nog niet in stemming gebracht.", "stemmen": {}}, {"id": 22, "titel": "Geen bezuinigingen op zorg, AOW of sociale zekerheid ter dekking defensie", "indiener": "SP", "datum": "2026-03-05", "thema": "Defensie", "status": "in_behandeling", "alignment": "strijdig", "vergadering": "Debat Defensiebegroting 2026", "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties", "toelichting": "Motie-Dobbe/Van Baarle: defensieuitgaven niet dekken ten koste van kwetsbare groepen. Stemming 10 maart 2026.", "stemmen": {}}, {"id": 23, "titel": "Militaire steun Oekraine op peil houden minimaal 1% defensiebudget", "indiener": "D66", "datum": "2026-03-05", "thema": "Defensie", "status": "in_behandeling", "alignment": "conform", "vergadering": "Debat Defensiebegroting 2026", "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties", "toelichting": "Conform akkoordpunt Oekraine-steun. Stemming 10 maart 2026.", "stemmen": {}}, {"id": 24, "titel": "Lelystad Airport als luchtmachtbasis met civiel medegebruik - conform akkoord", "indiener": "VVD", "datum": "2026-03-05", "thema": "Bereikbaarheid & Mobiliteit", "status": "in_behandeling", "alignment": "conform", "vergadering": "Debat Defensiebegroting 2026", "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties", "toelichting": "Conform akkoordpunt Lelystad Airport als militaire basis. Stemming 10 maart 2026.", "stemmen": {}}, {"id": 13, "titel": "IND-achterstanden wegwerken met extra capaciteit en vereenvoudiging", "indiener": "CDA", "datum": "2026-03-04", "thema": "Asiel, Migratie & Integratie", "status": "in_behandeling", "alignment": "conform", "vergadering": "Debat Asiel & Migratie 2026", "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties", "toelichting": "Conform akkoordpunt: IND-procedures vereenvoudigen en achterstanden wegwerken. Stemming later in maart.", "stemmen": {}}, {"id": 1, "titel": "Motie van wantrouwen kabinet-Jetten (Wilders/PVV) — 36848-60", "indiener": "PVV", "datum": "2026-02-26", "thema": "Democratie & Rechtsstaat", "status": "verworpen", "alignment": "strijdig", "vergadering": "Debat Regeringsverklaring (45e vergadering)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/45", "toelichting": "Ingediend door PVV-leider Wilders. Steun alleen van FvD en SP. Ruim verworpen door brede meerderheid inclusief eigen oud-fracties.", "stemmen": {"PVV": "voor", "FvD": "voor", "SP": "voor", "GL-PvdA": "tegen", "D66": "tegen", "VVD": "tegen", "CDA": "tegen", "NSC": "tegen", "BBB": "tegen", "CU": "tegen", "SGP": "tegen", "JA21": "tegen", "50PLUS": "tegen", "Volt": "tegen", "DENK": "tegen", "PvdD": "tegen", "Gr.Markuszower": "tegen"}}, {"id": 15, "titel": "Relatie met vakbeweging herstellen en AOW-leeftijd niet versneld verhogen (Klaver) — 36848-58", "indiener": "GL-PvdA", "datum": "2026-02-26", "thema": "Werk & Bestaanszekerheid", "status": "verworpen", "alignment": "strijdig", "vergadering": "Debat Regeringsverklaring (45e vergadering)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/detail?id=2026Z03941&did=2026D07890", "toelichting": "Motie-Klaver c.s.: kabinet moet relatie vakbeweging herstellen en AOW-leeftijd niet versneld verhogen. Strijdig met akkoord. Verworpen: coalitie (D66, VVD, CDA), SGP, JA21 en Gr.Markuszower stemden tegen.", "stemmen": {"GL-PvdA": "voor", "PVV": "voor", "BBB": "voor", "DENK": "voor", "SP": "voor", "CU": "voor", "50PLUS": "voor", "FvD": "voor", "PvdD": "voor", "Volt": "voor", "D66": "tegen", "VVD": "tegen", "CDA": "tegen", "NSC": "tegen", "SGP": "tegen", "JA21": "tegen", "Gr.Markuszower": "tegen"}}, {"id": 16, "titel": "Alternatieven uitwerken voor vrijheidsbijdrage (defensiebelasting) — 36848-59", "indiener": "GL-PvdA", "datum": "2026-02-26", "thema": "Defensie", "status": "verworpen", "alignment": "strijdig", "vergadering": "Debat Regeringsverklaring (45e vergadering)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/45", "toelichting": "Motie-Klaver c.s.: kabinet moet voor Voorjaarsnota alternatieven uitwerken voor de vrijheidsbijdrage. Verworpen: coalitie + SGP + Gr.Markuszower stemden tegen.", "stemmen": {"GL-PvdA": "voor", "BBB": "voor", "CU": "voor", "PvdD": "voor", "SP": "voor", "50PLUS": "voor", "Volt": "voor", "PVV": "voor", "DENK": "voor", "FvD": "voor", "D66": "tegen", "VVD": "tegen", "CDA": "tegen", "NSC": "tegen", "SGP": "tegen", "JA21": "tegen", "Gr.Markuszower": "tegen"}}, {"id": 2, "titel": "Kabinet moet nieuw AOW-voorstel indienen zonder directe koppeling aan levensverwachting (Stoffer) — 36848-XX", "indiener": "SGP", "datum": "2026-02-26", "thema": "Werk & Bestaanszekerheid", "status": "aangenomen", "alignment": "neutraal", "vergadering": "Debat Regeringsverklaring (45e vergadering)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/45", "toelichting": "Motie-Stoffer/Heutink (SGP/Gr.Markuszower): kabinet moet alternatief AOW-voorstel indienen zonder de directe een-op-eenkoppeling. Aangenomen met steun coalitie, SGP en Gr.Markuszower.", "stemmen": {"SGP": "voor", "Gr.Markuszower": "voor", "D66": "voor", "VVD": "voor", "CDA": "voor", "NSC": "voor", "BBB": "voor", "JA21": "voor", "50PLUS": "voor", "CU": "voor", "FvD": "voor", "GL-PvdA": "onthouden", "PVV": "onthouden", "SP": "onthouden", "PvdD": "onthouden", "Volt": "onthouden", "DENK": "onthouden"}}, {"id": 3, "titel": "Armoede afneemt in kabinetsperiode (motie-Bikker c.s.) — 36848-84", "indiener": "CU", "datum": "2026-02-26", "thema": "Werk & Bestaanszekerheid", "status": "aangenomen", "alignment": "conform", "vergadering": "Debat Regeringsverklaring (45e vergadering)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/45", "toelichting": "Motie-Bikker c.s. (CU, GL-PvdA, 50Plus, Volt, SGP): kabinet moet ervoor zorgen dat armoede in kabinetsperiode afneemt. Conform akkoordpunt 350 mln voor kwetsbaren. Aangenomen met vrijwel brede meerderheid.", "stemmen": {"CU": "voor", "GL-PvdA": "voor", "50PLUS": "voor", "Volt": "voor", "SGP": "voor", "D66": "voor", "VVD": "voor", "CDA": "voor", "NSC": "voor", "BBB": "voor", "SP": "voor", "PvdD": "voor", "DENK": "voor", "JA21": "voor", "Gr.Markuszower": "voor", "PVV": "voor", "FvD": "voor"}}, {"id": 4, "titel": "Verliesverrekening (carry-back) in nieuw box 3-stelsel invoeren (Eerdmans/Bikker) — 36848-67", "indiener": "JA21", "datum": "2026-02-26", "thema": "Economie & Ondernemen", "status": "aangenomen", "alignment": "conform", "vergadering": "Debat Regeringsverklaring (45e vergadering)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/45", "toelichting": "Motie-Eerdmans/Bikker: nieuwe box 3-heffing moet carry-back van minimaal 1 jaar bevatten. Aangenomen met brede meerderheid.", "stemmen": {"JA21": "voor", "CU": "voor", "D66": "voor", "VVD": "voor", "CDA": "voor", "NSC": "voor", "BBB": "voor", "SGP": "voor", "GL-PvdA": "voor", "SP": "voor", "50PLUS": "voor", "Volt": "voor", "Gr.Markuszower": "voor", "PvdD": "onthouden", "PVV": "onthouden", "FvD": "onthouden", "DENK": "onthouden"}}, {"id": 10, "titel": "Nationale woonagenda: 100.000 woningen per jaar vastleggen", "indiener": "D66", "datum": "2026-02-26", "thema": "Wonen & Bouwen", "status": "aangenomen", "alignment": "conform", "vergadering": "Debat Regeringsverklaring (45e vergadering)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/45", "toelichting": "Topprioriteit akkoord: 100.000 woningen/jaar, 30 grootschalige nieuwbouwlocaties van nationaal belang. Breed aangenomen.", "stemmen": {"D66": "voor", "VVD": "voor", "CDA": "voor", "NSC": "voor", "BBB": "voor", "PVV": "voor", "GL-PvdA": "voor", "SP": "voor", "Volt": "voor", "CU": "voor", "SGP": "voor", "JA21": "voor", "50PLUS": "voor", "Gr.Markuszower": "voor", "PvdD": "onthouden", "DENK": "voor", "FvD": "voor"}}, {"id": 14, "titel": "Stikstofdoelen 2035 wettelijk vastleggen en stikstoffonds 20 mrd herstellen", "indiener": "CDA", "datum": "2026-02-26", "thema": "Landbouw, Natuur & Stikstof", "status": "in_behandeling", "alignment": "conform", "vergadering": "Debat Regeringsverklaring (45e vergadering)", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/45", "toelichting": "Conform akkoordpunt: stikstofdoelen 2035 wettelijk, stikstoffonds 20 mrd hersteld. Status: nog niet in stemming gebracht.", "stemmen": {}}, {"id": 18, "titel": "AOW-leeftijdverhoging volledig van tafel en relatie vakbonden herstellen", "indiener": "GL-PvdA", "datum": "2026-02-26", "thema": "Werk & Bestaanszekerheid", "status": "verworpen", "alignment": "strijdig", "vergadering": "Debat Regeringsverklaring", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/45", "toelichting": "Motie-Klaver cs: AOW volledig van tafel en vakbondsrelatie herstellen. Verworpen.", "stemmen": {"GL-PvdA": "voor", "PVV": "voor", "BBB": "voor", "CU": "voor", "DENK": "voor", "SP": "voor", "50PLUS": "voor", "D66": "tegen", "VVD": "tegen", "CDA": "tegen", "NSC": "tegen", "SGP": "tegen", "JA21": "tegen", "Gr.Markuszower": "tegen", "PvdD": "voor", "Volt": "voor", "FvD": "voor"}}, {"id": 19, "titel": "Alternatieven voor vrijheidsbijdrage - belastingboete op werk van tafel", "indiener": "GL-PvdA", "datum": "2026-02-26", "thema": "Economie & Ondernemen", "status": "verworpen", "alignment": "strijdig", "vergadering": "Debat Regeringsverklaring", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/45", "toelichting": "Motie-Klaver cs: alternatieven zoeken voor de vrijheidsbijdrage (NAVO-taks). Nipt verworpen: JA21 en Gr.Markuszower stemden tegen.", "stemmen": {"GL-PvdA": "voor", "BBB": "voor", "CU": "voor", "PvdD": "voor", "SP": "voor", "50PLUS": "voor", "Volt": "voor", "D66": "tegen", "VVD": "tegen", "CDA": "tegen", "NSC": "tegen", "SGP": "tegen", "JA21": "tegen", "Gr.Markuszower": "tegen", "PVV": "voor", "DENK": "voor", "FvD": "voor"}}, {"id": 20, "titel": "Bezuinigingen sociale zekerheid pas na toets gevolgen kwetsbare groepen", "indiener": "GL-PvdA", "datum": "2026-02-26", "thema": "Werk & Bestaanszekerheid", "status": "aangenomen", "alignment": "neutraal", "vergadering": "Debat Regeringsverklaring", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/45", "toelichting": "Kamer wil dat het kabinet vooraf de gevolgen voor kwetsbare groepen in kaart brengt voor het bezuinigingen doorvoert. Breed aangenomen.", "stemmen": {"GL-PvdA": "voor", "D66": "voor", "VVD": "voor", "CDA": "voor", "SP": "voor", "PvdD": "voor", "Volt": "voor", "CU": "voor", "50PLUS": "voor", "DENK": "voor", "PVV": "voor", "BBB": "voor", "SGP": "voor", "JA21": "voor", "Gr.Markuszower": "voor", "FvD": "voor", "NSC": "voor"}}, {"id": 21, "titel": "Oekraine 3 miljard meerjarige steun conform akkoord - Jetten toezegging", "indiener": "D66", "datum": "2026-02-26", "thema": "Europa & Buitenlandse Zaken", "status": "aangenomen", "alignment": "conform", "vergadering": "Debat Regeringsverklaring", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/45", "toelichting": "Motie om de meerjarige Oekraine-steun van 3 mrd uit het akkoord te bevestigen.", "stemmen": {"D66": "voor", "VVD": "voor", "CDA": "voor", "NSC": "voor", "GL-PvdA": "voor", "CU": "voor", "Volt": "voor", "SGP": "voor", "BBB": "voor", "50PLUS": "voor", "JA21": "voor", "Gr.Markuszower": "voor", "SP": "onthouden", "PvdD": "onthouden", "DENK": "onthouden", "PVV": "voor", "FvD": "tegen"}}, {"id": 5, "titel": "Jetten aangewezen als formateur via motie-Paternotte", "indiener": "D66", "datum": "2026-02-07", "thema": "Democratie & Rechtsstaat", "status": "aangenomen", "alignment": "conform", "vergadering": "Debat eindverslag informateur Letschert", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/38", "toelichting": "Motie Paternotte (D66) om Rob Jetten aan te wijzen als formateur. PVV, FvD, DENK, PvdD en SP stemden tegen.", "stemmen": {"D66": "voor", "VVD": "voor", "CDA": "voor", "NSC": "voor", "BBB": "voor", "SGP": "voor", "CU": "voor", "JA21": "voor", "50PLUS": "voor", "Gr.Markuszower": "voor", "GL-PvdA": "voor", "Volt": "voor", "PVV": "tegen", "FvD": "tegen", "DENK": "tegen", "PvdD": "tegen", "SP": "tegen"}}, {"id": 17, "titel": "WW-duur niet verkorten van 2 naar 1 jaar", "indiener": "GL-PvdA", "datum": "2026-02-03", "thema": "Werk & Bestaanszekerheid", "status": "verworpen", "alignment": "strijdig", "vergadering": "Debat eindverslag informateur Letschert", "tk_url": "https://www.tweedekamer.nl/kamerstukken/plenaire_verslagen/detail/2025-2026/38", "toelichting": "Motie-Klaver: WW-verkorting van 2 naar 1 jaar niet doorvoeren. Verworpen met rechtse meerderheid.", "stemmen": {"GL-PvdA": "voor", "SP": "voor", "PvdD": "voor", "Volt": "voor", "DENK": "voor", "CU": "voor", "50PLUS": "voor", "PVV": "voor", "D66": "tegen", "VVD": "tegen", "CDA": "tegen", "NSC": "tegen", "BBB": "tegen", "SGP": "tegen", "JA21": "tegen", "Gr.Markuszower": "tegen", "FvD": "voor"}}];
+var NIEUW=[];
+var THEMAS=["Wonen & Bouwen", "Defensie", "Klimaat & Groene Groei", "Landbouw, Natuur & Stikstof", "Asiel, Migratie & Integratie", "Zorg & Preventie", "Onderwijs & Wetenschap", "Werk & Bestaanszekerheid", "Economie & Ondernemen", "Europa & Buitenlandse Zaken", "Democratie & Rechtsstaat", "Veiligheid & Justitie", "Slagvaardige Overheid", "Nationale Veiligheid", "Digitalisering & AI", "Bereikbaarheid & Mobiliteit", "Overheidsfinancien", "Sociale Cohesie & Cultuur"];
+var moties=[],openId=null,editId=null,delId=null,filtersOn=false,openThemas={},fetchSel={};
+function g(id){return document.getElementById(id);}
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function bdg(k,cfg){var c=cfg[k];if(!c)return "";return'<span class="badge" style="color:'+c.c+';background:'+c.b+';border-color:'+c.bd+'">'+(c.i?c.i+" ":"")+esc(c.l)+'</span>';}
+function toast(msg){var t=g("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},3000);}
+function loadDB(){try{var s=localStorage.getItem(SK);return s?JSON.parse(s):INIT.slice();}catch(e){return INIT.slice();}}
+function saveDB(){try{localStorage.setItem(SK,JSON.stringify(moties));}catch(e){}}
+function showPane(id){
+  var panes=["pnm","pna","pns"];
+  var tabs=["tab-m","tab-a","tab-s"];
+  for(var i=0;i<panes.length;i++){
+    var p=g(panes[i]);if(p)p.style.display="none";
+    var t=g(tabs[i]);if(t)t.classList.remove("on");
+  }
+  var tp={"tab-m":"pnm","tab-a":"pna","tab-s":"pns"};
+  var paneId=tp[id]||id;
+  var pane=g(paneId);if(pane)pane.style.display="block";
+  var tab=g(id);if(tab)tab.classList.add("on");
+  if(paneId==="pns")renderStats();
+  if(paneId==="pna")renderAkkoord();
+}
+function renderHero(){
+  var tot=moties.length,aang=0,conf=0,str=0;
+  for(var i=0;i<moties.length;i++){if(moties[i].status==="aangenomen")aang++;if(moties[i].alignment==="conform")conf++;if(moties[i].alignment==="strijdig")str++;}
+  var hbar=g("hbar");
+  if(!hbar)return;
+  hbar.innerHTML='<div class="hs"><div class="hsl">Moties totaal</div><div class="hsv">'+tot+'</div></div>'+
+    '<div class="hs"><div class="hsl">Aangenomen</div><div class="hsv" style="color:#5AA070">'+aang+'</div></div>'+
+    '<div class="hs"><div class="hsl">Conform akkoord</div><div class="hsv" style="color:#5AA070">'+conf+'</div></div>'+
+    '<div class="hs"><div class="hsl">Strijdig</div><div class="hsv" style="color:var(--r)">'+str+'</div></div>';
+}
+function renderVotes(st){
+  if(!st||!Object.keys(st).length)return'<p class="vem">Nog geen stemdata — klik Bewerken.</p>';
+  var grp={voor:[],tegen:[],onthouden:[],afwezig:[]};
+  for(var p in st){if(grp[st[p]])grp[st[p]].push(p);}
+  var lbls={voor:'Voor',tegen:'Tegen',onthouden:'Onthouden',afwezig:'Afwezig'};
+  var cols={voor:{c:'var(--g)',b:'var(--gb)',bd:'var(--gbd)'},tegen:{c:'var(--r)',b:'var(--rb)',bd:'var(--rbd)'},onthouden:{c:'var(--a)',b:'var(--ab)',bd:'var(--abd)'},afwezig:{c:'var(--mid)',b:'var(--nb)',bd:'var(--nbd)'}};
+  var html='<div class="vl">Stemming per fractie</div>';
+  for(var k in grp){
+    if(grp[k].length){
+      var col=cols[k];
+      html+='<div class="vg">'
+        +'<span class="vp" style="color:'+col.c+';background:'+col.b+';border-color:'+col.bd+'">'+lbls[k]+'</span>'
+        +'<div class="vc2">'
+        +grp[k].map(function(p){return'<span class="vcp" style="color:'+col.c+';border-color:'+col.bd+'">'+esc(p)+'</span>';}).join('')
+        +'</div></div>';
+    }
+  }
+  return html;
+}
+
+function getFiltered(){
+  var q=(g("sinp")||{value:""}).value.toLowerCase();
+  var fa=(g("fal")||{value:""}).value;
+  var ft=(g("fth")||{value:""}).value;
+  return moties.filter(function(m){
+    var qok=!q||(m.titel||"").toLowerCase().indexOf(q)>-1||(m.indiener||"").toLowerCase().indexOf(q)>-1||(m.thema||"").toLowerCase().indexOf(q)>-1;
+    var faok=!fa||m.alignment===fa;
+    var ftok=!ft||m.thema===ft;
+    return qok&&faok&&ftok;
+  });
+}
+function renderMotie(m){
+  var sc=SC[m.status]||SC.in_behandeling;
+  var ac=AC[m.alignment]||AC.neutraal;
+  var open=openId===m.id;
+  var stripe=m.alignment==='conform'?'var(--gbd)':m.alignment==='strijdig'?'var(--rbd)':'var(--bo2)';
+  var detail='';
+  if(open){
+    detail='<div class="md">'
+      +(m.toelichting?'<div class="mtl">'+esc(m.toelichting)+'</div>':'')
+      +(m.tk_url?'<a href="'+esc(m.tk_url)+'" target="_blank" rel="noopener" class="tkl">&#128279; Kamerstuk &rarr;</a>':'')
+      +'<div class="vs">'+renderVotes(m.stemmen)+'</div>'
+      +'<div class="da"><button class="be" data-edit="'+m.id+'">&#9999; Bewerken</button></div>'
+      +'</div>';
+  }
+  return '<div class="mc'+(open?' open':'')+(m.alignment==='strijdig'?' mc-str':m.alignment==='conform'?' mc-con':'')+'" data-id="'+m.id+'">'
+    +'<div class="mh" onclick="toggleCard('+m.id+')" style="cursor:pointer">'
+    +'<div class="ms" style="background:'+stripe+'"></div>'
+    +'<div class="mb">'
+    +'<div class="mm">'
+    +'<span class="mdt">'+esc(m.datum||'')+'</span>'
+    +'<span class="msep">&middot;</span>'
+    +'<span class="mi">'+esc(m.indiener||'')+'</span>'
+    +'<span class="mth">'+esc(m.thema||'')+'</span>'
+    +'</div>'
+    +'<div class="mt">'+esc(m.titel)+'</div>'
+    +'<div class="mbg">'+bdg(m.status,SC)+bdg(m.alignment,AC)+'</div>'
+    +'</div>'
+    +'<div class="mch">'+(open?'&#9650;':'&#9660;')+'</div>'
+    +'</div>'
+    +detail
+    +'</div>';
+}
+function renderMoties(){
+  renderHero();
+  var list=g("ml");if(!list)return;
+  var filtered=getFiltered();
+  if(!filtered.length){list.innerHTML='<div id="emsg"><p>Geen moties gevonden</p><span>Pas de zoekterm of filters aan.</span></div>';return;}
+  list.innerHTML=filtered.map(renderMotie).join("");
+  // Wire edit buttons
+  list.querySelectorAll(".be").forEach(function(b){
+    b.addEventListener("click",function(e){
+      e.stopPropagation();
+      openModal(Number(b.getAttribute("data-edit")));
+    });
+  });
+}
+
+function renderAkkoord(){
+  var wrap=g("akwrap");if(!wrap)return;
+  if(!window._akOpen)window._akOpen={};
+
+  // ── Summary stats ──────────────────────────────────────────────
+  var totalPunten=AKKOORD.reduce(function(a,ak){return a+ak.punten.length;},0);
+  var themasMetMotie=AKKOORD.filter(function(ak){
+    return moties.some(function(m){return m.thema===ak.thema;});
+  }).length;
+  var totalConform=moties.filter(function(m){return m.alignment==="conform";}).length;
+  var totalStrijdig=moties.filter(function(m){return m.alignment==="strijdig";}).length;
+  var dekkingPct=Math.round(themasMetMotie/AKKOORD.length*100);
+  var conformPct=moties.length?Math.round(totalConform/moties.length*100):0;
+
+  var summaryHtml='<div class="ak-hero">'
+    +'<div class="ak-hero-row">'
+    +'<div class="ak-hstat"><div class="ak-hbig">'+themasMetMotie+'/'+AKKOORD.length+'</div><div class="ak-hlabel">THEMA\u2019S GEDEKT</div></div>'
+    +'<div class="ak-hsep"></div>'
+    +'<div class="ak-hstat"><div class="ak-hbig" style="color:#5AA070">'+conformPct+'%</div><div class="ak-hlabel">CONFORM AKKOORD</div></div>'
+    +'<div class="ak-hsep"></div>'
+    +'<div class="ak-hstat"><div class="ak-hbig">'+totalPunten+'</div><div class="ak-hlabel">STANDPUNTEN</div></div>'
+    +'<div class="ak-hsep"></div>'
+    +'<div class="ak-hstat"><div class="ak-hbig">'+AKKOORD.length+'</div><div class="ak-hlabel">HOOFDSTUKKEN</div></div>'
+    +'</div>'
+    +'<div class="ak-hero-bar">'
+    +'<div class="ak-hero-barlabel">THEMA-DEKKING</div>'
+    +'<div class="ak-hero-track"><div class="ak-hero-fill" style="width:'+dekkingPct+'%"></div></div>'
+    +'<div class="ak-hero-barsub">'+dekkingPct+'% van '+AKKOORD.length+' thema\u2019s heeft minimaal 1 motie</div>'
+    +'</div>'
+    +'</div>';
+
+  // ── Accordion cards ────────────────────────────────────────────
+  var html='';
+  AKKOORD.forEach(function(ak){
+    var mots=moties.filter(function(m){return m.thema===ak.thema;});
+    var conf=mots.filter(function(m){return m.alignment==="conform";}).length;
+    var str=mots.filter(function(m){return m.alignment==="strijdig";}).length;
+    var open=!!window._akOpen[ak.thema];
+    var badge='';
+    if(conf>0&&str>0)badge='<span class="akbdg akbdg-g">\u2713 '+conf+'</span><span class="akbdg akbdg-r">\u00d7 '+str+'</span>';
+    else if(str>0)badge='<span class="akbdg akbdg-r">\u00d7 '+str+' strijdig</span>';
+    else if(conf>0)badge='<span class="akbdg akbdg-g">\u2713 '+conf+'</span>';
+    else if(mots.length===0)badge='<span class="akbdg akbdg-n">\u2013</span>';
+    var accent=str>0?'var(--r)':conf>0?'var(--g)':'var(--bo2)';
+    html+='<div class="akcard'+(open?' akopen':'')+'" style="border-left:4px solid '+accent+'">'
+      +'<div class="akhead" data-akthema="'+esc(ak.thema)+'">'
+      +'<div class="akicon">'+ak.emoji+'</div>'
+      +'<div class="akinfo">'
+      +'<div class="akname">'+esc(ak.thema)+'</div>'
+      +'<div class="aksub2">'+ak.punten.length+' akkoordpunten \u00b7 '+(mots.length?mots.length+' motie'+(mots.length!==1?'s':''):'nog geen moties')+'</div>'
+      +'</div>'
+      +'<div class="akbdgs">'+badge+'</div>'
+      +'<div class="akchev">'+(open?'\u25b2':'\u25bc')+'</div>'
+      +'</div>'
+      +(open?'<div class="akbody">'
+        +'<div class="akptitle">Akkoordpunten uit \u201cAan de slag\u201d</div>'
+        +'<ul class="akplist">'+ak.punten.map(function(p){return'<li>'+esc(p)+'</li>';}).join('')+'</ul>'
+        +(mots.length?'<div class="akptitle">Gerelateerde moties</div>'
+          +'<div class="akml2">'+mots.map(function(m){
+            return'<div class="akmc2">'
+              +'<div class="akmc2d">'+esc(m.datum||'')+'</div>'
+              +'<div class="akmc2t">'+esc(m.titel)+'</div>'
+              +'<div class="akmc2b">'+bdg(m.status,SC)+' '+bdg(m.alignment,AC)+'</div>'
+              +'</div>';
+          }).join('')+'</div>':'')
+        +'</div>':'')
+      +'</div>';
+  });
+
+  wrap.innerHTML=summaryHtml+'<div class="akklist">'+html+'</div>';
+
+  wrap.querySelectorAll('.akhead').forEach(function(el){
+    el.addEventListener('click',function(){
+      var thema=el.getAttribute('data-akthema');
+      window._akOpen[thema]=!window._akOpen[thema];
+      renderAkkoord();
+    });
+  });
+}
+
+function renderStats(){
+  var pns=g("pns");if(!pns)return;
+  if(!moties.length){pns.innerHTML='<div style="text-align:center;padding:60px 20px"><p style="color:var(--mid);font-size:14px">Voeg moties toe om statistieken te zien.</p></div>';return;}
+  var tot=moties.length,aang=0,verw=0,inb=0,conf=0,str=0,neut=0,ond=0;
+  for(var i=0;i<moties.length;i++){
+    var m=moties[i];
+    if(m.status==="aangenomen")aang++;else if(m.status==="verworpen")verw++;else inb++;
+    if(m.alignment==="conform")conf++;else if(m.alignment==="strijdig")str++;else if(m.alignment==="neutraal")neut++;else ond++;
+  }
+  var sc3=Math.round(tot*0.6);
+  // Party scores
+  var pscores={};
+  moties.forEach(function(m){
+    if(!m.stemmen)return;
+    for(var p in m.stemmen){
+      if(!pscores[p])pscores[p]={v:0,t:0,o:0};
+      var v=m.stemmen[p];
+      if(v==="voor")pscores[p].v++;
+      else if(v==="tegen")pscores[p].t++;
+      else pscores[p].o++;
+    }
+  });
+  var partyArr=Object.keys(pscores).map(function(p){
+    var ps=pscores[p];var tot2=ps.v+ps.t+ps.o||1;
+    return{name:p,sc:Math.round(ps.v/tot2*100),v:ps.v,t:ps.t,o:ps.o};
+  }).sort(function(a,b){return b.sc-a.sc;});
+  // Themes
+  var tmap={};
+  moties.forEach(function(m){tmap[m.thema||"Overig"]=(tmap[m.thema||"Overig"]||0)+1;});
+  var tArr=Object.keys(tmap).map(function(k){return{k:k,n:tmap[k]};}).sort(function(a,b){return b.n-a.n;});
+  var maxT=tArr.length?tArr[0].n:1;
+  // Recent activity
+  var recent=moties.slice().sort(function(a,b){return(b.datum||"").localeCompare(a.datum||"");}).slice(0,5);
+  function donut(){
+    var r=44,cx=50,cy=50,circ=2*Math.PI*r;
+    var segs=[
+      {v:conf,c:"#B8E0C5",l:"Conform"},
+      {v:str,c:"#EBBABA",l:"Strijdig"},
+      {v:neut,c:"var(--mid)",l:"Neutraal"},
+      {v:ond,c:"var(--abd)",l:"Onduidelijk"}
+    ];
+    var t2=segs.reduce(function(a,s){return a+s.v;},0)||1;
+    var off=0;
+    var paths=segs.map(function(s){
+      var frac=s.v/t2;var dash=frac*circ;var gap=circ-dash;
+      var p='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+s.c+'" stroke-width="12" stroke-dasharray="'+dash.toFixed(1)+' '+gap.toFixed(1)+'" stroke-dashoffset="'+(-(off*circ)).toFixed(1)+'" transform="rotate(-90 '+cx+' '+cy+')"/>';
+      off+=frac;return p;
+    }).join("");
+    var leg=segs.map(function(s){return'<div class="dli"><div class="dld" style="background:'+s.c+'"></div><div class="dll">'+s.l+'</div><div class="dlv">'+s.v+'</div></div>';}).join("");
+    return'<svg viewBox="0 0 100 100" style="width:100px;height:100px;flex-shrink:0">'+paths+'<text x="50" y="54" text-anchor="middle" font-size="16" font-weight="700" fill="var(--ink)">'+tot+'</text></svg><div class="dleg">'+leg+'</div>';
+  }
+  function recent2(){
+    return recent.map(function(m){
+      var sc=SC[m.status]||SC.in_behandeling;
+      return'<div class="ait"><div class="adot" style="background:'+sc.b+';border:2px solid '+sc.bd+'"></div><div><div class="atiT">'+esc(m.titel.length>55?m.titel.slice(0,55)+"\u2026":m.titel)+'</div><div class="asb">'+esc(m.indiener||"")+" \u00b7 "+esc(m.datum||"")+'</div></div></div>';
+    }).join("");
+  }
+  // Status column chart
+  var colData=[{l:"Aang.",v:aang,c:"var(--g)"},{l:"Verw.",v:verw,c:"var(--r)"},{l:"In beh.",v:inb,c:"var(--a)"}];
+  var maxC=Math.max(aang,verw,inb)||1;
+  var cols2=colData.map(function(d){return'<div class="ccol"><div class="ccbw"><div class="ccb" style="height:'+(d.v/maxC*100)+'%;background:'+d.c+'"></div></div><div class="ccl">'+d.l+'<br>'+d.v+'</div></div>';}).join("");
+  // Theme bar chart
+  var bars=tArr.slice(0,7).map(function(t){
+    var col=t.n>(maxT*0.6)?"var(--ink)":t.n>(maxT*0.3)?"var(--ink2)":"var(--mid)";
+    return'<div class="brow"><div class="blbl" title="'+esc(t.k)+'">'+esc(t.k)+'</div><div class="btrk"><div class="bfill" style="width:'+(t.n/maxT*100)+'%;background:'+col+'"></div></div><div class="bval">'+t.n+'</div></div>';
+  }).join("");
+  // Party mini-cards
+  var pcards=partyArr.slice(0,9).map(function(ps){
+    var pc2=ps.sc>=60?"var(--g)":ps.sc>=40?"var(--mid)":"var(--r)";
+    return'<div class="pc"><div class="pcn">'+esc(ps.name)+'</div><div class="pcv" style="color:'+pc2+'">'+ps.sc+'%</div><div class="pcb"><div class="pcbf" style="width:'+ps.sc+'%;background:'+pc2+'"></div></div></div>';
+  }).join("");
+  pns.innerHTML='<div class="dg"><div class="dg3">'
+    +'<div class="dk"><div class="dkt">Moties totaal</div><div class="dbn" style="color:var(--ink)">'+tot+'<span class="dun">moties</span></div><div class="dsub">'+aang+' aangenomen</div></div>'
+    +'<div class="dk"><div class="dkt">Aangenomen</div><div class="dbn" style="color:#5AA070">'+aang+'<span class="dun">van '+tot+'</span></div><div class="dsub">'+Math.round(aang/tot*100)+'% slagingsratio</div></div>'
+    +'<div class="dk"><div class="dkt">Conform akkoord</div><div class="dbn" style="color:var(--ink)">'+conf+'<span class="dun">van '+tot+'</span></div><div class="dsub">'+str+' strijdig met akkoord</div></div>'
+    +'</div>'
+    +'<div class="dgm">'
+    +'<div class="dk"><div class="dkt">Coalitie-alignment</div><div class="dnut">'+donut()+'</div></div>'
+    +'<div class="dk"><div class="dkt">Status</div><div class="cch">'+cols2+'</div></div>'
+    +'</div>'
+    +'<div class="dk"><div class="dkt">Moties per thema</div>'+bars+'</div>'
+    +(partyArr.length?'<div class="dk"><div class="dkt">Partijscores (% voor)</div><div class="pgrd">'+pcards+'</div></div>':'')
+    +'<div class="dk"><div class="dkt">Recente activiteit</div><div class="alist">'+recent2()+'</div></div>'
+    +'</div>';
+}
+function openModal(id){
+  editId=id||null;
+  var m=id?moties.find(function(x){return x.id===id;}):null;
+  g("mttl").textContent=id?"Motie bewerken":"Motie toevoegen";
+  g("ftit").value=m?m.titel:"";
+  g("fdat").value=m?m.datum:new Date().toISOString().slice(0,10);
+  // indiener select
+  var fi=g("find");if(fi){fi.value=m?m.indiener:(fi.options[0]?fi.options[0].value:"");}
+  // thema select
+  var fthm=g("fthm");if(fthm){fthm.value=m?m.thema:(fthm.options[0]?fthm.options[0].value:"");}
+  g("fverg").value=m?m.vergadering:"";
+  var fsta=g("fsta");if(fsta){fsta.value=m?m.status:"in_behandeling";}
+  var fali=g("fali");if(fali){fali.value=m?m.alignment:"neutraal";}
+  g("ftoe").value=m?m.toelichting:"";
+  g("furl").value=m?m.tk_url:"";
+  // Build voting grid
+  var sg=g("sgrid");
+  if(sg){
+    var stemmen=m?m.stemmen:{};
+    var parties=["VVD","D66","CDA","NSC","BBB","PVV","GL-PvdA","SP","PvdD","Volt","CU","SGP","DENK","50PLUS","JA21","FvD","Gr.Markuszower"];
+    var opts='<option value="">—</option><option value="voor">voor</option><option value="tegen">tegen</option><option value="onthouden">onthouden</option>';
+    var html="";
+    for(var i=0;i<parties.length;i++){
+      var p=parties[i];
+      html+='<label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0">'
+        +'<select data-party="'+p+'" style="font-size:11px;padding:2px 4px;border:1px solid var(--bo);border-radius:4px">'+opts+'</select>'
+        +'<span>'+p+'</span></label>';
+    }
+    sg.innerHTML=html;
+    // Set values after rendering
+    var sels=sg.querySelectorAll("select");
+    for(var i=0;i<sels.length;i++){
+      var party=sels[i].getAttribute("data-party");
+      if(stemmen&&stemmen[party])sels[i].value=stemmen[party];
+    }
+  }
+  g("mdel").style.display=id?"inline-block":"none";
+  g("ovm").style.display="flex";
+}
+function closeModal(){g("ovm").style.display="none";}
+function saveMotie(){
+  var titel=g("ftit").value.trim();
+  if(!titel){alert("Titel is verplicht");return;}
+  // Collect votes from sgrid
+  var stemmen={};
+  var sg=g("sgrid");
+  if(sg){
+    var sels=sg.querySelectorAll("select");
+    for(var i=0;i<sels.length;i++){
+      if(sels[i].value){stemmen[sels[i].getAttribute("data-party")]=sels[i].value;}
+    }
+  }
+  var fsta=g("fsta");var fali=g("fali");var fi=g("find");var fthm=g("fthm");
+  var m={
+    id:editId||(Date.now()),
+    titel:titel,
+    datum:g("fdat").value,
+    indiener:fi?fi.value.trim():"",
+    thema:fthm?fthm.value:"",
+    vergadering:g("fverg").value.trim(),
+    status:fsta?fsta.value:"in_behandeling",
+    alignment:fali?fali.value:"neutraal",
+    toelichting:g("ftoe").value.trim(),
+    tk_url:g("furl").value.trim(),
+    stemmen:stemmen
+  };
+  if(editId){
+    for(var i=0;i<moties.length;i++){if(moties[i].id===editId){moties[i]=m;break;}}
+  }else{
+    moties.push(m);
+  }
+  saveDB();closeModal();renderMoties();toast(editId?"Opgeslagen":"\u2713 "+titel+" toegevoegd!");
+}
+function openDel(id){delId=id;g("ovd").style.display="flex";}
+function closeDel(){g("ovd").style.display="none";delId=null;}
+function doDel(){
+  if(!delId)return;
+  moties=moties.filter(function(m){return m.id!==delId;});
+  saveDB();closeDel();closeModal();renderMoties();toast("Verwijderd");
+}
+function buildFetch(){
+  var ex={};for(var i=0;i<moties.length;i++)ex[moties[i].id]=true;
+  var avail=NIEUW.filter(function(m){return!ex[m.id];});
+  var fcon=g("fcon");var fftr=g("fftr");
+  if(!avail.length){
+    fcon.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--mid)"><div style="font-size:32px;margin-bottom:12px">\u2714</div><p>Geen nieuwe moties gevonden.</p></div>';
+    if(fftr)fftr.style.display="none";
+    return;
+  }
+  var html='<div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--mid)">'+avail.length+' nieuwe moties gevonden via AI</span><div style="display:flex;gap:8px"><button onclick="selAll(true)" style="font-size:11px;padding:4px 10px;border:1px solid var(--bo);border-radius:100px;background:transparent">Alles</button><button onclick="selAll(false)" style="font-size:11px;padding:4px 10px;border:1px solid var(--bo);border-radius:100px;background:transparent">Niets</button></div></div>';
+  html+=avail.map(function(m){
+    var chk=fetchSel[m.id]?"checked":"";
+    return'<label class="fri"><input type="checkbox" '+chk+' onchange="togFRI('+m.id+')"><div class="frit"><div class="frin">'+esc(m.titel)+'</div><div class="fris">'+bdg(m.status,SC)+' '+bdg(m.alignment,AC)+' \u00b7 '+esc(m.indiener||"")+" \u00b7 "+esc(m.datum||"")+'</div></div></label>';
+  }).join("");
+  fcon.innerHTML=html;
+  if(fftr)fftr.style.display="flex";
+  updateFBtn(avail);
+}
+function aiLiveFetch(){
+  var fc=g("fcon");
+  g("fftr").style.display="none";
+
+  // Check if GitHub Actions has populated NIEUW with fresh moties
+  var existingIds={};
+  for(var i=0;i<moties.length;i++) existingIds[moties[i].id]=true;
+  var avail=NIEUW.filter(function(m){ return !existingIds[m.id]; });
+
+  if(!avail.length){
+    fc.innerHTML='<div class="fnote" style="background:#E8F5ED;border-color:#A8D5B5">'
+      +'&#9989; <strong>Alles up-to-date</strong> &mdash; GitHub Actions heeft geen nieuwe moties gevonden. '
+      +'Nieuwe moties worden dagelijks automatisch opgehaald van tweedekamer.nl.</div>';
+    return;
+  }
+
+  g("fftr").style.display="flex";
+  fetchSel={};
+  for(var i=0;i<avail.length;i++) fetchSel[avail[i].id]=true;
+  updateFBtn(avail);
+
+  var out='<div class="frh"><span>&#127961; '+avail.length+' nieuwe moties gevonden</span>'
+    +'<div class="fsel"><button onclick="selAll(true)">Alles</button><button onclick="selAll(false)">Geen</button></div></div>';
+  for(var i=0;i<avail.length;i++){
+    var m2=avail[i],ac2=AC[m2.alignment]||{c:"#ccc"},on2=!!fetchSel[m2.id];
+    out+='<div class="fri'+(on2?" on":"")+" ai-fri"+(on2?" on":"")
+      +'" id="fri-'+m2.id+'" onclick="togFRI2('+JSON.stringify(m2.id)+')" >'
+      +'<div class="frii"><div class="fris" style="background:'+(ac2?ac2.c:"#ccc")+'"></div>'
+      +'<div class="frib"><div class="frim"><span class="mdt">'+esc(m2.datum)+'</span>'
+      +'<span class="mi">'+esc(m2.indiener)+'</span><span class="mth">'+esc(m2.thema)+'</span></div>'
+      +'<div class="frit">'+esc(m2.titel)+'</div>'
+      +'<div style="display:flex;gap:5px;margin-bottom:4px">'+bdg(m2.status,SC)+" "+bdg(m2.alignment,AC)+'</div>'
+      +(m2.toelichting?'<div class="frtoe">'+esc(m2.toelichting)+'</div>':"")
+      +'</div><div class="frichk"><div class="chk'+(on2?" on":"")+'">&#10003;</div></div></div></div>';
+  }
+  window._aiFetchResults=avail;
+  fc.innerHTML=out;
+}
+function togFRI2(id){
+  fetchSel[id]=!fetchSel[id];
+  var item=document.getElementById("fri-"+id);
+  if(!item) return;
+  var chk=item.querySelector(".chk");
+  item.classList.toggle("on",!!fetchSel[id]);
+  if(chk){ chk.classList.toggle("on",!!fetchSel[id]); chk.innerHTML=fetchSel[id]?"&#10003;":""; }
+  var avail=window._aiFetchResults||[];
+  updateFBtn(avail);
+}
+
+function togFRI(id){fetchSel[id]=!fetchSel[id];buildFetch();}
+function selAll(v){
+  var source=window._aiFetchResults||NIEUW;
+  var ex={};for(var i=0;i<moties.length;i++)ex[moties[i].id]=true;
+  for(var i=0;i<source.length;i++) if(!ex[source[i].id]) fetchSel[source[i].id]=v;
+  var avail=source.filter(function(m){return !ex[m.id];});
+  // Re-render the checkboxes
+  avail.forEach(function(m){
+    var item=document.getElementById("fri-"+m.id);
+    if(!item) return;
+    var chk=item.querySelector(".chk");
+    item.classList.toggle("on",v);
+    if(chk){chk.classList.toggle("on",v);chk.innerHTML=v?"&#10003;":"";}
+  });
+  updateFBtn(avail);
+}
+function updateFBtn(avail){var n=0;for(var i=0;i<avail.length;i++)if(fetchSel[avail[i].id])n++;var btn=g("fimp");if(btn){btn.textContent=n+" motie"+(n!==1?"s":"")+" importeren \u2192";btn.disabled=(n===0);}}
+function doImport(){
+  var src=window._aiFetchResults||NIEUW;
+  var ex={};for(var i=0;i<moties.length;i++)ex[moties[i].id]=true;
+  var imp=[];
+  for(var i=0;i<src.length;i++){
+    var mot=src[i];
+    if(fetchSel[mot.id]&&!ex[mot.id]&&!ex[mot.titel]){imp.push(mot);ex[mot.id]=true;}
+  }
+  for(var i=0;i<imp.length;i++)moties.push(imp[i]);
+  window._aiFetchResults=null;
+  saveDB();closeFetch();renderMoties();toast("\u2713 "+imp.length+" motie"+(imp.length!==1?"s":"")+" toegevoegd");
+}
+function openFetch(){buildFetch();g("ovf").style.display="flex";}
+function closeFetch(){g("ovf").style.display="none";}
+
+// News tab
+
+// Init
+moties=loadDB();
+// Strip in_behandeling votes
+for(var _i=0;_i<moties.length;_i++){if(moties[_i].status==="in_behandeling")moties[_i].stemmen={};}
+// Build theme filter
+for(var i=0;i<THEMAS.length;i++){var o=document.createElement("option");o.value=THEMAS[i];o.textContent=THEMAS[i];g("fth").appendChild(o);}
+renderMoties();
+// Populate modal selects
+(function(){
+  var PARTIES=["VVD","D66","CDA","NSC","BBB","PVV","GL-PvdA","SP","PvdD","Volt","CU","SGP","DENK","50PLUS","JA21","FvD","Gr.Markuszower"];
+  var fi=g("find");
+  if(fi&&!fi.options.length){
+    for(var i=0;i<PARTIES.length;i++){var o=document.createElement("option");o.value=PARTIES[i];o.textContent=PARTIES[i];fi.appendChild(o);}
+  }
+  var fthm=g("fthm");
+  if(fthm&&!fthm.options.length){
+    for(var i=0;i<THEMAS.length;i++){var o=document.createElement("option");o.value=THEMAS[i];o.textContent=THEMAS[i];fthm.appendChild(o);}
+  }
+  var fsta=g("fsta");
+  if(fsta&&!fsta.options.length){
+    var statuses=[["aangenomen","Aangenomen"],["verworpen","Verworpen"],["in_behandeling","In behandeling"],["aangehouden","Aangehouden"]];
+    for(var i=0;i<statuses.length;i++){var o=document.createElement("option");o.value=statuses[i][0];o.textContent=statuses[i][1];fsta.appendChild(o);}
+  }
+  var fali=g("fali");
+  if(fali&&!fali.options.length){
+    var aligns=[["conform","Conform akkoord"],["strijdig","Strijdig"],["neutraal","Neutraal"],["onduidelijk","Onduidelijk"]];
+    for(var i=0;i<aligns.length;i++){var o=document.createElement("option");o.value=aligns[i][0];o.textContent=aligns[i][1];fali.appendChild(o);}
+  }
+})();
+// Daily reminder
+try{
+  var last=localStorage.getItem("motie-lastvisit");
+  var now=Date.now();
+  if(!last||(now-parseInt(last))>86400000){
+    var db=g("daybanner");if(db)db.style.display="block";
+  }
+}catch(e){}
+
+// Event listeners
+g("btn-fetch").addEventListener("click",openFetch);
+g("btn-fetch2").addEventListener("click",openFetch);
+g("tab-m").addEventListener("click",function(){showPane("tab-m");});
+g("tab-a").addEventListener("click",function(){showPane("tab-a");});
+g("tab-s").addEventListener("click",function(){showPane("tab-s");});
+g("mx").addEventListener("click",closeModal);g("mcan").addEventListener("click",closeModal);g("msav").addEventListener("click",saveMotie);
+g("mdel").addEventListener("click",function(){openDel(editId);});
+g("dcan").addEventListener("click",closeDel);g("dok").addEventListener("click",doDel);
+g("fx").addEventListener("click",closeFetch);g("fcan").addEventListener("click",closeFetch);
+var si=g("sinp");if(si)si.addEventListener("input",renderMoties);
+var fa=g("fal");if(fa)fa.addEventListener("change",renderMoties);
+var ft=g("fth");if(ft)ft.addEventListener("change",renderMoties);
+g("fbtn").addEventListener("click",function(){
+  var fp=g("fp");if(!fp)return;
+  var open=fp.style.display!=="none";
+  fp.style.display=open?"none":"grid";
+  g("fbtn").style.background=open?"":"var(--ink)";
+  g("fbtn").style.color=open?"":"#fff";
+});
+g("btn-add").addEventListener("click",function(){openModal(null);});
+g("btn-add2").addEventListener("click",function(){openModal(null);});
+
+window.toggleCard=function(id){id=Number(id);openId=(openId===id)?null:id;renderMoties();};
+window.openModal=openModal;
+})();
+</script>
+</body>
+</html>
