@@ -84,7 +84,7 @@ LEDEN_PARTIJ = {
     # Volt
     "Koekkoek": "Volt",
     # DENK
-    "Azarkan": "DENK", "Ergin": "DENK", "Stephan van Baarle": "DENK",
+    "Azarkan": "DENK", "Ergin": "DENK", "Van Baarle": "DENK",
     # FvD
     "Van Houwelingen": "FvD", "Baudet": "FvD", "Chris Jansen": "FvD", "Van der Maas": "FvD",
     # JA21
@@ -96,8 +96,8 @@ LEDEN_PARTIJ = {
 }
 
 
-COALITIE = {"D66", "VVD", "CDA", "BBB", "NSC"}
-OPPOSITIE = {"GL-PvdA", "PVV", "SP", "PvdD", "CU", "SGP", "Volt", "DENK", "FvD", "JA21", "50PLUS", "Gr.Markuszower"}
+COALITIE = {"D66", "VVD", "CDA"}
+OPPOSITIE = {"GL-PvdA", "PVV", "SP", "PvdD", "CU", "SGP", "BBB", "Volt", "DENK", "FvD", "JA21", "50PLUS", "Gr.Markuszower"}
 
 # Keywords that suggest a motie conflicts with the coalition agreement
 STRIJDIG_KEYWORDS = [
