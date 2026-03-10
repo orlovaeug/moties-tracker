@@ -106,7 +106,7 @@ LEDEN_PARTIJ = {
     # CU (3)
     "Bikker": "CU", "Ceder": "CU", "Grinwis": "CU", "Segers": "CU",
     # DENK (3)
-    "El Abassi": "DENK", "Stephan van Baarle": "DENK", "Ergin": "DENK", "Azarkan": "DENK",
+    "El Abassi": "DENK", "Stephan van Baarle": "DENK", "Ergin": "DENK", "Azarkan": "DENK", "Van Baarle": "DENK",
     # PvdD (3)
     "Kostić": "PvdD", "Kostic": "PvdD", "Ouwehand": "PvdD", "Teunissen": "PvdD",
     "Wassenberg": "PvdD",
@@ -189,7 +189,7 @@ def detect_thema(text):
     return best
 
 def detect_indiener(titel):
-    m = re.search(r'lid(?:en)?\s+([A-Z][a-zA-Z\u00C0-\u017E\s\-]+?)(?:\s+c\.s\.| en [A-Z]|\s*-\s*[A-Z]|$)', titel)
+    m = re.search(r'(?:Gewijzigde\s+)?[Mm]otie\s+van\s+(?:het\s+lid|de\s+leden)\s+([A-Z][a-zA-Z\u00C0-\u017E\-]+(?:\s+[a-zA-Z\u00C0-\u017E\-]+){0,4}?)(?:\s+c\.s\.|\s+over\s|\s+en\s+[A-Z]|\s+-\s+[A-Z]|$)', titel)
     name_ctx = m.group(1).strip() if m else titel
     for naam in sorted(LEDEN_PARTIJ.keys(), key=len, reverse=True):
         pat = r'(?<![A-Za-z\u00C0-\u017E])' + re.escape(naam) + r'(?![A-Za-z\u00C0-\u017E])'
@@ -309,7 +309,12 @@ def main():
 
     new_items = []
 
-    for page in range(10):
+    # On first run (no scraped moties yet), fetch up to 50 pages to backfill since START_DATE
+    # On daily runs (existing scraped moties), just check recent pages
+    scraped_count = sum(1 for x in existing if str(x.get('id','')).startswith('tk'))
+    max_pages = 50 if scraped_count == 0 else 5
+    print(f'  Mode: {"backfill" if scraped_count == 0 else "daily"} (max {max_pages} paginas)')
+    for page in range(max_pages):
         raw = fetch_page(page)
         if not raw:
             break
@@ -366,9 +371,37 @@ def main():
     all_items = existing + new_items
     all_items.sort(key=lambda x: x.get('datum', ''), reverse=True)
 
+    # Archive logic:
+    # - aangenomen/verworpen: keep active permanently
+    # - in_behandeling older than 30 days: move to archief
+    # - aangehouden older than 60 days: move to archief
+    from datetime import date, timedelta
+    today = date.today()
+    archived = 0
+    for m in all_items:
+        if m.get('archief'):
+            continue  # already archived
+        status = m.get('status', 'in_behandeling')
+        if status in ('aangenomen', 'verworpen'):
+            continue  # keep active
+        try:
+            motie_date = date.fromisoformat(m.get('datum', TODAY))
+            days_old = (today - motie_date).days
+        except:
+            continue
+        if status == 'in_behandeling' and days_old > 30:
+            m['archief'] = True
+            archived += 1
+        elif status == 'aangehouden' and days_old > 60:
+            m['archief'] = True
+            archived += 1
+
+    if archived:
+        print(f'  {archived} moties gearchiveerd')
+
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(all_items, f, ensure_ascii=False, indent=2)
-    print(f'Klaar — totaal {len(all_items)} moties in moties.json')
+    print(f'Klaar — totaal {len(all_items)} moties in moties.json ({sum(1 for m in all_items if not m.get("archief"))} actief)')
 
 if __name__ == '__main__':
     main()

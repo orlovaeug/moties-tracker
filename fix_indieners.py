@@ -63,7 +63,7 @@ LEDEN_PARTIJ = {
     # CU (3)
     "Bikker": "CU", "Ceder": "CU", "Grinwis": "CU", "Segers": "CU",
     # DENK (3)
-    "El Abassi": "DENK", "Stephan van Baarle": "DENK", "Ergin": "DENK", "Azarkan": "DENK",
+    "El Abassi": "DENK", "Stephan van Baarle": "DENK", "Ergin": "DENK", "Azarkan": "DENK", "Van Baarle": "DENK",
     # PvdD (3)
     "Kostić": "PvdD", "Kostic": "PvdD", "Ouwehand": "PvdD", "Teunissen": "PvdD",
     "Wassenberg": "PvdD",
@@ -85,7 +85,7 @@ PARTIJEN = ["PVV","VVD","NSC","BBB","D66","GL-PvdA","CDA","SP","PvdD","CU","SGP"
             "Volt","DENK","FvD","JA21","50PLUS","Gr.Markuszower"]
 
 def detect_indiener(titel):
-    m = re.search(r'lid(?:en)?\s+([A-Z][a-zA-Z\u00C0-\u017E\s\-]+?)(?:\s+c\.s\.| en [A-Z]|\s*-\s*[A-Z]|$)', titel)
+    m = re.search(r'(?:Gewijzigde\s+)?[Mm]otie\s+van\s+(?:het\s+lid|de\s+leden)\s+([A-Z][a-zA-Z\u00C0-\u017E\-]+(?:\s+[a-zA-Z\u00C0-\u017E\-]+){0,4}?)(?:\s+c\.s\.|\s+over\s|\s+en\s+[A-Z]|\s+-\s+[A-Z]|$)', titel)
     name_ctx = m.group(1).strip() if m else titel
     for naam in sorted(LEDEN_PARTIJ.keys(), key=len, reverse=True):
         pat = r'(?<![A-Za-z\u00C0-\u017E])' + re.escape(naam) + r'(?![A-Za-z\u00C0-\u017E])'
