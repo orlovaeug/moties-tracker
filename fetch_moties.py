@@ -49,50 +49,79 @@ THEMA_KEYWORDS = {
 PARTIJEN = ["PVV","VVD","NSC","BBB","D66","GL-PvdA","CDA","SP","PvdD","CU","SGP","Volt","DENK","FvD","JA21","50PLUS","Gr.Markuszower"]
 
 LEDEN_PARTIJ = {
-    # PVV
-    "Wilders": "PVV", "Heutink": "PVV", "Agema": "PVV", "Maeijer": "PVV",
-    "Kisteman": "PVV", "Freek Jansen": "PVV",
-    # VVD
-    "Yesilgöz": "VVD", "Hermans": "VVD", "Peter de Groot": "VVD", "Brekelmans": "VVD",
-    "Rajkowski": "VVD", "Six Dijkstra": "VVD", "Karremans": "VVD", "Van Ark": "VVD",
-    "Bevers": "VVD", "Martens-America": "VVD", "Van Meetelen": "VVD",
-    # NSC
-    "Omtzigt": "NSC", "Nicolaï": "NSC", "Boomsma": "NSC",
-    # BBB
-    "Van der Plas": "BBB", "Vedder": "BBB", "Struijs": "BBB",
-    # D66
-    "Paternotte": "D66", "Jetten": "D66", "Van Weyenberg": "D66", "Van Lanschot": "D66",
-    "Ten Hove": "D66", "Kathmann": "D66", "Hammelburg": "D66", "Biekman": "D66",
-    "Van Berkel": "D66", "Kröger": "D66",
-    # GL-PvdA
-    "Klaver": "GL-PvdA", "Nijboer": "GL-PvdA", "Westerveld": "GL-PvdA",
-    "Mutluer": "GL-PvdA", "Lahlah": "GL-PvdA", "El Abassi": "GL-PvdA",
-    "Abdi": "GL-PvdA", "Belhirch": "GL-PvdA", "Armut": "GL-PvdA",
-    "Van den Berg": "GL-PvdA",
-    # CDA
-    "Bontenbal": "CDA", "Amhaouch": "CDA", "Van Campen": "CDA",
-    "Palmen": "CDA", "Lohman": "CDA", "De Beer": "CDA", "Bikkers": "CDA",
-    "Maes": "CDA", "Mathlouti": "CDA",
-    # SP
-    "Dijk": "SP", "Leijten": "SP", "Koudstaal": "SP",
-    # PvdD
-    "Teunissen": "PvdD", "Wassenberg": "PvdD", "Warmerdam": "PvdD",
-    # CU
-    "Bikker": "CU", "Segers": "CU", "Ceder": "CU",
-    # SGP
-    "Stoffer": "SGP", "Diederik van Dijk": "SGP", "Van der Staaij": "SGP",
-    # Volt
-    "Koekkoek": "Volt",
-    # DENK
-    "Azarkan": "DENK", "Ergin": "DENK", "Stephan van Baarle": "DENK",
-    # FvD
-    "Van Houwelingen": "FvD", "Baudet": "FvD", "Chris Jansen": "FvD", "Van der Maas": "FvD",
-    # JA21
-    "Eerdmans": "JA21", "Van Meijeren": "JA21", "Aartsen": "JA21", "Jumelet": "JA21",
-    # 50PLUS
-    "Boelsma-Hoekstra": "50PLUS", "Jagtenberg": "50PLUS",
-    # Gr.Markuszower
-    "Markuszower": "Gr.Markuszower",
+    # D66 (26) — largest party, elected Oct 2025
+    "Van Asten": "D66", "Bamenga": "D66", "Belhirch": "D66", "Biekman": "D66",
+    "Heera Dijk": "D66", "El Boujdaini": "D66", "Huidekooper": "D66", "Huizenga": "D66",
+    "Jagtenberg": "D66", "Klos": "D66", "Köse": "D66", "Kose": "D66",
+    "Van Leijen": "D66", "Mathlouti": "D66", "Neijenhuis": "D66", "Oosterhuis": "D66",
+    "Oualhadj": "D66", "Paternotte": "D66", "Paulusma": "D66", "Podt": "D66",
+    "Rooderkerk": "D66", "Schoonis": "D66", "Sneller": "D66", "Synhaeve": "D66",
+    "Vellinga-Beemsterboer": "D66", "Vervuurt": "D66", "Van der Werf": "D66",
+    "Jetten": "D66", "Van Weyenberg": "D66", "Van Lanschot": "D66",
+    "Hammelburg": "D66", "Ten Hove": "D66",
+    # VVD (22)
+    "Becker": "VVD", "Martin de Beer": "VVD", "Bevers": "VVD", "Bikkers": "VVD",
+    "Brekelmans": "VVD", "Van Campen": "VVD", "Van Eijk": "VVD", "Ellian": "VVD",
+    "Peter de Groot": "VVD", "Den Hollander": "VVD", "Kisteman": "VVD",
+    "De Kort": "VVD", "Van der Maas": "VVD", "Maes": "VVD", "Martens": "VVD",
+    "Meulenkamp": "VVD", "Michon-Derkzen": "VVD", "Müller": "VVD", "Muller": "VVD",
+    "Nobel": "VVD", "Rajkowski": "VVD", "Schutz": "VVD", "Wendel": "VVD",
+    "Yesilgöz": "VVD", "Yesilgoz": "VVD", "Hermans": "VVD",
+    # GL-PvdA (20)
+    "Abdi": "GL-PvdA", "Bromet": "GL-PvdA", "Bushoff": "GL-PvdA",
+    "De Hoop": "GL-PvdA", "Kathmann": "GL-PvdA", "Klaver": "GL-PvdA",
+    "Kröger": "GL-PvdA", "Kroger": "GL-PvdA", "Lahlah": "GL-PvdA",
+    "Van der Lee": "GL-PvdA", "Mohandis": "GL-PvdA", "Moorman": "GL-PvdA",
+    "Mutluer": "GL-PvdA", "Van Oosterhout": "GL-PvdA", "Patijn": "GL-PvdA",
+    "Piri": "GL-PvdA", "Stultiens": "GL-PvdA", "Tseggai": "GL-PvdA",
+    "Vliegenthart": "GL-PvdA", "Westerveld": "GL-PvdA", "Zalinyan": "GL-PvdA",
+    "Nijboer": "GL-PvdA",
+    # PVV (19)
+    "Boon": "PVV", "Bosma": "PVV", "Van Dijck": "PVV", "Emiel van Dijk": "PVV",
+    "Faber": "PVV", "Graus": "PVV", "Chris Jansen": "PVV", "Kops": "PVV",
+    "Maeijer": "PVV", "Van Meetelen": "PVV", "Mooiman": "PVV", "Mulder": "PVV",
+    "Prickaertz": "PVV", "Raijer": "PVV", "De Roon": "PVV", "Stöteler": "PVV",
+    "Soteler": "PVV", "Vlottes": "PVV", "Vondeling": "PVV", "Wilders": "PVV",
+    # CDA (18)
+    "Van Ark": "CDA", "Armut": "CDA", "Boelsma-Hoekstra": "CDA", "Bontenbal": "CDA",
+    "Van den Brink": "CDA", "Bühler": "CDA", "Buhler": "CDA", "Inge van Dijk": "CDA",
+    "Hamstra": "CDA", "Jumelet": "CDA", "Koorevaar": "CDA", "Krul": "CDA",
+    "Maes van Lanschot": "CDA", "Lohman": "CDA", "Poortman": "CDA",
+    "Steen": "CDA", "Straatman": "CDA", "Tijmstra": "CDA", "Zwinkels": "CDA",
+    "Amhaouch": "CDA",
+    # JA21 (9)
+    "Van den Berg": "JA21", "Boomsma": "JA21", "Ceulemans": "JA21",
+    "Clemminck-Croci": "JA21", "Coenradie": "JA21", "Eerdmans": "JA21",
+    "Goudzwaard": "JA21", "Hoogeveen": "JA21", "Nanninga": "JA21",
+    # FvD (7)
+    "Dekker": "FvD", "Van Duijvenvoorde": "FvD", "Van Houwelingen": "FvD",
+    "Freek Jansen": "FvD", "Van Meijeren": "FvD", "Russcher": "FvD", "De Vos": "FvD",
+    # Gr.Markuszower (7)
+    "Claassen": "Gr.Markuszower", "Heutink": "Gr.Markuszower",
+    "Ten Hove": "Gr.Markuszower", "Lammers": "Gr.Markuszower",
+    "Markuszower": "Gr.Markuszower", "Moinat": "Gr.Markuszower",
+    "Schilder": "Gr.Markuszower",
+    # BBB (3)
+    "Van der Plas": "BBB", "Vermeer": "BBB", "Wiersma": "BBB",
+    # CU (3)
+    "Bikker": "CU", "Ceder": "CU", "Grinwis": "CU", "Segers": "CU",
+    # DENK (3)
+    "El Abassi": "DENK", "Stephan van Baarle": "DENK", "Ergin": "DENK", "Azarkan": "DENK",
+    # PvdD (3)
+    "Kostić": "PvdD", "Kostic": "PvdD", "Ouwehand": "PvdD", "Teunissen": "PvdD",
+    "Wassenberg": "PvdD",
+    # SGP (3)
+    "Diederik van Dijk": "SGP", "Flach": "SGP", "Stoffer": "SGP", "Van der Staaij": "SGP",
+    # SP (3)
+    "Beckerman": "SP", "Jimmy Dijk": "SP", "Dobbe": "SP", "Leijten": "SP",
+    # 50PLUS (2)
+    "Van Brenk": "50PLUS", "Struijs": "50PLUS",
+    # Groep-Keijzer (1)
+    "Keijzer": "Groep-Keijzer",
+    # Volt (1)
+    "Dassen": "Volt",
+    # NSC (2 remaining after coalition changes)
+    "Omtzigt": "NSC", "Nicolaï": "NSC",
 }
 
 
@@ -159,15 +188,16 @@ def detect_thema(text):
             best, best_score = thema, score
     return best
 
-def detect_indiener(title):
-    m = re.search(r'lid(?:en)?\s+([A-Z][a-zA-Z\u00C0-\u017E\s\-]+?)(?:\s+c\.s\.|\s+en\s+[A-Z]|\s*-\s*[A-Z]|$)', title)
-    if m:
-        name = m.group(1).strip()
-        for naam, partij in LEDEN_PARTIJ.items():
-            if naam.lower() in name.lower():
-                return partij
-    for p in PARTIJEN:
-        if p in title:
+def detect_indiener(titel):
+    m = re.search(r'lid(?:en)?\s+([A-Z][a-zA-Z\u00C0-\u017E\s\-]+?)(?:\s+c\.s\.| en [A-Z]|\s*-\s*[A-Z]|$)', titel)
+    name_ctx = m.group(1).strip() if m else titel
+    for naam in sorted(LEDEN_PARTIJ.keys(), key=len, reverse=True):
+        pat = r'(?<![A-Za-z\u00C0-\u017E])' + re.escape(naam) + r'(?![A-Za-z\u00C0-\u017E])'
+        if re.search(pat, name_ctx, re.IGNORECASE):
+            return LEDEN_PARTIJ[naam]
+    for p in ["PVV","VVD","NSC","BBB","D66","GL-PvdA","CDA","SP","PvdD","CU","SGP",
+              "Volt","DENK","FvD","JA21","50PLUS","Gr.Markuszower"]:
+        if p in titel:
             return p
     return "Onbekend"
 
