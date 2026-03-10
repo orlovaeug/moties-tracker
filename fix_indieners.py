@@ -25,7 +25,7 @@ LEDEN_PARTIJ = {
     "Klaver": "GL-PvdA", "Nijboer": "GL-PvdA", "Westerveld": "GL-PvdA",
     "Mutluer": "GL-PvdA", "Lahlah": "GL-PvdA", "El Abassi": "GL-PvdA",
     "Abdi": "GL-PvdA", "Belhirch": "GL-PvdA", "Armut": "GL-PvdA",
-    "Van den Berg": "GL-PvdA",
+    "Van den Berg": "GL-PvdA", "Lahlah": "GL-PvdA",
     # CDA
     "Bontenbal": "CDA", "Amhaouch": "CDA", "Van Campen": "CDA",
     "Palmen": "CDA", "Lohman": "CDA", "De Beer": "CDA", "Bikkers": "CDA",
