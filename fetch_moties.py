@@ -49,22 +49,50 @@ THEMA_KEYWORDS = {
 PARTIJEN = ["PVV","VVD","NSC","BBB","D66","GL-PvdA","CDA","SP","PvdD","CU","SGP","Volt","DENK","FvD","JA21","50PLUS","Gr.Markuszower"]
 
 LEDEN_PARTIJ = {
-    "Wilders":"PVV","Heutink":"PVV","Agema":"PVV",
-    "Yesilgöz":"VVD","Hermans":"VVD","Peter de Groot":"VVD","Brekelmans":"VVD","Rajkowski":"VVD","Six Dijkstra":"VVD",
-    "Omtzigt":"NSC","Dassen":"NSC","Nicolaï":"NSC",
-    "Van der Plas":"BBB","Vedder":"BBB","Struijs":"BBB","Grinwis":"BBB",
-    "Paternotte":"D66","Jetten":"D66","Van Weyenberg":"D66","Van Lanschot":"D66","Ten Hove":"D66","Kathmann":"D66",
-    "Klaver":"GL-PvdA","Nijboer":"GL-PvdA","Westerveld":"GL-PvdA","Van Baarle":"GL-PvdA","Dobbe":"GL-PvdA","Mutluer":"GL-PvdA",
-    "Bontenbal":"CDA","Boswijk":"CDA","Amhaouch":"CDA","Van Campen":"CDA",
-    "Dobbe":"SP","Dijk":"SP","Leijten":"SP","Koudstaal":"SP",
-    "Teunissen":"PvdD","Wassenberg":"PvdD",
-    "Bikker":"CU","Segers":"CU","Ceder":"CU",
-    "Stoffer":"SGP","Diederik van Dijk":"SGP","Van der Staaij":"SGP",
-    "Koekkoek":"Volt","Dassen":"Volt",
-    "Azarkan":"DENK","Ergin":"DENK",
-    "Van Houwelingen":"FvD","Baudet":"FvD",
-    "Eerdmans":"JA21","Van Meijeren":"JA21",
-    "Markuszower":"Gr.Markuszower",
+    # PVV
+    "Wilders": "PVV", "Heutink": "PVV", "Agema": "PVV", "Maeijer": "PVV",
+    "Kisteman": "PVV", "Freek Jansen": "PVV",
+    # VVD
+    "Yesilgöz": "VVD", "Hermans": "VVD", "Peter de Groot": "VVD", "Brekelmans": "VVD",
+    "Rajkowski": "VVD", "Six Dijkstra": "VVD", "Karremans": "VVD", "Van Ark": "VVD",
+    "Bevers": "VVD", "Martens-America": "VVD", "Van Meetelen": "VVD",
+    # NSC
+    "Omtzigt": "NSC", "Nicolaï": "NSC", "Boomsma": "NSC",
+    # BBB
+    "Van der Plas": "BBB", "Vedder": "BBB", "Struijs": "BBB",
+    # D66
+    "Paternotte": "D66", "Jetten": "D66", "Van Weyenberg": "D66", "Van Lanschot": "D66",
+    "Ten Hove": "D66", "Kathmann": "D66", "Hammelburg": "D66", "Biekman": "D66",
+    "Van Berkel": "D66", "Kröger": "D66",
+    # GL-PvdA
+    "Klaver": "GL-PvdA", "Nijboer": "GL-PvdA", "Westerveld": "GL-PvdA",
+    "Mutluer": "GL-PvdA", "Lahlah": "GL-PvdA", "El Abassi": "GL-PvdA",
+    "Abdi": "GL-PvdA", "Belhirch": "GL-PvdA", "Armut": "GL-PvdA",
+    "Van den Berg": "GL-PvdA",
+    # CDA
+    "Bontenbal": "CDA", "Amhaouch": "CDA", "Van Campen": "CDA",
+    "Palmen": "CDA", "Lohman": "CDA", "De Beer": "CDA", "Bikkers": "CDA",
+    "Maes": "CDA", "Mathlouti": "CDA",
+    # SP
+    "Dijk": "SP", "Leijten": "SP", "Koudstaal": "SP",
+    # PvdD
+    "Teunissen": "PvdD", "Wassenberg": "PvdD", "Warmerdam": "PvdD",
+    # CU
+    "Bikker": "CU", "Segers": "CU", "Ceder": "CU",
+    # SGP
+    "Stoffer": "SGP", "Diederik van Dijk": "SGP", "Van der Staaij": "SGP",
+    # Volt
+    "Koekkoek": "Volt",
+    # DENK
+    "Azarkan": "DENK", "Ergin": "DENK", "Stephan van Baarle": "DENK",
+    # FvD
+    "Van Houwelingen": "FvD", "Baudet": "FvD", "Chris Jansen": "FvD", "Van der Maas": "FvD",
+    # JA21
+    "Eerdmans": "JA21", "Van Meijeren": "JA21", "Aartsen": "JA21", "Jumelet": "JA21",
+    # 50PLUS
+    "Boelsma-Hoekstra": "50PLUS", "Jagtenberg": "50PLUS",
+    # Gr.Markuszower
+    "Markuszower": "Gr.Markuszower",
 }
 
 def detect_thema(text):
