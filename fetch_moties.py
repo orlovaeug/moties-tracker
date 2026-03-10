@@ -95,6 +95,61 @@ LEDEN_PARTIJ = {
     "Markuszower": "Gr.Markuszower",
 }
 
+
+COALITIE = {"D66", "VVD", "CDA", "BBB", "NSC"}
+OPPOSITIE = {"GL-PvdA", "PVV", "SP", "PvdD", "CU", "SGP", "Volt", "DENK", "FvD", "JA21", "50PLUS", "Gr.Markuszower"}
+
+# Keywords that suggest a motie conflicts with the coalition agreement
+STRIJDIG_KEYWORDS = [
+    "niet verhogen", "van tafel", "terugtrekken", "intrekken", "afwijzen", "verwerpen",
+    "geen bezuinig", "stop", "verbod", "moratorium", "schrap", "afschaffen",
+    "niet korten", "niet verlagen", "geen korting", "geen verlaging",
+    "geen uitzetting", "niet uitzetten", "niet deporteren",
+    "geen samenwerking met", "distantieert", "veroordeelt kabinet",
+    "onverantwoord", "onacceptabel", "onaanvaardbaar",
+]
+
+# Keywords that suggest a motie aligns with the coalition agreement
+CONFORM_KEYWORDS = [
+    "conform akkoord", "uitvoering geven", "verzoekt de regering te",
+    "zo snel mogelijk", "versterken", "uitbreiden", "verhogen",
+    "meer investeren", "extra middelen", "extra budget",
+    "wettelijk vastleggen", "invoeren", "oprichten", "realiseren",
+    "nationaal programma", "taskforce", "actieplan",
+]
+
+# Akkoord thema's — moties over deze onderwerpen zijn eerder conform
+AKKOORD_THEMAS = {
+    "Defensie": "conform",           # 3.5% bbp — kernpunt
+    "Wonen & Bouwen": "conform",     # 100k woningen/jaar
+    "Klimaat & Energie": "neutraal", # kernenergie ja, maar ook veel oppositie
+    "Asiel & Migratie": "conform",   # strengere asielwet — coalitiestandpunt
+    "Financien": "neutraal",
+    "Economie & Ondernemen": "conform",
+}
+
+def detect_alignment(titel, indiener, thema):
+    titel_lower = titel.lower()
+
+    # 1. Explicit keywords override everything
+    for kw in STRIJDIG_KEYWORDS:
+        if kw in titel_lower:
+            return "strijdig"
+    for kw in CONFORM_KEYWORDS:
+        if kw in titel_lower:
+            return "conform"
+
+    # 2. If submitted by coalition party → likely conform
+    if indiener in COALITIE:
+        return AKKOORD_THEMAS.get(thema, "conform")
+
+    # 3. If submitted by opposition → likely strijdig or neutraal
+    if indiener in OPPOSITIE:
+        # Some opposition moties are still adopted (procedural, broad support)
+        return "neutraal"
+
+    return "neutraal"
+
 def detect_thema(text):
     t = text.lower()
     best, best_score = "Overig", 0
@@ -259,7 +314,7 @@ def main():
                 'datum': r['datum'],
                 'thema': thema,
                 'status': 'in_behandeling',
-                'alignment': 'neutraal',
+                'alignment': detect_alignment(r['titel'], detect_indiener(r['titel']), thema),
                 'vergadering': '',
                 'tk_url': r['link'],
                 'toelichting': '',

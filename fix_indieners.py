@@ -68,20 +68,67 @@ def detect_indiener(titel):
             return p
     return None  # None = leave as-is
 
+COALITIE = {"D66", "VVD", "CDA", "BBB", "NSC"}
+OPPOSITIE = {"GL-PvdA", "PVV", "SP", "PvdD", "CU", "SGP", "Volt", "DENK", "FvD", "JA21", "50PLUS", "Gr.Markuszower"}
+
+STRIJDIG_KEYWORDS = [
+    "niet verhogen", "van tafel", "terugtrekken", "intrekken", "afwijzen",
+    "geen bezuinig", "stop", "verbod", "moratorium", "schrap", "afschaffen",
+    "niet korten", "niet verlagen", "geen korting", "geen verlaging",
+    "geen uitzetting", "niet uitzetten", "veroordeelt kabinet",
+    "onverantwoord", "onacceptabel", "onaanvaardbaar",
+]
+CONFORM_KEYWORDS = [
+    "conform akkoord", "uitvoering geven", "verzoekt de regering te",
+    "versterken", "uitbreiden", "verhogen", "meer investeren", "extra middelen",
+    "wettelijk vastleggen", "invoeren", "oprichten", "realiseren",
+    "nationaal programma", "taskforce", "actieplan",
+]
+AKKOORD_THEMAS = {
+    "Defensie": "conform",
+    "Wonen & Bouwen": "conform",
+    "Asiel & Migratie": "conform",
+    "Economie & Ondernemen": "conform",
+}
+
+def detect_alignment(titel, indiener, thema):
+    t = titel.lower()
+    for kw in STRIJDIG_KEYWORDS:
+        if kw in t:
+            return "strijdig"
+    for kw in CONFORM_KEYWORDS:
+        if kw in t:
+            return "conform"
+    if indiener in COALITIE:
+        return AKKOORD_THEMAS.get(thema, "conform")
+    return "neutraal"
+
 with open('moties.json', 'r', encoding='utf-8') as f:
     moties = json.load(f)
 
-fixed = 0
+fixed_ind = 0
+fixed_ali = 0
 for m in moties:
+    titel = m.get('titel', '')
+
+    # Fix indiener
     if m.get('indiener') == 'Onbekend':
-        detected = detect_indiener(m.get('titel', ''))
+        detected = detect_indiener(titel)
         if detected:
-            print(f"  Fix: {m['titel'][:60]} → {detected}")
+            print(f"  Indiener: {titel[:55]} → {detected}")
             m['indiener'] = detected
-            fixed += 1
+            fixed_ind += 1
+
+    # Fix alignment if still neutraal (may have been set wrong)
+    if m.get('alignment') == 'neutraal':
+        new_ali = detect_alignment(titel, m.get('indiener',''), m.get('thema',''))
+        if new_ali != 'neutraal':
+            print(f"  Alignment: {titel[:50]} → {new_ali}")
+            m['alignment'] = new_ali
+            fixed_ali += 1
 
 with open('moties.json', 'w', encoding='utf-8') as f:
     json.dump(moties, f, ensure_ascii=False, indent=2)
 
-print(f"\n✅ {fixed} indieners gecorrigeerd in moties.json")
+print(f"\n✅ {fixed_ind} indieners + {fixed_ali} alignments gecorrigeerd")
 print("Voer daarna embed_moties.py uit om index.html te updaten.")
