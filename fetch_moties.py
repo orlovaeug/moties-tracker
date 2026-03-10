@@ -217,6 +217,50 @@ def parse_dutch_date(s):
             pass
     return None
 
+def fetch_detail_status(url):
+    """Fetch a motie detail page and detect its stemming status and actual date."""
+    if not url.startswith('http'):
+        url = 'https://www.tweedekamer.nl' + url
+    try:
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=20) as r:
+            raw = r.read().decode('utf-8', errors='replace')
+        raw = html_module.unescape(raw)
+        raw_lower = raw.lower()
+
+        # Detect status from page text
+        status = 'in_behandeling'
+        # Look for clear stemming result indicators
+        if 'aangenomen' in raw_lower:
+            # Make sure it's a result, not just "motie aangenomen" in boilerplate
+            if re.search(r'(stemming|uitslag|besluit|aangenomen\s*\b)', raw_lower):
+                status = 'aangenomen'
+        if 'verworpen' in raw_lower:
+            if re.search(r'(stemming|uitslag|besluit|verworpen\s*\b)', raw_lower):
+                status = 'verworpen'
+        if 'aangehouden' in raw_lower:
+            status = 'aangehouden'
+
+        # Try to extract actual vergadering date from detail page
+        # Detail pages often show "Vergaderjaar" and date more precisely
+        datum = None
+        date_pattern = re.compile(
+            r'\b(\d{1,2})\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(20\d{2})\b',
+            re.IGNORECASE
+        )
+        MONTHS = {'januari':1,'februari':2,'maart':3,'april':4,'mei':5,'juni':6,
+                  'juli':7,'augustus':8,'september':9,'oktober':10,'november':11,'december':12}
+        matches = date_pattern.findall(raw)
+        if matches:
+            d, m, y = matches[0]
+            datum = f"{y}-{MONTHS[m.lower()]:02d}-{int(d):02d}"
+
+        return status, datum
+    except Exception as e:
+        print(f'    Detail fetch fout: {e}')
+        return 'in_behandeling', None
+
+
 def fetch_page(page=0):
     url = (
         'https://www.tweedekamer.nl/kamerstukken/moties'
@@ -342,14 +386,28 @@ def main():
             existing_ids.add(item_id)
             existing_links.add(r['link'])
             thema = detect_thema(r['titel'])
+            indiener = detect_indiener(r['titel'])
+
+            # Fetch detail page to get real status and date
+            # (skip for today's moties to keep it fast)
+            from datetime import date as _date
+            is_recent = r['datum'] >= _date.today().isoformat()
+            if not is_recent:
+                detail_status, detail_datum = fetch_detail_status(r['link'])
+                time.sleep(0.5)
+            else:
+                detail_status, detail_datum = 'in_behandeling', None
+
+            motie_datum = detail_datum or r['datum']
+
             new_items.append({
                 'id': item_id,
                 'titel': r['titel'],
-                'indiener': detect_indiener(r['titel']),
-                'datum': r['datum'],
+                'indiener': indiener,
+                'datum': motie_datum,
                 'thema': thema,
-                'status': 'in_behandeling',
-                'alignment': detect_alignment(r['titel'], detect_indiener(r['titel']), thema),
+                'status': detail_status,
+                'alignment': detect_alignment(r['titel'], indiener, thema),
                 'vergadering': '',
                 'tk_url': r['link'],
                 'toelichting': '',

@@ -109,11 +109,43 @@ def detect_alignment(titel, indiener, thema):
         return AKKOORD_THEMAS.get(thema, "conform")
     return "neutraal"
 
+import urllib.request, html as html_module, time
+from datetime import date
+
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (compatible; MotieTracker/1.0)',
+    'Accept': 'text/html',
+    'Accept-Language': 'nl-NL,nl;q=0.9',
+}
+
+def fetch_detail_status(url):
+    """Fetch motie detail page and detect its real status."""
+    if not url.startswith('http'):
+        url = 'https://www.tweedekamer.nl' + url
+    try:
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=20) as r:
+            raw = r.read().decode('utf-8', errors='replace')
+        raw_u = html_module.unescape(raw).lower()
+        if re.search(r'(stemming|uitslag|besluit).{0,100}aangenomen', raw_u) or re.search(r'aangenomen.{0,100}(stemming|uitslag|besluit)', raw_u):
+            return 'aangenomen'
+        if re.search(r'(stemming|uitslag|besluit).{0,100}verworpen', raw_u) or re.search(r'verworpen.{0,100}(stemming|uitslag|besluit)', raw_u):
+            return 'verworpen'
+        if 'aangehouden' in raw_u:
+            return 'aangehouden'
+        return None  # unknown, keep existing
+    except Exception as e:
+        print(f"    Detail fout: {e}")
+        return None
+
 with open('moties.json', 'r', encoding='utf-8') as f:
     moties = json.load(f)
 
 fixed_ind = 0
 fixed_ali = 0
+fixed_sta = 0
+today = date.today()
+
 for m in moties:
     titel = m.get('titel', '')
 
@@ -125,7 +157,7 @@ for m in moties:
             m['indiener'] = detected
             fixed_ind += 1
 
-    # Fix alignment if still neutraal (may have been set wrong)
+    # Fix alignment if still neutraal
     if m.get('alignment') == 'neutraal':
         new_ali = detect_alignment(titel, m.get('indiener',''), m.get('thema',''))
         if new_ali != 'neutraal':
@@ -133,8 +165,23 @@ for m in moties:
             m['alignment'] = new_ali
             fixed_ali += 1
 
+    # Re-check status for in_behandeling moties older than 1 day
+    if m.get('status') == 'in_behandeling' and m.get('tk_url','').startswith('/'):
+        try:
+            motie_date = date.fromisoformat(m.get('datum', today.isoformat()))
+            days_old = (today - motie_date).days
+        except:
+            days_old = 0
+        if days_old >= 1:
+            new_status = fetch_detail_status(m['tk_url'])
+            if new_status and new_status != 'in_behandeling':
+                print(f"  Status: {titel[:50]} → {new_status}")
+                m['status'] = new_status
+                fixed_sta += 1
+            time.sleep(0.4)
+
 with open('moties.json', 'w', encoding='utf-8') as f:
     json.dump(moties, f, ensure_ascii=False, indent=2)
 
-print(f"\n✅ {fixed_ind} indieners + {fixed_ali} alignments gecorrigeerd")
+print(f"\n✅ {fixed_ind} indieners + {fixed_ali} alignments + {fixed_sta} statussen gecorrigeerd")
 print("Voer daarna embed_moties.py uit om index.html te updaten.")
