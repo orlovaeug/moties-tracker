@@ -433,6 +433,7 @@ button,input,select,textarea{font-family:inherit}button{cursor:pointer}a{text-de
 <script>
 (function(){
 var SK="motie-v17";
+var PROXY_URL="https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev"; // ← vervang dit met jouw Worker URL
 var SC={
   aangenomen:{l:"Aangenomen",i:"\u2713",c:"#3A7A4A",b:"#EAF6EE",bd:"#B8E0C5"},
   verworpen:{l:"Verworpen",i:"\u2717",c:"#A03030",b:"#FBEEEE",bd:"#EBBABA"},
@@ -890,68 +891,11 @@ function liveFetch(){
   fcon.innerHTML=
     '<div style="text-align:center;padding:36px 20px">'
     +'<div class="spin"></div>'
-    +'<div style="font-size:13px;color:var(--mid);margin-top:16px">Moties ophalen van tweedekamer.nl via AI&hellip;</div>'
+    +'<div style="font-size:13px;color:var(--mid);margin-top:16px">Pagina herladen&hellip;</div>'
     +'</div>';
-
-  var existingTitles=moties.map(function(m){return m.titel;});
-  var prompt="Zoek op tweedekamer.nl naar recente moties (na 23 februari 2026) van het kabinet-Jetten (coalitie D66, VVD, CDA). "
-    +"De volgende moties zijn al bekend (sla ze over):\n"
-    +existingTitles.slice(0,20).map(function(t,i){return(i+1)+". "+t;}).join("\n")
-    +"\n\nGeef ALLEEN een JSON-array terug (geen markdown, geen tekst erbuiten), maximaal 12 items:\n"
-    +'[{"titel":"...","indiener":"partijnaam","datum":"YYYY-MM-DD","thema":"een van: Bestaanszekerheid|Asiel & Migratie|Landbouw & Natuur|Veiligheid & Justitie|Zorg|Onderwijs & Wetenschap|Klimaat & Energie|Wonen & Bouwen|Financien|Buitenlandse Zaken & Europa|Defensie|Overheid & Bestuur|Democratie & Rechtsstaat|Nationale Veiligheid|Economie & Ondernemen|Digitalisering & AI|Bereikbaarheid & Mobiliteit|Sociale Cohesie|Overig","status":"aangenomen|verworpen|in_behandeling","alignment":"conform|neutraal|strijdig","toelichting":"1 zin context","vergadering":"naam debat","stemmen":{}}]';
-
-  fetch("https://api.anthropic.com/v1/messages",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      model:"claude-sonnet-4-20250514",
-      max_tokens:3000,
-      tools:[{"type":"web_search_20250305","name":"web_search"}],
-      messages:[{role:"user",content:prompt}]
-    })
-  })
-  .then(function(r){return r.json();})
-  .then(function(data){
-    var text="";
-    if(data.content) for(var i=0;i<data.content.length;i++) if(data.content[i].type==="text") text+=data.content[i].text;
-    var arr=null;
-    try{arr=JSON.parse(text.trim());}catch(e){var m=text.match(/\[[\s\S]*\]/);if(m)try{arr=JSON.parse(m[0]);}catch(e2){}}
-    if(!arr||!arr.length){
-      fcon.innerHTML='<div class="fnote" style="color:var(--r)">&#9888; Geen moties gevonden. Probeer opnieuw of voeg handmatig toe.<br><small style="color:var(--mid)">'+esc((text||"geen respons").slice(0,150))+'</small></div>';
-      return;
-    }
-    var existIds={};
-    for(var i=0;i<moties.length;i++) existIds[moties[i].id]=true;
-    var newId=Date.now();
-    var avail=[];
-    for(var i=0;i<arr.length;i++){
-      var mot=arr[i];
-      if(!mot.titel) continue;
-      mot.id=mot.id||("live"+newId++);
-      mot.stemmen=mot.stemmen||{};
-      mot.tk_url=mot.tk_url||"https://www.tweedekamer.nl/kamerstukken/stemmingsuitslagen";
-      if(!existIds[mot.id]&&!existIds[mot.titel]) avail.push(mot);
-    }
-    if(!avail.length){
-      fcon.innerHTML='<div class="fnote" style="background:#E8F5ED;border-color:#A8D5B5">&#9989; Geen nieuwe moties &mdash; alles is al bijgewerkt!</div>';
-      return;
-    }
-    fetchSel={};
-    showFetchItems(avail);
-  })
-  .catch(function(err){
-    fcon.innerHTML='<div class="fnote" style="color:var(--r)">&#9888; Netwerkfout: '+esc(err.message)+'</div>';
-  });
+  setTimeout(function(){ window.location.reload(); }, 1500);
 }
 
-function togItem(el, id){
-  if(id===undefined) id=el.getAttribute('data-fid');
-  fetchSel[id]=!fetchSel[id];
-  el.classList.toggle("on",!!fetchSel[id]);
-  var chk=document.getElementById("chk-"+id);
-  if(chk){chk.classList.toggle("on",!!fetchSel[id]); chk.innerHTML=fetchSel[id]?"&#10003;":"";}
-  updateFBtn(window._aiFetchResults||[]);
-}
 
 function togFRI(id){var el=document.getElementById("fri-"+id); if(el) togItem(el,id);}
 function togFRI2(id){togFRI(id);}
