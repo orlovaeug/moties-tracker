@@ -1,31 +1,5 @@
 [
   {
-    "id": "tk_test_001",
-    "titel": "Test motie nieuw 1",
-    "indiener": "D66",
-    "datum": "2026-03-10",
-    "thema": "Defensie",
-    "status": "aangenomen",
-    "alignment": "conform",
-    "vergadering": "Test debat",
-    "tk_url": "https://tweedekamer.nl",
-    "toelichting": "Test",
-    "stemmen": {}
-  },
-  {
-    "id": "tk_test_002",
-    "titel": "Test motie nieuw 2",
-    "indiener": "VVD",
-    "datum": "2026-03-10",
-    "thema": "Zorg",
-    "status": "verworpen",
-    "alignment": "strijdig",
-    "vergadering": "Test debat 2",
-    "tk_url": "https://tweedekamer.nl",
-    "toelichting": "Test 2",
-    "stemmen": {}
-  },
-  {
     "id": 6,
     "titel": "Defensiebudget wettelijk naar 3,5% bbp in 2035",
     "indiener": "VVD",
