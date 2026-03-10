@@ -943,8 +943,21 @@ function closeFetch(){g("ovf").style.display="none";}
 
 // News tab
 
-// Init
+// Init — auto-merge any new moties baked in by GitHub Actions
 moties=loadDB();
+(function(){
+  var existIds={};
+  for(var i=0;i<moties.length;i++) existIds[moties[i].id]=true;
+  var added=0;
+  for(var i=0;i<(NIEUW||[]).length;i++){
+    if(!existIds[NIEUW[i].id]){
+      moties.push(NIEUW[i]);
+      existIds[NIEUW[i].id]=true;
+      added++;
+    }
+  }
+  if(added>0){ saveDB(); }
+})();
 // Strip in_behandeling votes
 for(var _i=0;_i<moties.length;_i++){if(moties[_i].status==="in_behandeling")moties[_i].stemmen={};}
 // Build theme filter
