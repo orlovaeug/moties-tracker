@@ -372,18 +372,16 @@ def fetch_stemmen(url):
     html = fetch_html(url)
     if not html:
         return {}
-    # Parse markdown table: | Fracties | Zetels | Voor/Tegen |
-    # Also works on raw HTML after tag stripping
-    text = re.sub(r'<[^>]+>', ' ', html)
-    rows = re.findall(
-        r'[|]\s*([^|\n]+?)\s*[|]\s*\d+\s*[|]\s*(Voor|Tegen|Niet deelgenomen|Onthouden)\s*[|]',
-        text, re.IGNORECASE
-    )
+    # Parse HTML table rows: <tr><td>PVV</td><td>37</td><td>Tegen</td></tr>
     stemmen = {}
-    for party, vote in rows:
-        party = party.strip()
-        if party and party.lower() not in ('fracties', 'fractie'):
-            stemmen[party] = vote.lower().replace('niet deelgenomen', 'afwezig')
+    for tr in re.findall(r'<tr\b[^>]*>(.*?)</tr>', html, re.IGNORECASE | re.DOTALL):
+        cells = re.findall(r'<td\b[^>]*>(.*?)</td>', tr, re.IGNORECASE | re.DOTALL)
+        if len(cells) >= 3:
+            party = re.sub(r'<[^>]+>', '', cells[0]).strip()
+            vote_raw = re.sub(r'<[^>]+>', '', cells[2]).strip()
+            vote_match = re.match(r'(Voor|Tegen|Niet deelgenomen|Onthouden)', vote_raw, re.IGNORECASE)
+            if party and vote_match and party.lower() not in ('fracties', 'fractie'):
+                stemmen[party] = vote_match.group(1).lower().replace('niet deelgenomen', 'afwezig')
     return stemmen
 
 
@@ -501,12 +499,15 @@ def main():
         and m.get('tk_url')
     ]
     if needs_stemmen:
-        print(f'  Partijstemmen ophalen: {min(50, len(needs_stemmen))} van {len(needs_stemmen)} moties')
-        for m in needs_stemmen[:50]:
+        print(f'  Partijstemmen ophalen: {len(needs_stemmen)} moties')
+        fetched_stemmen = 0
+        for m in needs_stemmen:
             stemmen = fetch_stemmen(m['tk_url'])
             if stemmen:
                 m['stemmen'] = stemmen
+                fetched_stemmen += 1
             time.sleep(0.4)
+        print(f'    {fetched_stemmen} moties partijstemmen opgehaald')
 
     # ── Step 2: Scrape new moties ──
     new_items = []
