@@ -403,13 +403,14 @@ def fetch_agenda():
         with urllib.request.urlopen(req, timeout=15) as r:
             data = json.loads(r.read().decode('utf-8'))
         items = data.get('value', [])
-        # Debug: show unique Soort values found
-        soorten = set(a.get('Soort','?') for a in items)
-        print(f'  Agenda raw: {len(items)} items, soorten: {soorten}')
-        # Filter to plenaire sessions
-        plenair = [a for a in items if a.get('Soort','').lower() in ('plenair','plenaire vergadering','plenaire zitting')]
+        PLENAIR_SOORTEN = {
+            'Plenair debat (debat)', 'Plenair debat (wetgeving)',
+            'Plenair debat (tweeminutendebat)', 'Plenair debat (overig)',
+            'Stemmingen', 'Hamerstukken', 'Regeling van werkzaamheden'
+        }
+        plenair = [a for a in items if a.get('Soort','') in PLENAIR_SOORTEN]
         if not plenair:
-            plenair = items  # fallback: show all if no plenair found
+            plenair = items
         agenda = []
         for a in plenair:
             datum = (a.get('Datum') or '')[:10]
