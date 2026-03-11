@@ -240,9 +240,10 @@ def fetch_odata(url):
     try:
         req = urllib.request.Request(url, headers={'Accept': 'application/json', 'User-Agent': HEADERS['User-Agent']})
         with urllib.request.urlopen(req, timeout=15) as r:
-            return json.loads(r.read())
+            data = json.loads(r.read())
+            return data
     except Exception as e:
-        print(f'    OData fout: {e}')
+        print(f'    OData fout ({url[:80]}): {e}')
         return None
 
 
@@ -260,6 +261,8 @@ def fetch_detail_status(url):
         doc_data = fetch_odata(
             ODATA + '/Document?$filter=Id eq %27' + doc_id + '%27&$select=Id,Datum'
         )
+        if doc_data is not None and not doc_data.get('value'):
+            print(f'    OData leeg voor {doc_id}')
         if doc_data and doc_data.get('value'):
             raw_datum = doc_data['value'][0].get('Datum', '')
             if raw_datum:
@@ -437,15 +440,8 @@ def main():
             indiener = detect_indiener(r['titel'])
 
             # Use OData API to get real date, status and stemmen
-            # (skip for today's moties to keep backfill fast on very recent ones)
-            from datetime import date as _date
-            is_today = r['datum'] >= _date.today().isoformat()
-            if not is_today:
-                detail_status, detail_datum, detail_stemmen = fetch_detail_status(r['link'])
-                time.sleep(0.5)
-            else:
-                detail_status, detail_datum, detail_stemmen = 'in_behandeling', None, {}
-
+            detail_status, detail_datum, detail_stemmen = fetch_detail_status(r['link'])
+            time.sleep(0.3)
             motie_datum = detail_datum or r['datum']
 
             new_items.append({

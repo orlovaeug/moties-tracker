@@ -297,14 +297,10 @@ for m in moties:
             m['alignment'] = new_ali
             fixed_ali += 1
 
-    # Hercheck status voor in_behandeling moties ouder dan 1 dag
-    if m.get('status') == 'in_behandeling' and m.get('tk_url', '') != '':
-        try:
-            motie_date = date.fromisoformat(m.get('datum', today.isoformat()))
-            days_old = (today - motie_date).days
-        except Exception:
-            days_old = 0
-        if days_old >= 1:
+    # Hercheck status: only in_behandeling moties with no stemmen yet
+    # (OData may have failed during initial fetch, or vote happened after scraping)
+    if m.get('status') == 'in_behandeling' and m.get('tk_url', '') != '' and not m.get('stemmen'):
+        if True:
             new_status, new_stemmen = fetch_detail_status(m['tk_url'])
             if new_status and new_status != 'in_behandeling':
                 print(f"  Status: {titel[:50]} -> {new_status}")
