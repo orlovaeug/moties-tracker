@@ -3,7 +3,7 @@
 fix_indieners.py — corrigeert indieners, alignment en status in moties.json
 Draait dagelijks in GitHub Actions na fetch_moties.py
 """
-import json, re, urllib.request, html as html_module, time
+import json, re, urllib.request, urllib.parse, html as html_module, time
 from datetime import date
 
 # ── Constanten ────────────────────────────────────────────────────────────────
@@ -155,32 +155,21 @@ FRACTIE_MAP = {
     'Groep-Keijzer': 'Groep-Keijzer',
 }
 STEM_MAP = {'Voor': 'voor', 'Tegen': 'tegen', 'Onthouden': 'onthouden'}
-ODATA = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0'
-
-
-def extract_doc_ids(url):
-    return list(dict.fromkeys(re.findall(r'[?&](?:id|did)=([A-Za-z0-9]+)', url or '')))
-
-
-def fetch_odata(path, params):
-    """Fetch JSON from TK OData API with proper URL encoding."""
-    import urllib.parse
-    url = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0' + path + '?' + urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
-    try:
-        req = urllib.request.Request(url, headers={'Accept': 'application/json', 'User-Agent': 'MotieTracker/1.0'})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            return json.loads(r.read())
-    except Exception as e:
-        print(f'    OData fout: {e}')
-        return None
 
 
 def fetch_detail_status(url):
-    """Use TK OData API to get real date, status and per-party stemmen."""
-    ids = extract_doc_ids(url)
-    if not ids:
+    """Get real date from HTML detail page + stemmen from OData."""
+    if not url:
         return 'in_behandeling', None, {}
+    if not url.startswith('http'):
+        url = 'https://www.tweedekamer.nl' + url
 
+    zaak_m = re.search(r'[?&]id=([A-Za-z0-9]+)', url)
+    doc_m  = re.search(r'[?&]did=([A-Za-z0-9]+)', url)
+    zaak_id = zaak_m.group(1) if zaak_m else None
+    doc_id  = doc_m.group(1)  if doc_m  else None
+
+    ODATA = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0'
     FRACTIE_MAP = {
         'VVD':'VVD','D66':'D66','GL-PvdA':'GL-PvdA','GroenLinks-PvdA':'GL-PvdA',
         'PVV':'PVV','CDA':'CDA','SP':'SP','PvdD':'PvdD','ChristenUnie':'CU','CU':'CU',
@@ -190,39 +179,51 @@ def fetch_detail_status(url):
     }
     STEM_MAP = {'Voor':'voor','Tegen':'tegen','Onthouden':'onthouden'}
 
+    # 1. Parse real date from HTML detail page ("Voorgesteld DD maand YYYY")
     best_datum = None
+    try:
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=15) as r:
+            html = r.read().decode('utf-8', errors='replace')
+        m = re.search(
+            r'Voorgesteld\s+(\d{1,2})\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(20\d{2})',
+            html, re.IGNORECASE
+        )
+        if m:
+            d, mo, y = m.group(1), m.group(2).lower(), m.group(3)
+            MONTHS_LOCAL = {'januari':1,'februari':2,'maart':3,'april':4,'mei':5,'juni':6,
+                            'juli':7,'augustus':8,'september':9,'oktober':10,'november':11,'december':12}
+            best_datum = f"{y}-{MONTHS_LOCAL[mo]:02d}-{int(d):02d}"
+    except Exception as e:
+        print(f'    HTML fout: {e}')
+
+    # 2. Get stemming from OData using Zaak ID
     best_stemmen = {}
     best_status = 'in_behandeling'
-
-    for doc_id in ids:
-        # 1. Get real document date
-        doc_data = fetch_odata('/Document', {
-            '$filter': f"Id eq '{doc_id}'",
-            '$select': 'Id,Datum'
-        })
-        if doc_data and doc_data.get('value'):
-            raw = doc_data['value'][0].get('Datum','')
-            if raw and not best_datum:
-                best_datum = raw[:10]
-
-        # 2. Get stemming via Zaak
-        for filt in [
-            f"Zaak/Documenten/any(d:d/Id eq '{doc_id}')",
-            f"Besluit/Zaak/Documenten/any(d:d/Id eq '{doc_id}')",
+    for sid in [i for i in [zaak_id, doc_id] if i]:
+        for filter_expr in [
+            f"Zaak/Id eq '{sid}'",
+            f"Besluit/Zaak/Id eq '{sid}'",
         ]:
-            data = fetch_odata('/Stemming', {
-                '$filter': filt,
-                '$expand': 'Fractie($select=Afkorting)',
-                '$select': 'Soort,ActorFractie',
-            })
-            if not data or not data.get('value'):
+            filt = urllib.parse.quote(filter_expr)
+            try:
+                req = urllib.request.Request(
+                    f"{ODATA}/Stemming?$filter={filt}&$expand=Fractie($select=Afkorting)&$select=Soort,ActorFractie",
+                    headers={'Accept': 'application/json', 'User-Agent': 'MotieTracker/1.0'}
+                )
+                with urllib.request.urlopen(req, timeout=15) as r:
+                    data = json.loads(r.read())
+            except Exception as e:
+                print(f'    OData fout: {e}')
+                continue
+            if not data.get('value'):
                 continue
             stemmen = {}
             voor = tegen = 0
             for item in data['value']:
-                soort = item.get('Soort','')
+                soort = item.get('Soort', '')
                 stem = STEM_MAP.get(soort, soort.lower() if soort else '')
-                naam = (item.get('Fractie') or {}).get('Afkorting') or item.get('ActorFractie','')
+                naam = (item.get('Fractie') or {}).get('Afkorting') or item.get('ActorFractie', '')
                 naam = FRACTIE_MAP.get(naam, naam)
                 if naam and stem:
                     stemmen[naam] = stem
@@ -237,58 +238,6 @@ def fetch_detail_status(url):
 
     return best_status, best_datum, best_stemmen
 
-
-def fetch_stemmen(url):
-    """Use TK OData API to get per-fractie votes for a motie."""
-    # Extract document ID from URL
-    doc_id = extract_motie_id(url)
-    if not doc_id:
-        return {}
-    # Try both id= and did= variants
-    ids_to_try = [doc_id]
-    m2 = re.search(r'[?&]id=([A-Za-z0-9]+).*[?&]did=([A-Za-z0-9]+)', url or '')
-    if m2:
-        ids_to_try = [m2.group(1), m2.group(2)]
-
-    FRACTIE_MAP = {
-        'VVD': 'VVD', 'D66': 'D66', 'GL-PvdA': 'GL-PvdA', 'GroenLinks-PvdA': 'GL-PvdA',
-        'PVV': 'PVV', 'CDA': 'CDA', 'SP': 'SP', 'PvdD': 'PvdD',
-        'ChristenUnie': 'CU', 'CU': 'CU', 'SGP': 'SGP', 'Volt': 'Volt',
-        'DENK': 'DENK', 'FvD': 'FvD', 'JA21': 'JA21', 'BBB': 'BBB',
-        '50PLUS': '50PLUS', 'NSC': 'NSC', 'Markuszower': 'Gr.Markuszower',
-        'Groep Markuszower': 'Gr.Markuszower', 'Groep-Keijzer': 'Groep-Keijzer',
-    }
-    STEM_MAP = {'Voor': 'voor', 'Tegen': 'tegen', 'Onthouden': 'onthouden'}
-
-    for doc_id in ids_to_try:
-        try:
-            api_url = (
-                'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Stemming'
-                '?$filter=Zaak/Documenten/any(d:d/Id eq %27' + doc_id + '%27)'
-                '&$expand=Fractie($select=Afkorting,NaamNl)'
-                '&$select=Soort,ActorFractie'
-            )
-            req = urllib.request.Request(api_url, headers={'Accept': 'application/json'})
-            with urllib.request.urlopen(req, timeout=15) as r:
-                data = json.loads(r.read())
-            items = data.get('value', [])
-            if not items:
-                continue
-            stemmen = {}
-            for item in items:
-                soort = item.get('Soort', '')
-                stem = STEM_MAP.get(soort, soort.lower())
-                # Get fractie name
-                fractie = item.get('Fractie') or {}
-                naam = fractie.get('Afkorting') or fractie.get('NaamNl') or item.get('ActorFractie', '')
-                naam = FRACTIE_MAP.get(naam, naam)
-                if naam and stem:
-                    stemmen[naam] = stem
-            if stemmen:
-                return stemmen
-        except Exception as e:
-            print(f"    Stemmen fout ({doc_id}): {e}")
-    return {}
 
 
 # ── Hoofdprogramma ────────────────────────────────────────────────────────────
@@ -322,7 +271,7 @@ for m in moties:
 
 # Pass 2: OData batch — max 40 calls total per run to stay within timeout
 # Priority: (a) voted moties missing stemmen, (b) in_behandeling missing stemmen
-BATCH = 200
+BATCH = 100
 odata_done = 0
 
 needs_odata = (
@@ -332,15 +281,23 @@ needs_odata = (
 # oldest first so backlog drains over multiple runs
 needs_odata.sort(key=lambda x: x.get('datum',''))
 
+removed = set()
 print(f'OData batch: {min(BATCH, len(needs_odata))} van {len(needs_odata)} moties')
 for m in needs_odata[:BATCH]:
     titel = m.get('titel','')[:50]
     new_status, new_datum, new_stemmen = fetch_detail_status(m['tk_url'])
 
-    # Fix wrong date (scraper shows indexing date, OData gives real date)
-    if new_datum and m.get('datum','') >= today.isoformat():
+    # Fix wrong date
+    if new_datum:
         m['datum'] = new_datum
         print(f"  Datum: {titel} -> {new_datum}")
+        # Remove if before START_DATE
+        if new_datum < '2026-02-23':
+            removed.add(m['id'])
+            print(f"  Verwijderd (te oud): {titel}")
+            odata_done += 1
+            time.sleep(0.5)
+            continue
 
     if new_stemmen and not m.get('stemmen'):
         m['stemmen'] = new_stemmen
@@ -355,7 +312,11 @@ for m in needs_odata[:BATCH]:
             m['archief'] = False
 
     odata_done += 1
-    time.sleep(0.3)
+    time.sleep(0.5)
+
+if removed:
+    moties = [m for m in moties if m.get('id') not in removed]
+    print(f"  {len(removed)} moties verwijderd (voor 2026-02-23)")
 
 with open('moties.json', 'w', encoding='utf-8') as f:
     json.dump(moties, f, ensure_ascii=False, indent=2)
