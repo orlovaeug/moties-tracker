@@ -19,49 +19,76 @@ HEADERS = {
 MONTHS = {'januari':1,'februari':2,'maart':3,'april':4,'mei':5,'juni':6,
           'juli':7,'augustus':8,'september':9,'oktober':10,'november':11,'december':12}
 
+# Coalitie kabinet-Jetten (2025-heden): D66, VVD, CDA
 COALITIE  = {"D66","VVD","CDA"}
-OPPOSITIE = {"PVV","GL-PvdA","SP","PvdD","CU","SGP","Volt","DENK","FvD","JA21","50PLUS","Gr.Markuszower","Groep-Keijzer","BBB","NSC"}
+OPPOSITIE = {"PVV","GL-PvdA","SP","PvdD","CU","SGP","Volt","DENK","FVD","JA21",
+             "50PLUS","Gr.Markuszower","Groep-Keijzer","BBB","NSC"}
 
+# Volledige lijst Tweede Kamerleden 2025-heden (parlement.com, maart 2026)
 LEDEN_PARTIJ = {
-    # PVV
-    "Geert Wilders":"PVV","Fleur Agema":"PVV","Martin Bosma":"PVV","Barry Madlener":"PVV",
-    "Emiel van Dijk":"PVV","Léon de Jong":"PVV","El Boujdaini":"PVV","Heutink":"PVV",
-    "Markuszower":"Gr.Markuszower","Groep Markuszower":"Gr.Markuszower",
-    # VVD
-    "Hermans":"VVD","Michon-Derkzen":"VVD","Rajkowski":"VVD","Becker":"VVD",
-    "Bikkers":"VVD","Ellian":"VVD","Brekelmans":"VVD","Hagen":"VVD",
-    "Six Dijkstra":"VVD","Klink":"VVD","Peter de Groot":"VVD","Abdi":"VVD","Klos":"VVD",
-    # NSC
-    "Omtzigt":"NSC","Van Hijum":"NSC","Struijs":"NSC","Boelsma-Hoekstra":"NSC","Lammers":"NSC",
-    # BBB
-    "Van der Plas":"BBB","Hamstra":"BBB","Wendel":"BBB","Jumelet":"BBB",
-    "Van Oosterhout":"BBB","Vermeer":"BBB",
-    # D66
-    "Vervuurt":"D66","Paternotte":"D66","Dassen":"Volt",  # Dassen is Volt not D66
-    # CDA
-    "Bontenbal":"CDA","Inge van Dijk":"CDA","Boswijk":"CDA","Vedder":"CDA",
-    "Krul":"CDA","Van den Berg":"CDA","Tijs van den Brink":"CDA",
-    # GL-PvdA
-    "Klaver":"GL-PvdA","Maatoug":"GL-PvdA","Nijboer":"GL-PvdA","Bushoff":"GL-PvdA",
-    "Kathmann":"GL-PvdA","Mohandis":"GL-PvdA","Köse":"GL-PvdA","Moorman":"GL-PvdA",
-    # SP
-    "Jimmy Dijk":"SP","Beckerman":"SP","Temmink":"SP",
-    # PvdD
-    "Simons":"PvdD","Teunissen":"PvdD",
-    # CU
+    # D66 (26) — coalitie
+    "Van Asten":"D66","Bamenga":"D66","Belhirch":"D66","Biekman":"D66",
+    "Heera Dijk":"D66","El Boujdaini":"D66","Huidekooper":"D66","Huizenga":"D66",
+    "Jagtenberg":"D66","Klos":"D66","Köse":"D66","Van Leijen":"D66",
+    "Mathlouti":"D66","Neijenhuis":"D66","Oosterhuis":"D66","Oualhadj":"D66",
+    "Paternotte":"D66","Paulusma":"D66","Podt":"D66","Rooderkerk":"D66",
+    "Schoonis":"D66","Sneller":"D66","Synhaeve":"D66","Vellinga-Beemsterboer":"D66",
+    "Vervuurt":"D66","Van der Werf":"D66",
+    # VVD (22) — coalitie
+    "Becker":"VVD","De Beer":"VVD","Bevers":"VVD","Bikkers":"VVD",
+    "Brekelmans":"VVD","Van Campen":"VVD","Van Eijk":"VVD","Ellian":"VVD",
+    "Peter de Groot":"VVD","Den Hollander":"VVD","Kisteman":"VVD","De Kort":"VVD",
+    "Van der Maas":"VVD","Maes":"VVD","Martens":"VVD","Meulenkamp":"VVD",
+    "Michon-Derkzen":"VVD","Müller":"VVD","Nobel":"VVD","Rajkowski":"VVD",
+    "Schutz":"VVD","Wendel":"VVD",
+    # CDA (18) — coalitie
+    "Van Ark":"CDA","Armut":"CDA","Boelsma-Hoekstra":"CDA","Bontenbal":"CDA",
+    "Tijs van den Brink":"CDA","Bühler":"CDA","Inge van Dijk":"CDA","Hamstra":"CDA",
+    "Jumelet":"CDA","Koorevaar":"CDA","Krul":"CDA","Van Lanschot":"CDA",
+    "Lohman":"CDA","Poortman":"CDA","Steen":"CDA","Straatman":"CDA",
+    "Tijmstra":"CDA","Zwinkels":"CDA",
+    # GL-PvdA (20)
+    "Abdi":"GL-PvdA","Bromet":"GL-PvdA","Bushoff":"GL-PvdA","De Hoop":"GL-PvdA",
+    "Kathmann":"GL-PvdA","Klaver":"GL-PvdA","Kröger":"GL-PvdA","Lahlah":"GL-PvdA",
+    "Van der Lee":"GL-PvdA","Mohandis":"GL-PvdA","Moorman":"GL-PvdA","Mutluer":"GL-PvdA",
+    "Sjoukje van Oosterhout":"GL-PvdA","Patijn":"GL-PvdA","Piri":"GL-PvdA","Stultiens":"GL-PvdA",
+    "Tseggai":"GL-PvdA","Vliegenthart":"GL-PvdA","Westerveld":"GL-PvdA","Zalinyan":"GL-PvdA",
+    # PVV (19)
+    "Boon":"PVV","Bosma":"PVV","Tony van Dijck":"PVV","Emiel van Dijk":"PVV",
+    "Faber-van de Klashorst":"PVV","Graus":"PVV","Chris Jansen":"PVV","Kops":"PVV",
+    "Maeijer":"PVV","Van Meetelen":"PVV","Mooiman":"PVV","Mulder":"PVV",
+    "Prickaertz":"PVV","Raijer":"PVV","De Roon":"PVV","Stöteler":"PVV",
+    "Vlottes":"PVV","Vondeling":"PVV","Wilders":"PVV",
+    # JA21 (9)
+    "Daniël van den Berg":"JA21","Boomsma":"JA21","Ceulemans":"JA21",
+    "Clemminck-Croci":"JA21","Coenradie":"JA21","Eerdmans":"JA21",
+    "Goudzwaard":"JA21","Hoogeveen":"JA21","Nanninga":"JA21",
+    # FVD (7)
+    "Dekker":"FVD","Van Duijvenvoorde":"FVD","Van Houwelingen":"FVD",
+    "Freek Jansen":"FVD","Van Meijeren":"FVD","Russcher":"FVD","De Vos":"FVD",
+    # Groep-Markuszower (7)
+    "Claassen":"Gr.Markuszower","Heutink":"Gr.Markuszower","Ten Hove":"Gr.Markuszower",
+    "Lammers":"Gr.Markuszower","Markuszower":"Gr.Markuszower",
+    "Moinat":"Gr.Markuszower","Schilder":"Gr.Markuszower",
+    # BBB (3)
+    "Van der Plas":"BBB","Vermeer":"BBB","Wiersma":"BBB",
+    # ChristenUnie (3)
     "Bikker":"CU","Ceder":"CU","Grinwis":"CU",
-    # SGP
-    "Diederik van Dijk":"SGP","Stoffer":"SGP","Flach":"SGP",
-    # Volt
-    "Koekkoek":"Volt",
-    # DENK
-    "Van Baarle":"DENK","Stephan van Baarle":"DENK","El Abassi":"DENK",
-    # JA21
-    "Eerdmans":"JA21",
-    # FvD
-    "Baudet":"FvD",
+    # DENK (3)
+    "El Abassi":"DENK","Van Baarle":"DENK","Stephan van Baarle":"DENK","Ergin":"DENK",
+    # PvdD (3)
+    "Kostić":"PvdD","Ouwehand":"PvdD","Teunissen":"PvdD",
+    # SGP (3)
+    "Diederik van Dijk":"SGP","Flach":"SGP","Stoffer":"SGP",
+    # SP (3)
+    "Beckerman":"SP","Jimmy Dijk":"SP","Dobbe":"SP",
+    # 50PLUS (2)
+    "Van Brenk":"50PLUS","Struijs":"50PLUS",
+    # Groep-Keijzer (1)
+    "Keijzer":"Groep-Keijzer",
+    # Volt (1)
+    "Dassen":"Volt",
 }
-
 STRIJDIG_KEYWORDS = [
     "klimaatdoel","kinderopvang gratis","eigen risico afschaffen",
     "asielzoekers meer","vluchtelingen opvang","discriminatie aanpakken",
@@ -274,6 +301,42 @@ def parse_moties_from_html(raw):
         results.append({'titel': title, 'datum': list_date or TODAY, 'link': link})
     return results
 
+def fetch_leden_partij():
+    """Scrape alle 150 Kamerleden + fractie live van tweedekamer.nl."""
+    PARTY_NORM = {
+        "GroenLinks-PvdA":"GL-PvdA","ChristenUnie":"CU",
+        "Groep Markuszower":"Gr.Markuszower","Lid Keijzer":"Groep-Keijzer",
+        "FVD":"FvD",
+    }
+    result = {}
+    url = "https://www.tweedekamer.nl/kamerleden_en_commissies/alle_kamerleden"
+    html = fetch_html(url)
+    if not html:
+        return {}
+    # Each member card: name in <h3><a>Name</a></h3> followed by party text
+    cards = re.findall(
+        r'<a[^>]+/alle_kamerleden/[^"]+">([^<]+)</a>\s*</h3>\s*<[^>]+>\s*([A-Za-z0-9\-\s]+?)\s*</',
+        html
+    )
+    for full_name, party in cards:
+        full_name = full_name.strip()
+        party = PARTY_NORM.get(party.strip(), party.strip())
+        if not full_name or not party or len(party) > 25:
+            continue
+        result[full_name] = party
+        # Also index by surname only (last capitalised word)
+        parts = full_name.split()
+        # surname = last word that starts with uppercase
+        for i in range(len(parts)-1, -1, -1):
+            if parts[i][0].isupper():
+                surname = parts[i]
+                if surname not in result:
+                    result[surname] = party
+                break
+    print(f"  Kamerleden geladen: {len(result)} namen")
+    return result
+
+
 # ── Main ──
 
 def main():
@@ -293,6 +356,12 @@ def main():
         if re.search(r'[?&]id=(2026Z\w+)', x.get('tk_url',''))
     }
     print(f'Bestaande moties: {len(existing)}')
+
+    # Load live Kamerleden list, fall back to static dict
+    print('Kamerleden ophalen...')
+    live_leden = fetch_leden_partij()
+    if live_leden:
+        LEDEN_PARTIJ.update(live_leden)
 
     scraped_count = sum(1 for x in existing if str(x.get('id','')).startswith('tk'))
     is_backfill   = scraped_count == 0
