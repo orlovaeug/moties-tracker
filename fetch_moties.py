@@ -588,7 +588,11 @@ def main():
 
         results = parse_moties_from_html(raw)
         if not results:
-            print(f'  Pagina {page+1}: geen moties gevonden (HTML len={len(raw)}, snippet: {repr(raw[1000:1200])})')
+            import re as _re
+            classes = _re.findall(r'class="([^"]{10,60})"', raw)
+            motie_classes = [c for c in classes if any(x in c.lower() for x in ['result','item','search','motie','card','list'])]
+            print(f'  Pagina {page+1}: geen moties gevonden (HTML len={len(raw)})')
+            print(f'  Relevante classes: {list(set(motie_classes))[:10]}')
             break
         print(f'  Pagina {page+1}: {len(results)} moties')
 
