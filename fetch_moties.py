@@ -217,48 +217,96 @@ def parse_dutch_date(s):
             pass
     return None
 
-def fetch_detail_status(url):
-    """Fetch a motie detail page and detect its stemming status and actual date."""
-    if not url.startswith('http'):
-        url = 'https://www.tweedekamer.nl' + url
+FRACTIE_MAP = {
+    'VVD': 'VVD', 'D66': 'D66', 'GL-PvdA': 'GL-PvdA', 'GroenLinks-PvdA': 'GL-PvdA',
+    'PVV': 'PVV', 'CDA': 'CDA', 'SP': 'SP', 'PvdD': 'PvdD',
+    'ChristenUnie': 'CU', 'CU': 'CU', 'SGP': 'SGP', 'Volt': 'Volt',
+    'DENK': 'DENK', 'FvD': 'FvD', 'JA21': 'JA21', 'BBB': 'BBB',
+    '50PLUS': '50PLUS', 'NSC': 'NSC',
+    'Markuszower': 'Gr.Markuszower', 'Groep Markuszower': 'Gr.Markuszower',
+    'Groep-Keijzer': 'Groep-Keijzer',
+}
+STEM_MAP = {'Voor': 'voor', 'Tegen': 'tegen', 'Onthouden': 'onthouden'}
+
+
+def extract_doc_ids(url):
+    """Extract document IDs from a TK motie URL (both id= and did= params)."""
+    ids = re.findall(r'[?&](?:id|did)=([A-Za-z0-9]+)', url or '')
+    return list(dict.fromkeys(ids))  # deduplicated, order preserved
+
+
+def fetch_odata(url):
+    """Fetch JSON from TK OData API."""
     try:
-        req = urllib.request.Request(url, headers=HEADERS)
-        with urllib.request.urlopen(req, timeout=20) as r:
-            raw = r.read().decode('utf-8', errors='replace')
-        raw = html_module.unescape(raw)
-        raw_lower = raw.lower()
-
-        # Detect status from page text
-        status = 'in_behandeling'
-        # Look for clear stemming result indicators
-        if 'aangenomen' in raw_lower:
-            # Make sure it's a result, not just "motie aangenomen" in boilerplate
-            if re.search(r'(stemming|uitslag|besluit|aangenomen\s*\b)', raw_lower):
-                status = 'aangenomen'
-        if 'verworpen' in raw_lower:
-            if re.search(r'(stemming|uitslag|besluit|verworpen\s*\b)', raw_lower):
-                status = 'verworpen'
-        if 'aangehouden' in raw_lower:
-            status = 'aangehouden'
-
-        # Try to extract actual vergadering date from detail page
-        # Detail pages often show "Vergaderjaar" and date more precisely
-        datum = None
-        date_pattern = re.compile(
-            r'\b(\d{1,2})\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(20\d{2})\b',
-            re.IGNORECASE
-        )
-        MONTHS = {'januari':1,'februari':2,'maart':3,'april':4,'mei':5,'juni':6,
-                  'juli':7,'augustus':8,'september':9,'oktober':10,'november':11,'december':12}
-        matches = date_pattern.findall(raw)
-        if matches:
-            d, m, y = matches[0]
-            datum = f"{y}-{MONTHS[m.lower()]:02d}-{int(d):02d}"
-
-        return status, datum
+        req = urllib.request.Request(url, headers={'Accept': 'application/json', 'User-Agent': HEADERS['User-Agent']})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            return json.loads(r.read())
     except Exception as e:
-        print(f'    Detail fetch fout: {e}')
-        return 'in_behandeling', None
+        print(f'    OData fout: {e}')
+        return None
+
+
+def fetch_detail_status(url):
+    """Use TK OData API to get real date, status and per-party stemmen for a motie."""
+    ids = extract_doc_ids(url)
+    if not ids:
+        return 'in_behandeling', None, {}
+
+    ODATA = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0'
+
+    for doc_id in ids:
+        # 1. Get document datum
+        datum = None
+        doc_data = fetch_odata(
+            ODATA + '/Document?$filter=Id eq %27' + doc_id + '%27&$select=Id,Datum'
+        )
+        if doc_data and doc_data.get('value'):
+            raw_datum = doc_data['value'][0].get('Datum', '')
+            if raw_datum:
+                datum = raw_datum[:10]  # YYYY-MM-DD
+
+        # 2. Get stemming results via Zaak linked to this document
+        stemmen_data = fetch_odata(
+            ODATA + '/Stemming'
+            '?$filter=Zaak/Documenten/any(d:d/Id eq %27' + doc_id + '%27)'
+            '&$expand=Fractie($select=Afkorting)'
+            '&$select=Soort,ActorFractie'
+        )
+
+        if not stemmen_data or not stemmen_data.get('value'):
+            # Try via Besluit
+            stemmen_data = fetch_odata(
+                ODATA + '/Stemming'
+                '?$filter=Besluit/Zaak/Documenten/any(d:d/Id eq %27' + doc_id + '%27)'
+                '&$expand=Fractie($select=Afkorting)'
+                '&$select=Soort,ActorFractie'
+            )
+
+        stemmen = {}
+        status = 'in_behandeling'
+
+        if stemmen_data and stemmen_data.get('value'):
+            voor = 0
+            tegen = 0
+            for item in stemmen_data['value']:
+                soort = item.get('Soort', '')
+                stem = STEM_MAP.get(soort, soort.lower() if soort else '')
+                fractie_obj = item.get('Fractie') or {}
+                naam = fractie_obj.get('Afkorting') or item.get('ActorFractie', '')
+                naam = FRACTIE_MAP.get(naam, naam)
+                if naam and stem:
+                    stemmen[naam] = stem
+                if stem == 'voor':
+                    voor += 1
+                elif stem == 'tegen':
+                    tegen += 1
+            if stemmen:
+                status = 'aangenomen' if voor >= tegen else 'verworpen'
+
+        if datum or stemmen:
+            return status, datum, stemmen
+
+    return 'in_behandeling', None, {}
 
 
 def fetch_page(page=0):
@@ -388,15 +436,15 @@ def main():
             thema = detect_thema(r['titel'])
             indiener = detect_indiener(r['titel'])
 
-            # Fetch detail page to get real status and date
-            # (skip for today's moties to keep it fast)
+            # Use OData API to get real date, status and stemmen
+            # (skip for today's moties to keep backfill fast on very recent ones)
             from datetime import date as _date
-            is_recent = r['datum'] >= _date.today().isoformat()
-            if not is_recent:
-                detail_status, detail_datum = fetch_detail_status(r['link'])
+            is_today = r['datum'] >= _date.today().isoformat()
+            if not is_today:
+                detail_status, detail_datum, detail_stemmen = fetch_detail_status(r['link'])
                 time.sleep(0.5)
             else:
-                detail_status, detail_datum = 'in_behandeling', None
+                detail_status, detail_datum, detail_stemmen = 'in_behandeling', None, {}
 
             motie_datum = detail_datum or r['datum']
 
@@ -411,7 +459,7 @@ def main():
                 'vergadering': '',
                 'tk_url': r['link'],
                 'toelichting': '',
-                'stemmen': {}
+                'stemmen': detail_stemmen
             })
             found_new = True
 
