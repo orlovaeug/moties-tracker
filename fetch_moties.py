@@ -481,6 +481,7 @@ def main():
         if stemming.get('besluit') and m.get('status','') not in ('aangenomen','verworpen','aangehouden'):
             m['status'] = stemming['besluit']
             m['archief'] = False
+            m.pop('stemmen_na', None)  # reset so party votes get fetched
             changed = True
         # Store vote score e.g. "(75-74)"
         if stemming.get('score') and not m.get('score'):
@@ -496,6 +497,7 @@ def main():
         m for m in existing
         if m.get('status') in ('aangenomen', 'verworpen')
         and not m.get('stemmen')
+        and not m.get('stemmen_na')
         and m.get('tk_url')
     ]
     if needs_stemmen:
@@ -506,6 +508,9 @@ def main():
             if stemmen:
                 m['stemmen'] = stemmen
                 fetched_stemmen += 1
+            else:
+                # No table found — likely handopsteken, mark to avoid retrying
+                m['stemmen_na'] = True
             time.sleep(0.4)
         print(f'    {fetched_stemmen} moties partijstemmen opgehaald')
 
@@ -529,7 +534,12 @@ def main():
             zaak_id = extract_zaak_id(link)
             item_id = make_id(link)
 
-            if link in existing_links or item_id in seen_ids:
+            # Match on zaak_id (robust) or full link or item_id
+            if item_id in seen_ids:
+                continue
+            if link in existing_links:
+                continue
+            if zaak_id and zaak_id in existing_by_zaak:
                 continue
 
             # Get real date
@@ -574,9 +584,13 @@ def main():
                 'archief':    False,
             })
 
-        if not is_backfill and not found_new_on_page and page >= 2:
-            print(f'  Geen nieuwe moties meer — klaar')
-            break
+        if not is_backfill and not found_new_on_page:
+            consecutive_empty = consecutive_empty + 1 if 'consecutive_empty' in dir() else 1
+            if consecutive_empty >= 3:
+                print(f'  Geen nieuwe moties meer — klaar')
+                break
+        else:
+            consecutive_empty = 0
 
         time.sleep(1.5)
 
