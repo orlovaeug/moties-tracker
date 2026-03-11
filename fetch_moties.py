@@ -362,8 +362,18 @@ def fetch_motie_datum(url):
     html = fetch_html(url)
     if not html:
         return None
-    m = re.search(r'Voorgesteld\s+(\d{1,2}\s+\w+\s+20\d{2})', html, re.IGNORECASE)
-    return parse_dutch_date(m.group(1)) if m else None
+    # Try multiple date patterns on the detail page
+    for pattern in [
+        r'Datum[:\s]+(\d{1,2}\s+\w+\s+20\d{2})',
+        r'Voorgesteld\s+(\d{1,2}\s+\w+\s+20\d{2})',
+        r'(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})',
+    ]:
+        m = re.search(pattern, html, re.IGNORECASE)
+        if m:
+            d = parse_dutch_date(m.group(1))
+            if d and d >= START_DATE:
+                return d
+    return None
 
 def fetch_stemmen(url):
     """Fetch per-party vote breakdown from motie detail page."""
@@ -568,6 +578,7 @@ def main():
     # ── Step 2: Scrape new moties ──
     new_items = []
     seen_ids = {x['id'] for x in existing if 'id' in x}
+    consecutive_empty = 0
 
     for page in range(max_pages):
         raw = fetch_page(page)
@@ -609,8 +620,10 @@ def main():
             if not real_date:
                 real_date = r['list_date'] or TODAY
 
-            # Hard filter — skip anything before START_DATE
-            if real_date < START_DATE:
+            # Hard filter — skip anything clearly before START_DATE
+            # If date is uncertain (TODAY), always keep it
+            if real_date != TODAY and real_date < START_DATE:
+                print(f'    SKIP (datum {real_date} < {START_DATE}): {r["titel"][:60]}')
                 continue
 
             found_new_on_page = True
@@ -636,7 +649,7 @@ def main():
             })
 
         if not is_backfill and not found_new_on_page:
-            consecutive_empty = consecutive_empty + 1 if 'consecutive_empty' in dir() else 1
+            consecutive_empty += 1
             if consecutive_empty >= 3:
                 print(f'  Geen nieuwe moties meer — klaar')
                 break
