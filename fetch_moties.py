@@ -386,10 +386,11 @@ def fetch_stemmen(url):
 
 
 def fetch_agenda():
-    """Fetch plenaire agenda from TK OData API (server-side, no CORS issue)."""
+    """Fetch plenaire agenda from TK OData API."""
     today = date.today().isoformat()
     future = (date.today() + __import__('datetime').timedelta(days=21)).isoformat()
-    filter_str = f"Datum ge {today} and Datum le {future} and Soort eq 'Plenair'"
+    # Filter on date range only — no Soort filter (value may differ)
+    filter_str = f"Datum ge {today} and Datum le {future} and Verwijderd eq false"
     url = (
         "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Activiteit"
         "?$filter=" + urllib.parse.quote(filter_str)
@@ -398,12 +399,19 @@ def fetch_agenda():
         + "&$top=60"
     )
     try:
-        req = urllib.request.Request(url, headers=HEADERS)
+        req = urllib.request.Request(url, headers={**HEADERS, 'Accept': 'application/json'})
         with urllib.request.urlopen(req, timeout=15) as r:
             data = json.loads(r.read().decode('utf-8'))
         items = data.get('value', [])
+        # Debug: show unique Soort values found
+        soorten = set(a.get('Soort','?') for a in items)
+        print(f'  Agenda raw: {len(items)} items, soorten: {soorten}')
+        # Filter to plenaire sessions
+        plenair = [a for a in items if a.get('Soort','').lower() in ('plenair','plenaire vergadering','plenaire zitting')]
+        if not plenair:
+            plenair = items  # fallback: show all if no plenair found
         agenda = []
-        for a in items:
+        for a in plenair:
             datum = (a.get('Datum') or '')[:10]
             agenda.append({
                 'datum':   datum,
