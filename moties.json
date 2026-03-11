@@ -5884,7 +5884,8 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z04935&did=2026D11248",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkc8b54b2eea",
@@ -5939,7 +5940,25 @@
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z04765&did=2026D10862",
     "toelichting": "",
-    "stemmen": {},
+    "stemmen": {
+      "D66": "tegen",
+      "VVD": "tegen",
+      "GroenLinks-PvdA": "voor",
+      "PVV": "voor",
+      "CDA": "tegen",
+      "JA21": "voor",
+      "FVD": "voor",
+      "Groep Markuszower": "voor",
+      "BBB": "voor",
+      "ChristenUnie": "voor",
+      "DENK": "voor",
+      "PvdD": "voor",
+      "SGP": "voor",
+      "SP": "voor",
+      "50PLUS": "voor",
+      "Keijzer": "voor",
+      "Volt": "voor"
+    },
     "archief": false
   },
   {
@@ -5967,7 +5986,25 @@
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z04227&did=2026D09735",
     "toelichting": "",
-    "stemmen": {},
+    "stemmen": {
+      "D66": "voor",
+      "VVD": "voor",
+      "GroenLinks-PvdA": "voor",
+      "PVV": "tegen",
+      "CDA": "voor",
+      "JA21": "voor",
+      "FVD": "voor",
+      "Groep Markuszower": "voor",
+      "BBB": "voor",
+      "ChristenUnie": "voor",
+      "DENK": "voor",
+      "PvdD": "voor",
+      "SGP": "voor",
+      "SP": "voor",
+      "50PLUS": "voor",
+      "Keijzer": "voor",
+      "Volt": "voor"
+    },
     "archief": false
   },
   {
@@ -6009,7 +6046,25 @@
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z04444&did=2026D10138",
     "toelichting": "",
-    "stemmen": {},
+    "stemmen": {
+      "D66": "voor",
+      "VVD": "voor",
+      "GroenLinks-PvdA": "tegen",
+      "PVV": "voor",
+      "CDA": "tegen",
+      "JA21": "tegen",
+      "FVD": "tegen",
+      "Groep Markuszower": "tegen",
+      "BBB": "voor",
+      "ChristenUnie": "voor",
+      "DENK": "voor",
+      "PvdD": "voor",
+      "SGP": "voor",
+      "SP": "voor",
+      "50PLUS": "voor",
+      "Keijzer": "voor",
+      "Volt": "voor"
+    },
     "archief": false
   }
 ]
