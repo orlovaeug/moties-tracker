@@ -253,8 +253,6 @@ def scrape_stemmingen():
                 continue
 
             detail = detail.replace('&amp;', '&')
-            print(f'    Page size: {len(detail)} chars, has "Besluit": {"Besluit" in detail}')
-
             # Get session date — try 3 methods:
             # 1. fromdate= in footer link (most reliable, always present)
             session_datum = None
@@ -295,37 +293,46 @@ def scrape_stemmingen():
                 print(f'    Sessie {session_datum} voor {START_DATE} — overslaan')
                 continue
 
-            # Extract all motie zaak IDs and their Besluit
-            # Pattern: href="/kamerstukken/detail?id=2026Z04746&did=..." ... Besluit: Aangenomen.
-            zaak_matches = list(re.finditer(r'[?&]id=(\d{4}Z\w+)', detail))
+            # Split page into per-motie sections
+            # Try multiple card boundary patterns used by TK website
+            for split_pat in [
+                r'(?=class="js-clickable[^"]*")',
+                r'(?=class="search-result)',
+                r'(?=<article)',
+                r'(?=<li[^>]*kamerstuk)',
+            ]:
+                cards = re.split(split_pat, detail)
+                if len(cards) > 2:
+                    break
+            
+            # Fallback: split on every occurrence of the motie link pattern
+            if len(cards) <= 2:
+                # Split directly before each href containing a zaak ID
+                cards = re.split(r'(?=href="[^"]*[?&]id=\d{4}Z)', detail)
+
             found_besluit = 0
+            found_moties = 0
 
-            for i, zm in enumerate(zaak_matches):
-                zaak_id = zm.group(1)
-                search_start = zm.start()
-                search_end = zaak_matches[i+1].start() if i+1 < len(zaak_matches) else search_start + 2000
-                chunk = detail[search_start:min(search_end, search_start + 2000)]
+            for card in cards:
+                id_m = re.search(r'[?&]id=(\d{4}Z\w+)', card)
+                if not id_m:
+                    continue
+                zaak_id = id_m.group(1)
+                found_moties += 1
 
-                # Besluit: can be plain text OR wrapped in tags — handle both
-                chunk_text = re.sub(r'<[^>]+>', ' ', chunk)
-                bm = re.search(r'Besluit:\s*(Aangenomen|Verworpen|Aangehouden)', chunk_text, re.IGNORECASE)
+                # Strip tags and search full card for Besluit
+                card_text = re.sub(r'<[^>]+>', ' ', card)
+                bm = re.search(r'Besluit:\s*(Aangenomen|Verworpen|Aangehouden)', card_text, re.IGNORECASE)
                 besluit = bm.group(1).lower() if bm else None
                 if besluit:
                     found_besluit += 1
-                # DEBUG: show raw chunk around Besluit word
-                if i == 0 and found_besluit == 0 and len(stemmingen) < 5:
-                    besluit_pos = chunk_text.find('esluit')
-                    if besluit_pos >= 0:
-                        print(f'    DEBUG besluit context: {chunk_text[max(0,besluit_pos-5):besluit_pos+40]!r}')
-                    else:
-                        print(f'    DEBUG no "esluit" in chunk. chunk[:200]: {chunk_text[:200]!r}')
 
                 if zaak_id not in stemmingen:
                     stemmingen[zaak_id] = {'datum': session_datum, 'besluit': besluit}
                 elif besluit and not stemmingen[zaak_id].get('besluit'):
                     stemmingen[zaak_id]['besluit'] = besluit
 
-            print(f'    {session_datum}: {len(zaak_matches)} moties, {found_besluit} besluit')
+            print(f'    {session_datum}: {found_moties} moties, {found_besluit} besluit')
             time.sleep(0.5)
 
         # Stop when oldest session on this page is before START_DATE
