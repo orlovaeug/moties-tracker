@@ -6,7 +6,7 @@ Gebruikt de officiele zoekpagina. Geen API-sleutel nodig.
 import json, re, time, hashlib
 from datetime import date
 import urllib.request
-import urllib.parse, urllib.parse
+
 import html as html_module
 
 DATA_FILE  = 'moties.json'
@@ -439,14 +439,9 @@ def main():
             thema = detect_thema(r['titel'])
             indiener = detect_indiener(r['titel'])
 
-            # During backfill skip OData (too slow for 700+ moties)
-            # fix_indieners.py resolves dates/statussen in daily batches of 40
-            if scraped_count > 0:
-                detail_status, detail_datum, detail_stemmen = fetch_detail_status(r['link'])
-                time.sleep(0.3)
-            else:
-                detail_status, detail_datum, detail_stemmen = 'in_behandeling', None, {}
-            motie_datum = detail_datum or r['datum']
+            motie_datum = r['datum']
+            detail_status = 'in_behandeling'
+            detail_stemmen = {}
 
             new_items.append({
                 'id': item_id,
