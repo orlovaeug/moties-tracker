@@ -213,12 +213,15 @@ def fetch_leden_partij():
 def scrape_stemmingen():
     """
     Scrape stemmingsuitslagen since START_DATE.
-    Returns dict: zaak_id -> {datum, besluit}
     
-    The stemmingsuitslagen detail page structure:
-    - One page = one voting session (e.g. 5 maart 2026)
-    - Contains list of moties with their zaak IDs and Besluit
-    - The date of the session is the stemming date for all moties on that page
+    Real page structure (confirmed from live fetch):
+    - URL: /stemmingsuitslagen/detail?id=2026P03693
+    - Heading: "Plenaire vergadering 10 maart 2026" (in <h2>, after ~8KB of nav)
+    - Motie links: href="/kamerstukken/detail?id=2026Z04746&did=2026D06518"
+    - Besluit: plain text "Besluit: Aangenomen. (75-74)" — NOT inside <strong>
+    - Footer link: "Bekijk de overige stemmingen van 10 maart 2026" with fromdate=2026-03-10
+    
+    Returns dict: zaak_id -> {datum, besluit}
     """
     stemmingen = {}
     base = (
@@ -242,6 +245,7 @@ def scrape_stemmingen():
         print(f'  Stemmingen pagina {page+1}: {len(detail_links)} sessies')
 
         oldest_on_page = None
+
         for link in detail_links:
             link_url = 'https://www.tweedekamer.nl' + link.replace('&amp;', '&')
             detail = fetch_html(link_url)
@@ -250,40 +254,50 @@ def scrape_stemmingen():
 
             detail = detail.replace('&amp;', '&')
 
-            # Find the stemming session date from the h2 heading
-            # Real page: "## Plenaire vergadering 3 maart 2026"
-            # Strip tags from top of page to find date reliably
-            detail_top_text = re.sub(r'<[^>]+>', ' ', detail[:5000])
-            datum_m = re.search(
-                r'Plenaire\s+vergadering\s+(\d{1,2}\s+\w+\s+20\d{2})',
-                detail_top_text, re.IGNORECASE
-            )
-            if not datum_m:
-                datum_m = re.search(
-                    r'(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})',
-                    detail_top_text, re.IGNORECASE
+            # Get session date — try 3 methods:
+            # 1. fromdate= in footer link (most reliable, always present)
+            session_datum = None
+            footer_m = re.search(r'fromdate=(20\d{2}-\d{2}-\d{2})', detail)
+            if footer_m:
+                session_datum = footer_m.group(1)
+            
+            if not session_datum:
+                # 2. Strip tags and find "Plenaire vergadering DD maand YYYY"
+                detail_text = re.sub(r'<[^>]+>', ' ', detail)
+                pv_m = re.search(
+                    r'Plenaire\s+vergadering\s+(\d{1,2}\s+\w+\s+20\d{2})',
+                    detail_text, re.IGNORECASE
                 )
-            session_datum = parse_dutch_date(datum_m.group(1) if datum_m else '')
+                if pv_m:
+                    session_datum = parse_dutch_date(pv_m.group(1))
+            
+            if not session_datum:
+                # 3. Any Dutch date in page text
+                detail_text = re.sub(r'<[^>]+>', ' ', detail)
+                any_m = re.search(
+                    r'(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})',
+                    detail_text, re.IGNORECASE
+                )
+                if any_m:
+                    session_datum = parse_dutch_date(any_m.group(1))
 
-            # Track oldest session on this list page
-            if session_datum:
-                if oldest_on_page is None or session_datum < oldest_on_page:
-                    oldest_on_page = session_datum
+            if not session_datum:
+                print(f'    Geen datum gevonden: {link_url[:80]}')
+                continue
 
-            # Skip sessions entirely before our window
-            if session_datum and session_datum < START_DATE:
+            # Track oldest on page
+            if oldest_on_page is None or session_datum < oldest_on_page:
+                oldest_on_page = session_datum
+
+            # Skip sessions before our window
+            if session_datum < START_DATE:
                 print(f'    Sessie {session_datum} voor {START_DATE} — overslaan')
                 continue
 
-            if not session_datum:
-                print(f'    Geen datum gevonden op {link_url[:60]}')
-
-            zaak_pattern = re.compile(r'[?&]id=(\d{4}Z\w+)')
-            # Strip tags before searching for Besluit — raw HTML has <strong>Besluit:</strong> Verworpen
-            besluit_pattern = re.compile(r'Besluit:\s*(Aangenomen|Verworpen|Aangehouden)', re.IGNORECASE)
-
-            zaak_matches = list(zaak_pattern.finditer(detail))
-            print(f'    {session_datum}: {len(zaak_matches)} zaak-IDs, besluit zoeken...')
+            # Extract all motie zaak IDs and their Besluit
+            # Pattern: href="/kamerstukken/detail?id=2026Z04746&did=..." ... Besluit: Aangenomen.
+            zaak_matches = list(re.finditer(r'[?&]id=(\d{4}Z\w+)', detail))
+            found_besluit = 0
 
             for i, zm in enumerate(zaak_matches):
                 zaak_id = zm.group(1)
@@ -291,28 +305,32 @@ def scrape_stemmingen():
                 search_end = zaak_matches[i+1].start() if i+1 < len(zaak_matches) else search_start + 2000
                 chunk = detail[search_start:min(search_end, search_start + 2000)]
 
-                # Strip HTML tags so <strong>Besluit:</strong> Verworpen becomes "Besluit: Verworpen"
+                # Besluit: can be plain text OR wrapped in tags — handle both
                 chunk_text = re.sub(r'<[^>]+>', ' ', chunk)
-
-                bm = besluit_pattern.search(chunk_text)
+                bm = re.search(r'Besluit:\s*(Aangenomen|Verworpen|Aangehouden)', chunk_text, re.IGNORECASE)
                 besluit = bm.group(1).lower() if bm else None
+                if besluit:
+                    found_besluit += 1
 
                 if zaak_id not in stemmingen:
                     stemmingen[zaak_id] = {'datum': session_datum, 'besluit': besluit}
                 elif besluit and not stemmingen[zaak_id].get('besluit'):
                     stemmingen[zaak_id]['besluit'] = besluit
 
+            print(f'    {session_datum}: {len(zaak_matches)} moties, {found_besluit} besluit')
             time.sleep(0.5)
 
-        # Only stop when the oldest session on this entire list page is before START_DATE
+        # Stop when oldest session on this page is before START_DATE
         if oldest_on_page and oldest_on_page < START_DATE:
-            print(f'  Oudste sessie op pagina {page+1}: {oldest_on_page} — stoppen')
+            print(f'  Oudste sessie: {oldest_on_page} — stoppen')
             break
+
         time.sleep(1)
 
     voted = sum(1 for v in stemmingen.values() if v.get('besluit'))
-    print(f'  Stemmingen totaal: {len(stemmingen)} zaak-IDs, {voted} met besluit')
+    print(f'  Stemmingen totaal: {len(stemmingen)} moties, {voted} met besluit')
     return stemmingen
+
 
 # ── Motie detail page for real date ──
 
