@@ -606,6 +606,9 @@ def main():
             print(f'  Relevante classes: {list(set(motie_classes))[:10]}')
             break
         print(f'  Pagina {page+1}: {len(results)} moties')
+        if page == 0:
+            for r in results:
+                print(f'    - {extract_zaak_id(r["link"])} | {r["titel"][:60]}')
 
         found_new_on_page = False
         for r in results:
