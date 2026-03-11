@@ -618,11 +618,12 @@ def main():
 
             # Match on zaak_id (robust) or full link or item_id
             if item_id in seen_ids:
+                if page == 0: print(f'    SKIP item_id: {zaak_id}')
                 continue
             if link in existing_links:
+                if page == 0: print(f'    SKIP link: {zaak_id} → {link}')
                 continue
             if zaak_id and zaak_id in existing_by_zaak:
-                # Debug: confirm the match
                 matched_m = existing_by_zaak[zaak_id]
                 if page == 0:
                     print(f'    SKIP zaak_id match: {zaak_id} → stored url: {matched_m.get("tk_url","?")}')
