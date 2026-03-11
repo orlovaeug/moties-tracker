@@ -385,6 +385,39 @@ def fetch_stemmen(url):
     return stemmen
 
 
+def fetch_agenda():
+    """Fetch plenaire agenda from TK OData API (server-side, no CORS issue)."""
+    today = date.today().isoformat()
+    future = (date.today() + __import__('datetime').timedelta(days=21)).isoformat()
+    url = (
+        "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Activiteit"
+        f"?$filter=Datum ge {today} and Datum le {future} and Soort eq 'Plenair'"
+        "&$orderby=Datum asc,Aanvangstijd asc"
+        "&$select=Nummer,Onderwerp,Datum,Aanvangstijd,Locatie,Soort"
+        "&$top=60"
+    )
+    try:
+        req = urllib.request.Request(url, headers=HEADERS)
+        with urllib.request.urlopen(req, timeout=15) as r:
+            data = json.loads(r.read().decode('utf-8'))
+        items = data.get('value', [])
+        agenda = []
+        for a in items:
+            datum = (a.get('Datum') or '')[:10]
+            agenda.append({
+                'datum':   datum,
+                'tijd':    (a.get('Aanvangstijd') or '')[:5],
+                'titel':   a.get('Onderwerp') or a.get('Nummer') or 'Vergadering',
+                'locatie': a.get('Locatie') or 'Plenaire zaal',
+                'soort':   a.get('Soort') or 'Plenair',
+            })
+        print(f'  Agenda: {len(agenda)} activiteiten geladen')
+        return agenda
+    except Exception as e:
+        print(f'  Agenda ophalen mislukt: {e}')
+        return []
+
+
 # ── Moties list scrape ──
 
 def fetch_page(page=0):
@@ -634,6 +667,12 @@ def main():
     active = sum(1 for m in all_moties if not m.get('archief'))
     voted  = sum(1 for m in all_moties if m.get('status') in ('aangenomen','verworpen'))
     print(f'Totaal: {len(all_moties)} moties ({active} actief, {voted} gestemd)')
+
+    # Fetch and save agenda
+    print('\nAgenda ophalen...')
+    agenda = fetch_agenda()
+    with open('agenda.json', 'w', encoding='utf-8') as f:
+        json.dump(agenda, f, ensure_ascii=False, indent=2)
 
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(all_moties, f, ensure_ascii=False, indent=2)
