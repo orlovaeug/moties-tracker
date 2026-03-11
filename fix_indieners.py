@@ -198,7 +198,7 @@ for m in moties:
             fixed_ali += 1
 
     # Hercheck status voor in_behandeling moties ouder dan 1 dag
-    if m.get('status') == 'in_behandeling' and m.get('tk_url', '').startswith('/'):
+    if m.get('status') == 'in_behandeling' and m.get('tk_url', '') != '':
         try:
             motie_date = date.fromisoformat(m.get('datum', today.isoformat()))
             days_old = (today - motie_date).days
