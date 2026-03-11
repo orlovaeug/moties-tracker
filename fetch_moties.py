@@ -430,29 +430,37 @@ def main():
     all_items.sort(key=lambda x: x.get('datum', ''), reverse=True)
 
     # Archive logic:
-    # - aangenomen/verworpen: keep active permanently
-    # - in_behandeling older than 30 days: move to archief
-    # - aangehouden older than 60 days: move to archief
-    from datetime import date, timedelta
+    # - aangenomen/verworpen: always active permanently (unarchive if needed)
+    # - in_behandeling older than 7 days -> archief
+    # - aangehouden older than 60 days -> archief
+    from datetime import date
     today = date.today()
     archived = 0
+    unarchived = 0
     for m in all_items:
-        if m.get('archief'):
-            continue  # already archived
         status = m.get('status', 'in_behandeling')
+        # Voted moties always stay active — unarchive if they were previously archived
         if status in ('aangenomen', 'verworpen'):
-            continue  # keep active
+            if m.get('archief'):
+                m['archief'] = False
+                unarchived += 1
+            continue
+        # Already archived and not voted — leave it
+        if m.get('archief'):
+            continue
         try:
-            motie_date = date.fromisoformat(m.get('datum', TODAY))
+            motie_date = date.fromisoformat(m.get('datum', str(today)))
             days_old = (today - motie_date).days
         except:
             continue
-        if status == 'in_behandeling' and days_old > 30:
+        if status == 'in_behandeling' and days_old > 7:
             m['archief'] = True
             archived += 1
         elif status == 'aangehouden' and days_old > 60:
             m['archief'] = True
             archived += 1
+    if unarchived:
+        print(f'  {unarchived} moties teruggehaald uit archief (gestemd)')
 
     if archived:
         print(f'  {archived} moties gearchiveerd')

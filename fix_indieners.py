@@ -168,6 +168,65 @@ def fetch_detail_status(url):
         return None
 
 
+def extract_motie_id(url):
+    """Extract the document ID from a TK motie URL."""
+    m = re.search(r'[?&](?:id|did)=([A-Za-z0-9]+)', url or '')
+    return m.group(1) if m else None
+
+
+def fetch_stemmen(url):
+    """Use TK OData API to get per-fractie votes for a motie."""
+    # Extract document ID from URL
+    doc_id = extract_motie_id(url)
+    if not doc_id:
+        return {}
+    # Try both id= and did= variants
+    ids_to_try = [doc_id]
+    m2 = re.search(r'[?&]id=([A-Za-z0-9]+).*[?&]did=([A-Za-z0-9]+)', url or '')
+    if m2:
+        ids_to_try = [m2.group(1), m2.group(2)]
+
+    FRACTIE_MAP = {
+        'VVD': 'VVD', 'D66': 'D66', 'GL-PvdA': 'GL-PvdA', 'GroenLinks-PvdA': 'GL-PvdA',
+        'PVV': 'PVV', 'CDA': 'CDA', 'SP': 'SP', 'PvdD': 'PvdD',
+        'ChristenUnie': 'CU', 'CU': 'CU', 'SGP': 'SGP', 'Volt': 'Volt',
+        'DENK': 'DENK', 'FvD': 'FvD', 'JA21': 'JA21', 'BBB': 'BBB',
+        '50PLUS': '50PLUS', 'NSC': 'NSC', 'Markuszower': 'Gr.Markuszower',
+        'Groep Markuszower': 'Gr.Markuszower', 'Groep-Keijzer': 'Groep-Keijzer',
+    }
+    STEM_MAP = {'Voor': 'voor', 'Tegen': 'tegen', 'Onthouden': 'onthouden'}
+
+    for doc_id in ids_to_try:
+        try:
+            api_url = (
+                'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Stemming'
+                '?$filter=Zaak/Documenten/any(d:d/Id eq %27' + doc_id + '%27)'
+                '&$expand=Fractie($select=Afkorting,NaamNl)'
+                '&$select=Soort,ActorFractie'
+            )
+            req = urllib.request.Request(api_url, headers={'Accept': 'application/json'})
+            with urllib.request.urlopen(req, timeout=15) as r:
+                data = json.loads(r.read())
+            items = data.get('value', [])
+            if not items:
+                continue
+            stemmen = {}
+            for item in items:
+                soort = item.get('Soort', '')
+                stem = STEM_MAP.get(soort, soort.lower())
+                # Get fractie name
+                fractie = item.get('Fractie') or {}
+                naam = fractie.get('Afkorting') or fractie.get('NaamNl') or item.get('ActorFractie', '')
+                naam = FRACTIE_MAP.get(naam, naam)
+                if naam and stem:
+                    stemmen[naam] = stem
+            if stemmen:
+                return stemmen
+        except Exception as e:
+            print(f"    Stemmen fout ({doc_id}): {e}")
+    return {}
+
+
 # ── Hoofdprogramma ────────────────────────────────────────────────────────────
 
 with open('moties.json', 'r', encoding='utf-8') as f:
@@ -176,10 +235,20 @@ with open('moties.json', 'r', encoding='utf-8') as f:
 fixed_ind = 0
 fixed_ali = 0
 fixed_sta = 0
+fixed_stemmen = 0
 today = date.today()
 
 for m in moties:
     titel = m.get('titel', '')
+
+    # Fetch stemmen for already-voted moties that have empty stemmen
+    if m.get('status') in ('aangenomen', 'verworpen') and not m.get('stemmen'):
+        stemmen = fetch_stemmen(m.get('tk_url', ''))
+        if stemmen:
+            m['stemmen'] = stemmen
+            fixed_stemmen += 1
+            print(f"  Stemmen: {titel[:50]} ({len(stemmen)} fracties)")
+        time.sleep(0.3)
 
     # Fix indiener
     if m.get('indiener') == 'Onbekend':
@@ -210,9 +279,20 @@ for m in moties:
                 print(f"  Status: {titel[:50]} -> {new_status}")
                 m['status'] = new_status
                 fixed_sta += 1
+                # If now voted, unarchive so it shows permanently
+                if new_status in ('aangenomen', 'verworpen'):
+                    if m.get('archief'):
+                        m['archief'] = False
+                        print(f"  Uit archief: {titel[:50]}")
+                    # Fetch per-party votes if not yet known
+                    if not m.get('stemmen'):
+                        stemmen = fetch_stemmen(m.get('tk_url', ''))
+                        if stemmen:
+                            m['stemmen'] = stemmen
+                            print(f"  Stemmen: {len(stemmen)} fracties")
             time.sleep(0.4)
 
 with open('moties.json', 'w', encoding='utf-8') as f:
     json.dump(moties, f, ensure_ascii=False, indent=2)
 
-print(f"\n✅ {fixed_ind} indieners + {fixed_ali} alignments + {fixed_sta} statussen gecorrigeerd")
+print(f"\n✅ {fixed_ind} indieners + {fixed_ali} alignments + {fixed_sta} statussen + {fixed_stemmen} stemmen gecorrigeerd")
