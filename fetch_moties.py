@@ -583,10 +583,12 @@ def main():
     for page in range(max_pages):
         raw = fetch_page(page)
         if not raw:
+            print(f'  Pagina {page+1}: fetch mislukt (leeg)')
             break
 
         results = parse_moties_from_html(raw)
         if not results:
+            print(f'  Pagina {page+1}: geen moties gevonden (HTML len={len(raw)}, snippet: {repr(raw[1000:1200])})')
             break
         print(f'  Pagina {page+1}: {len(results)} moties')
 
