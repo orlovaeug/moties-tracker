@@ -526,7 +526,7 @@ def main():
 
     scraped_count = sum(1 for x in existing if str(x.get('id','')).startswith('tk'))
     is_backfill   = scraped_count == 0
-    max_pages     = 50 if is_backfill else 15
+    max_pages     = 50 if is_backfill else 30
     print(f'Mode: {"backfill" if is_backfill else "daily"} (max {max_pages} paginas)')
 
     # ── Step 1: Stemmingsuitslagen ──
@@ -622,6 +622,10 @@ def main():
             if link in existing_links:
                 continue
             if zaak_id and zaak_id in existing_by_zaak:
+                # Debug: confirm the match
+                matched_m = existing_by_zaak[zaak_id]
+                if page == 0:
+                    print(f'    SKIP zaak_id match: {zaak_id} → stored url: {matched_m.get("tk_url","?")}')
                 continue
 
             # Get real date
@@ -670,7 +674,7 @@ def main():
 
         if not is_backfill and not found_new_on_page:
             consecutive_empty += 1
-            if consecutive_empty >= 3:
+            if consecutive_empty >= 5:
                 print(f'  Geen nieuwe moties meer — klaar')
                 break
         else:
