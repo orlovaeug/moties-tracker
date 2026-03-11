@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """fetch_moties.py — haalt moties op en verrijkt met datum + stemmen in één run."""
-import json, re, time, hashlib, urllib.request
+import json, re, time, hashlib, urllib.request, urllib.parse
 import html as html_module
 from datetime import date
 
@@ -389,12 +389,13 @@ def fetch_agenda():
     """Fetch plenaire agenda from TK OData API (server-side, no CORS issue)."""
     today = date.today().isoformat()
     future = (date.today() + __import__('datetime').timedelta(days=21)).isoformat()
+    filter_str = f"Datum ge {today} and Datum le {future} and Soort eq 'Plenair'"
     url = (
         "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Activiteit"
-        f"?$filter=Datum ge {today} and Datum le {future} and Soort eq 'Plenair'"
-        "&$orderby=Datum asc,Aanvangstijd asc"
-        "&$select=Nummer,Onderwerp,Datum,Aanvangstijd,Locatie,Soort"
-        "&$top=60"
+        "?$filter=" + urllib.parse.quote(filter_str)
+        + "&$orderby=" + urllib.parse.quote("Datum asc,Aanvangstijd asc")
+        + "&$select=Nummer,Onderwerp,Datum,Aanvangstijd,Locatie,Soort"
+        + "&$top=60"
     )
     try:
         req = urllib.request.Request(url, headers=HEADERS)
