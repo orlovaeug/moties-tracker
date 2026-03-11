@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """fetch_moties.py — haalt moties op en verrijkt met datum + stemmen in één run."""
-import json, re, time, hashlib, urllib.request, urllib.parse
+import json, re, time, hashlib, urllib.request
 import html as html_module
 from datetime import date
 
@@ -16,105 +16,98 @@ HEADERS = {
     'Connection': 'keep-alive',
 }
 
-MONTHS = {'januari':1,'februari':2,'maart':3,'april':4,'mei':5,'juni':6,
-          'juli':7,'augustus':8,'september':9,'oktober':10,'november':11,'december':12}
-
-# Coalitie kabinet-Jetten (2025-heden): D66, VVD, CDA
-COALITIE  = {"D66","VVD","CDA"}
-OPPOSITIE = {"PVV","GL-PvdA","SP","PvdD","CU","SGP","Volt","DENK","FVD","JA21",
-             "50PLUS","Gr.Markuszower","Groep-Keijzer","BBB","NSC"}
-
-# Volledige lijst Tweede Kamerleden 2025-heden (parlement.com, maart 2026)
-LEDEN_PARTIJ = {
-    # D66 (26) — coalitie
-    "Van Asten":"D66","Bamenga":"D66","Belhirch":"D66","Biekman":"D66",
-    "Heera Dijk":"D66","El Boujdaini":"D66","Huidekooper":"D66","Huizenga":"D66",
-    "Jagtenberg":"D66","Klos":"D66","Köse":"D66","Van Leijen":"D66",
-    "Mathlouti":"D66","Neijenhuis":"D66","Oosterhuis":"D66","Oualhadj":"D66",
-    "Paternotte":"D66","Paulusma":"D66","Podt":"D66","Rooderkerk":"D66",
-    "Schoonis":"D66","Sneller":"D66","Synhaeve":"D66","Vellinga-Beemsterboer":"D66",
-    "Vervuurt":"D66","Van der Werf":"D66",
-    # VVD (22) — coalitie
-    "Becker":"VVD","De Beer":"VVD","Bevers":"VVD","Bikkers":"VVD",
-    "Brekelmans":"VVD","Van Campen":"VVD","Van Eijk":"VVD","Ellian":"VVD",
-    "Peter de Groot":"VVD","Den Hollander":"VVD","Kisteman":"VVD","De Kort":"VVD",
-    "Van der Maas":"VVD","Maes":"VVD","Martens":"VVD","Meulenkamp":"VVD",
-    "Michon-Derkzen":"VVD","Müller":"VVD","Nobel":"VVD","Rajkowski":"VVD",
-    "Schutz":"VVD","Wendel":"VVD",
-    # CDA (18) — coalitie
-    "Van Ark":"CDA","Armut":"CDA","Boelsma-Hoekstra":"CDA","Bontenbal":"CDA",
-    "Tijs van den Brink":"CDA","Bühler":"CDA","Inge van Dijk":"CDA","Hamstra":"CDA",
-    "Jumelet":"CDA","Koorevaar":"CDA","Krul":"CDA","Van Lanschot":"CDA",
-    "Lohman":"CDA","Poortman":"CDA","Steen":"CDA","Straatman":"CDA",
-    "Tijmstra":"CDA","Zwinkels":"CDA",
-    # GL-PvdA (20)
-    "Abdi":"GL-PvdA","Bromet":"GL-PvdA","Bushoff":"GL-PvdA","De Hoop":"GL-PvdA",
-    "Kathmann":"GL-PvdA","Klaver":"GL-PvdA","Kröger":"GL-PvdA","Lahlah":"GL-PvdA",
-    "Van der Lee":"GL-PvdA","Mohandis":"GL-PvdA","Moorman":"GL-PvdA","Mutluer":"GL-PvdA",
-    "Sjoukje van Oosterhout":"GL-PvdA","Patijn":"GL-PvdA","Piri":"GL-PvdA","Stultiens":"GL-PvdA",
-    "Tseggai":"GL-PvdA","Vliegenthart":"GL-PvdA","Westerveld":"GL-PvdA","Zalinyan":"GL-PvdA",
-    # PVV (19)
-    "Boon":"PVV","Bosma":"PVV","Tony van Dijck":"PVV","Emiel van Dijk":"PVV",
-    "Faber-van de Klashorst":"PVV","Graus":"PVV","Chris Jansen":"PVV","Kops":"PVV",
-    "Maeijer":"PVV","Van Meetelen":"PVV","Mooiman":"PVV","Mulder":"PVV",
-    "Prickaertz":"PVV","Raijer":"PVV","De Roon":"PVV","Stöteler":"PVV",
-    "Vlottes":"PVV","Vondeling":"PVV","Wilders":"PVV",
-    # JA21 (9)
-    "Daniël van den Berg":"JA21","Boomsma":"JA21","Ceulemans":"JA21",
-    "Clemminck-Croci":"JA21","Coenradie":"JA21","Eerdmans":"JA21",
-    "Goudzwaard":"JA21","Hoogeveen":"JA21","Nanninga":"JA21",
-    # FVD (7)
-    "Dekker":"FVD","Van Duijvenvoorde":"FVD","Van Houwelingen":"FVD",
-    "Freek Jansen":"FVD","Van Meijeren":"FVD","Russcher":"FVD","De Vos":"FVD",
-    # Groep-Markuszower (7)
-    "Claassen":"Gr.Markuszower","Heutink":"Gr.Markuszower","Ten Hove":"Gr.Markuszower",
-    "Lammers":"Gr.Markuszower","Markuszower":"Gr.Markuszower",
-    "Moinat":"Gr.Markuszower","Schilder":"Gr.Markuszower",
-    # BBB (3)
-    "Van der Plas":"BBB","Vermeer":"BBB","Wiersma":"BBB",
-    # ChristenUnie (3)
-    "Bikker":"CU","Ceder":"CU","Grinwis":"CU",
-    # DENK (3)
-    "El Abassi":"DENK","Van Baarle":"DENK","Stephan van Baarle":"DENK","Ergin":"DENK",
-    # PvdD (3)
-    "Kostić":"PvdD","Ouwehand":"PvdD","Teunissen":"PvdD",
-    # SGP (3)
-    "Diederik van Dijk":"SGP","Flach":"SGP","Stoffer":"SGP",
-    # SP (3)
-    "Beckerman":"SP","Jimmy Dijk":"SP","Dobbe":"SP",
-    # 50PLUS (2)
-    "Van Brenk":"50PLUS","Struijs":"50PLUS",
-    # Groep-Keijzer (1)
-    "Keijzer":"Groep-Keijzer",
-    # Volt (1)
-    "Dassen":"Volt",
+MONTHS = {
+    'januari':1,'februari':2,'maart':3,'april':4,'mei':5,'juni':6,
+    'juli':7,'augustus':8,'september':9,'oktober':10,'november':11,'december':12
 }
+
+# Coalitie kabinet-Jetten: VVD, D66, CDA
+COALITIE  = {"VVD","D66","CDA"}
+OPPOSITIE = {"PVV","GL-PvdA","NSC","BBB","SP","PvdD","CU","SGP","Volt","DENK","FvD","JA21","50PLUS","Gr.Markuszower","Groep-Keijzer"}
+
+LEDEN_PARTIJ = {
+    # PVV
+    "Wilders":"PVV","Geert Wilders":"PVV","Agema":"PVV","Fleur Agema":"PVV",
+    "Bosma":"PVV","Martin Bosma":"PVV","Madlener":"PVV","Barry Madlener":"PVV",
+    "Emiel van Dijk":"PVV","Léon de Jong":"PVV","Leon de Jong":"PVV",
+    "El Boujdaini":"PVV","Heutink":"PVV","Helder":"PVV","Faber":"PVV",
+    "Fritsma":"PVV","Graus":"PVV","Beertema":"PVV","De Graaf":"PVV",
+    "Duvekot":"PVV","Kerseboom":"PVV",
+    # VVD
+    "Hermans":"VVD","Yesilgöz":"VVD","Dilan Yesilgöz":"VVD",
+    "Michon-Derkzen":"VVD","Rajkowski":"VVD","Becker":"VVD","Bikkers":"VVD",
+    "Ellian":"VVD","Brekelmans":"VVD","Hagen":"VVD","Six Dijkstra":"VVD",
+    "Klink":"VVD","Peter de Groot":"VVD","Klos":"VVD","Erkens":"VVD",
+    "Minhas":"VVD","Palmen":"VVD","Soepboer":"VVD","Wesselink":"VVD",
+    "Gündogan":"VVD","Van der Werf":"VVD",
+    # NSC
+    "Omtzigt":"NSC","Pieter Omtzigt":"NSC","Van Hijum":"NSC","Struijs":"NSC",
+    "Boelsma-Hoekstra":"NSC","Lammers":"NSC","Crijns":"NSC","Podt":"NSC","Hartman":"NSC",
+    # BBB
+    "Van der Plas":"BBB","Caroline van der Plas":"BBB","Hamstra":"BBB",
+    "Wendel":"BBB","Jumelet":"BBB","Van Oosterhout":"BBB","Vermeer":"BBB","Kostić":"BBB",
+    # GL-PvdA
+    "Klaver":"GL-PvdA","Jesse Klaver":"GL-PvdA","Timmermans":"GL-PvdA",
+    "Maatoug":"GL-PvdA","Nijboer":"GL-PvdA","Bushoff":"GL-PvdA",
+    "Kathmann":"GL-PvdA","Mohandis":"GL-PvdA","Köse":"GL-PvdA","Moorman":"GL-PvdA",
+    "Bromet":"GL-PvdA","Chakor":"GL-PvdA","Gijs van Dijk":"GL-PvdA",
+    "Hammelburg":"GL-PvdA","Mutluer":"GL-PvdA","Piri":"GL-PvdA",
+    "Thijssen":"GL-PvdA","Westerveld":"GL-PvdA","Kuiken":"GL-PvdA",
+    "Fatihya Abdi":"GL-PvdA",
+    # D66
+    "Paternotte":"D66","Jan Paternotte":"D66","Vervuurt":"D66",
+    "Van Asten":"D66","Wuite":"D66","Raemakers":"D66","White":"D66","Van der Laan":"D66",
+    # CDA
+    "Bontenbal":"CDA","Henri Bontenbal":"CDA","Boswijk":"CDA","Vedder":"CDA",
+    "Krul":"CDA","Van den Berg":"CDA","Van Ark":"CDA","Armut":"CDA",
+    "Van den Brink":"CDA","Inge van Dijk":"CDA",
+    # SP
+    "Jimmy Dijk":"SP","Beckerman":"SP","Temmink":"SP","Van Nispen":"SP","Leijten":"SP",
+    # PvdD
+    "Simons":"PvdD","Teunissen":"PvdD","Vestering":"PvdD","Van Raan":"PvdD",
+    # CU
+    "Bikker":"CU","Mirjam Bikker":"CU","Ceder":"CU","Grinwis":"CU",
+    # SGP
+    "Diederik van Dijk":"SGP","Stoffer":"SGP","Flach":"SGP",
+    # Volt
+    "Dassen":"Volt","Koekkoek":"Volt",
+    # DENK
+    "Stephan van Baarle":"DENK","Van Baarle":"DENK","El Abassi":"DENK","Ergin":"DENK",
+    # JA21
+    "Eerdmans":"JA21",
+    # FvD
+    "Baudet":"FvD",
+    # Groep Markuszower
+    "Markuszower":"Gr.Markuszower",
+    # Groep Keijzer
+    "Keijzer":"Groep-Keijzer",
+    # 50PLUS
+    "Baay-Timmerman":"50PLUS",
+}
+
 STRIJDIG_KEYWORDS = [
     "klimaatdoel","kinderopvang gratis","eigen risico afschaffen",
     "asielzoekers meer","vluchtelingen opvang","discriminatie aanpakken",
-    "aow volledig van tafel","ww-verkorting niet",
 ]
 CONFORM_KEYWORDS = [
     "asielinstroom beperken","grenzen sluiten","defensie versterken",
-    "kernenergie","belastingverlaging","vrijheidsbijdrage","navo",
-    "terugkeer","grenscontrole",
+    "kernenergie","belastingverlaging","navo","terugkeer","grenscontrole",
 ]
 
 THEMA_KEYWORDS = {
     "Defensie":["defensie","militair","navo","leger","oekra","wapen","krijgsmacht","luchtmacht","marine"],
-    "Bestaanszekerheid":["aow","pensioen","uitkering","armoede","minimumloon","bijstand","zzp","ww-duur","bestaanszekerheid"],
+    "Bestaanszekerheid":["aow","pensioen","uitkering","armoede","minimumloon","bijstand","bestaanszekerheid"],
     "Klimaat & Energie":["klimaat","energie","windmolen","kerncentrale","co2","netcongestie","zonnepaneel","warmtepomp","fossiel"],
     "Wonen & Bouwen":["woning","huur","hypotheek","bouwen","nieuwbouw","woningmarkt","huurder","corporatie"],
     "Zorg":["zorg","eigen risico","ggz","ziekenhuis","verpleging","mantelzorg","huisarts","medicijn","apotheek"],
-    "Asiel & Migratie":["asiel","migratie","vluchteling","ind","spreidingswet","azc","verblijf","inburgering","grenstoezicht"],
-    "Onderwijs & Wetenschap":["onderwijs","school","leraar","student","universiteit","mbo","kinderopvang","studie"],
-    "Landbouw & Natuur":["landbouw","boer","stikstof","natuur","natura 2000","veehouderij","mest","agrar","visserij"],
-    "Financien":["belasting","begroting","box 3","btw","financien","rijksbegroting","staatsschuld","belastingdienst"],
-    "Buitenlandse Zaken & Europa":["europa","oekra","buitenland","sanctie","diplomatie","europese unie"],
-    "Democratie & Rechtsstaat":["democratie","grondwet","rechtsstaat","referendum","verkiezing","kiesrecht"],
-    "Economie & Ondernemen":["economie","ondernemen","mkb","arbeidsmarkt","zzp","concurrentie","exportbevordering"],
-    "Bereikbaarheid & Mobiliteit":["trein","spoor","fiets","ov","snelweg","ns ","mobiliteit","bereikbaarheid"],
-    "Zorg & Preventie":["preventie","leefstijl","alcohol","roken","obesitas","vaccinatie"],
+    "Asiel & Migratie":["asiel","migratie","vluchteling","ind","azc","verblijf","inburgering","grenstoezicht","asielzoekers"],
+    "Onderwijs":["onderwijs","school","leraar","student","universiteit","mbo","kinderopvang","studie"],
+    "Landbouw & Natuur":["landbouw","boer","stikstof","natuur","natura","veehouderij","mest","visserij"],
+    "Financiën":["belasting","begroting","box 3","btw","rijksbegroting","staatsschuld","belastingdienst"],
+    "Buitenlandse Zaken":["europa","oekra","buitenland","sanctie","diplomatie","israel","gaza","ukraine"],
+    "Democratie & Rechtsstaat":["democratie","grondwet","rechtsstaat","referendum","verkiezing","rechter"],
+    "Economie":["economie","ondernemen","mkb","arbeidsmarkt","concurrentie","export","innovatie"],
+    "Bereikbaarheid":["trein","spoor","fiets","ov","snelweg","mobiliteit","bereikbaarheid","schiphol"],
     "Overig":[],
 }
 
@@ -139,24 +132,27 @@ def detect_indiener(titel):
         pat = r'(?<![A-Za-z\u00C0-\u017E])' + re.escape(naam) + r'(?![A-Za-z\u00C0-\u017E])'
         if re.search(pat, name_ctx, re.IGNORECASE):
             return LEDEN_PARTIJ[naam]
-    for p in ["PVV","VVD","NSC","BBB","D66","GL-PvdA","CDA","SP","PvdD","CU","SGP","Volt","DENK","FvD","JA21","50PLUS","Gr.Markuszower"]:
+    for p in ["PVV","VVD","NSC","BBB","D66","GL-PvdA","CDA","SP","PvdD","CU","SGP","Volt","DENK","FvD","JA21","50PLUS"]:
         if p in titel:
             return p
     return "Onbekend"
 
-def detect_alignment(titel, indiener, thema):
+def detect_alignment(titel, indiener):
     t = titel.lower()
     for kw in STRIJDIG_KEYWORDS:
         if kw in t: return "strijdig"
     for kw in CONFORM_KEYWORDS:
         if kw in t: return "conform"
     if indiener in COALITIE: return "conform"
+    if indiener in OPPOSITIE: return "strijdig"
     return "neutraal"
 
 def make_id(val):
     return 'tk' + hashlib.md5(str(val).encode()).hexdigest()[:10]
 
 def parse_dutch_date(s):
+    if not s:
+        return None
     m = re.search(
         r'(\d{1,2})\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(20\d{2})',
         s, re.IGNORECASE
@@ -171,106 +167,169 @@ def fetch_html(url):
     try:
         req = urllib.request.Request(url, headers=HEADERS)
         with urllib.request.urlopen(req, timeout=20) as r:
-            return html_module.unescape(r.read().decode('utf-8', errors='replace'))
+            raw = r.read().decode('utf-8', errors='replace')
+        return html_module.unescape(raw)
     except Exception as e:
         print(f'  Fetch fout: {e}')
         return ''
 
-# ── Step 1: Scrape stemmingsuitslagen → build lookup zaak_id -> {datum, besluit} ──
+def extract_zaak_id(url_or_str):
+    """Extract zaak ID from URL — any year (2025Z, 2026Z, etc.)"""
+    m = re.search(r'[?&]id=(\d{4}Z\w+)', url_or_str)
+    return m.group(1) if m else None
+
+# ── Live Kamerleden scrape ──
+
+def fetch_leden_partij():
+    PARTY_NORM = {
+        "GroenLinks-PvdA":"GL-PvdA","ChristenUnie":"CU",
+        "Groep Markuszower":"Gr.Markuszower","Lid Keijzer":"Groep-Keijzer","FVD":"FvD",
+    }
+    result = {}
+    html = fetch_html("https://www.tweedekamer.nl/kamerleden_en_commissies/alle_kamerleden")
+    if not html:
+        return {}
+    cards = re.findall(
+        r'/alle_kamerleden/[^"]+">([^<]+)</a>\s*</h3>\s*<[^>]+>\s*([A-Za-z0-9\-\s]+?)[\s<]',
+        html
+    )
+    for full_name, party in cards:
+        full_name = full_name.strip()
+        party = PARTY_NORM.get(party.strip(), party.strip())
+        if not full_name or not party or len(party) > 25:
+            continue
+        result[full_name] = party
+        parts = full_name.split()
+        for i in range(len(parts)-1, -1, -1):
+            if parts[i][0].isupper():
+                if parts[i] not in result:
+                    result[parts[i]] = party
+                break
+    print(f'  Kamerleden geladen: {len(result)} namen')
+    return result
+
+# ── Stemmingsuitslagen ──
 
 def scrape_stemmingen():
-    """Scrape stemmingsuitslagen pages since START_DATE. Returns zaak_id -> {datum, besluit}."""
+    """
+    Scrape stemmingsuitslagen since START_DATE.
+    Returns dict: zaak_id -> {datum, besluit}
+    
+    The stemmingsuitslagen detail page structure:
+    - One page = one voting session (e.g. 5 maart 2026)
+    - Contains list of moties with their zaak IDs and Besluit
+    - The date of the session is the stemming date for all moties on that page
+    """
     stemmingen = {}
-    base = ('https://www.tweedekamer.nl/kamerstukken/stemmingsuitslagen'
-            '?qry=%2A&fld_tk_categorie=Kamerstukken'
-            '&fld_prl_kamerstuk=Stemmingsuitslagen&srt=date%3Adesc%3Adate&page=')
+    base = (
+        'https://www.tweedekamer.nl/kamerstukken/stemmingsuitslagen'
+        '?qry=%2A&fld_tk_categorie=Kamerstukken'
+        '&fld_prl_kamerstuk=Stemmingsuitslagen&srt=date%3Adesc%3Adate&page='
+    )
 
-    for page in range(20):
+    for page in range(25):
         html = fetch_html(base + str(page))
         if not html:
             break
 
-        # Find detail page links on list page
-        detail_links = list(set(re.findall(
+        detail_links = list(dict.fromkeys(re.findall(
             r'href="(/kamerstukken/stemmingsuitslagen/detail\?[^"]+)"', html
         )))
         if not detail_links:
             print(f'  Stemmingen pagina {page+1}: geen links — stoppen')
             break
 
-        print(f'  Stemmingen pagina {page+1}: {len(detail_links)} uitslagen')
+        print(f'  Stemmingen pagina {page+1}: {len(detail_links)} sessies')
 
-        # Scrape each detail page
-        all_old = True
+        stop_after_page = False
         for link in detail_links:
             link_url = 'https://www.tweedekamer.nl' + link.replace('&amp;', '&')
-            detail_html = fetch_html(link_url)
-            if not detail_html:
+            detail = fetch_html(link_url)
+            if not detail:
                 continue
 
-            detail_html_norm = detail_html.replace('&amp;', '&')
+            detail = detail.replace('&amp;', '&')
 
-            # Split into per-motie blocks on any link containing a Zaak ID
-            blocks = re.split(r'(?=href="[^"]*[?&]id=2026Z)', detail_html_norm)
+            # Find the stemming date — look for it in the page title/header area
+            # It appears as "Stemmingsuitslagen DD maand YYYY" or just in h1/h2
+            datum_m = re.search(
+                r'(?:Stemmingsuitslagen|Stemming(?:en)?|Plenaire\s+vergadering)[^<]{0,50}'
+                r'(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})',
+                detail[:5000], re.IGNORECASE
+            )
+            if not datum_m:
+                # Fallback: first date in the page body
+                datum_m = re.search(
+                    r'(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})',
+                    detail[:5000], re.IGNORECASE
+                )
+            session_datum = parse_dutch_date(datum_m.group(1) if datum_m else '')
 
-            for block in blocks[:300]:
-                id_m = re.search(r'[?&]id=(2026Z\w+)', block)
-                if not id_m:
-                    continue
-                zaak_id = id_m.group(1)
+            if session_datum and session_datum < START_DATE:
+                print(f'    Sessie {session_datum} voor {START_DATE} — overslaan')
+                stop_after_page = True
+                continue
 
-                datum = parse_dutch_date(block[:500])
-                besluit_m = re.search(r'Besluit:\s*(Aangenomen|Verworpen|Aangehouden)', block, re.IGNORECASE)
-                besluit = besluit_m.group(1).lower() if besluit_m else None
+            if not session_datum:
+                print(f'    Geen datum gevonden op {link_url[:60]}')
 
-                if datum or besluit:
-                    stemmingen[zaak_id] = {'datum': datum, 'besluit': besluit}
-                    if datum and datum >= START_DATE:
-                        all_old = False
+            # Find all motie entries — each has a zaak ID link + nearby Besluit text
+            # Strategy: find all zaak ID occurrences, then search for Besluit in next 1500 chars
+            zaak_pattern = re.compile(r'[?&]id=(\d{4}Z\w+)')
+            besluit_pattern = re.compile(r'Besluit[:\s]+(Aangenomen|Verworpen|Aangehouden)', re.IGNORECASE)
 
-            time.sleep(0.3)
+            # Find all positions of zaak IDs
+            zaak_matches = list(zaak_pattern.finditer(detail))
+            print(f'    {session_datum}: {len(zaak_matches)} moties gevonden')
 
-        # Check if this page only has old stemmingen
-        # Look for dates in result titles (lines starting with a date)
-        page_dates = re.findall(
-            r'\n(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})\n',
-            html[:30000], re.IGNORECASE
-        )
-        if page_dates:
-            last = parse_dutch_date(page_dates[-1])
-            if last and last < START_DATE:
-                print(f'  Pagina {page+1}: oudste datum {last} — stoppen')
-                break
+            for i, zm in enumerate(zaak_matches):
+                zaak_id = zm.group(1)
+                # Search for Besluit between this zaak_id and the next
+                search_start = zm.start()
+                search_end = zaak_matches[i+1].start() if i+1 < len(zaak_matches) else search_start + 1500
+                chunk = detail[search_start:min(search_end, search_start + 1500)]
 
+                bm = besluit_pattern.search(chunk)
+                besluit = bm.group(1).lower() if bm else None
+
+                if zaak_id not in stemmingen:
+                    stemmingen[zaak_id] = {'datum': session_datum, 'besluit': besluit}
+                elif besluit and not stemmingen[zaak_id].get('besluit'):
+                    stemmingen[zaak_id]['besluit'] = besluit
+
+            time.sleep(0.5)
+
+        if stop_after_page:
+            break
         time.sleep(1)
 
-    print(f'  Stemmingen totaal: {len(stemmingen)} moties met uitslag')
+    voted = sum(1 for v in stemmingen.values() if v.get('besluit'))
+    print(f'  Stemmingen totaal: {len(stemmingen)} zaak-IDs, {voted} met besluit')
     return stemmingen
 
-# ── Step 2: Get real date from motie detail page ──
+# ── Motie detail page for real date ──
 
 def fetch_motie_datum(url):
-    """Fetch motie detail page and extract 'Voorgesteld DD maand YYYY'."""
     if not url.startswith('http'):
         url = 'https://www.tweedekamer.nl' + url
     html = fetch_html(url)
     if not html:
         return None
-    return parse_dutch_date(re.search(
-        r'Voorgesteld\s+(\d{1,2}\s+\w+\s+20\d{2})', html, re.IGNORECASE
-    ).group(1) if re.search(r'Voorgesteld\s+(\d{1,2}\s+\w+\s+20\d{2})', html, re.IGNORECASE) else '')
+    m = re.search(r'Voorgesteld\s+(\d{1,2}\s+\w+\s+20\d{2})', html, re.IGNORECASE)
+    return parse_dutch_date(m.group(1)) if m else None
 
-# ── Step 3: Scrape moties list pages ──
+# ── Moties list scrape ──
 
 def fetch_page(page=0):
-    url = ('https://www.tweedekamer.nl/kamerstukken/moties'
-           '?qry=%2A&fld_tk_categorie=Kamerstukken&fld_prl_kamerstuk=Moties'
-           f'&srt=date%3Adesc%3Adate&page={page}')
+    url = (
+        'https://www.tweedekamer.nl/kamerstukken/moties'
+        '?qry=%2A&fld_tk_categorie=Kamerstukken&fld_prl_kamerstuk=Moties'
+        f'&srt=date%3Adesc%3Adate&page={page}'
+    )
     try:
         req = urllib.request.Request(url, headers=HEADERS)
         with urllib.request.urlopen(req, timeout=25) as r:
             raw = r.read().decode('utf-8', errors='replace')
-        print(f'  Pagina {page+1}: {len(raw)} bytes')
         return raw
     except Exception as e:
         print(f'  Fout pagina {page+1}: {e}')
@@ -298,44 +357,8 @@ def parse_moties_from_html(raw):
             mo = MONTHS.get(date_m.group(2).lower(), 0)
             if mo:
                 list_date = f"{date_m.group(3)}-{mo:02d}-{int(date_m.group(1)):02d}"
-        results.append({'titel': title, 'datum': list_date or TODAY, 'link': link})
+        results.append({'titel': title, 'list_date': list_date, 'link': link})
     return results
-
-def fetch_leden_partij():
-    """Scrape alle 150 Kamerleden + fractie live van tweedekamer.nl."""
-    PARTY_NORM = {
-        "GroenLinks-PvdA":"GL-PvdA","ChristenUnie":"CU",
-        "Groep Markuszower":"Gr.Markuszower","Lid Keijzer":"Groep-Keijzer",
-        "FVD":"FvD",
-    }
-    result = {}
-    url = "https://www.tweedekamer.nl/kamerleden_en_commissies/alle_kamerleden"
-    html = fetch_html(url)
-    if not html:
-        return {}
-    # Each member card: name in <h3><a>Name</a></h3> followed by party text
-    cards = re.findall(
-        r'<a[^>]+/alle_kamerleden/[^"]+">([^<]+)</a>\s*</h3>\s*<[^>]+>\s*([A-Za-z0-9\-\s]+?)\s*</',
-        html
-    )
-    for full_name, party in cards:
-        full_name = full_name.strip()
-        party = PARTY_NORM.get(party.strip(), party.strip())
-        if not full_name or not party or len(party) > 25:
-            continue
-        result[full_name] = party
-        # Also index by surname only (last capitalised word)
-        parts = full_name.split()
-        # surname = last word that starts with uppercase
-        for i in range(len(parts)-1, -1, -1):
-            if parts[i][0].isupper():
-                surname = parts[i]
-                if surname not in result:
-                    result[surname] = party
-                break
-    print(f"  Kamerleden geladen: {len(result)} namen")
-    return result
-
 
 # ── Main ──
 
@@ -348,16 +371,22 @@ def main():
     except FileNotFoundError:
         existing = []
 
-    existing_ids   = {x['id'] for x in existing}
-    existing_links = {x.get('tk_url','') for x in existing}
+    # Purge any existing moties before START_DATE (cleanup from previous bad runs)
+    before = len(existing)
+    existing = [m for m in existing if m.get('datum','') >= START_DATE]
+    if len(existing) < before:
+        print(f'Gezuiverd: {before - len(existing)} moties voor {START_DATE} verwijderd')
+
+    existing_links   = {x.get('tk_url','') for x in existing}
     existing_by_zaak = {
-        re.search(r'[?&]id=(2026Z\w+)', x.get('tk_url','')).group(1): x
+        extract_zaak_id(x.get('tk_url','')): x
         for x in existing
-        if re.search(r'[?&]id=(2026Z\w+)', x.get('tk_url',''))
+        if extract_zaak_id(x.get('tk_url',''))
     }
+
     print(f'Bestaande moties: {len(existing)}')
 
-    # Load live Kamerleden list, fall back to static dict
+    # Load live Kamerleden
     print('Kamerleden ophalen...')
     live_leden = fetch_leden_partij()
     if live_leden:
@@ -365,154 +394,146 @@ def main():
 
     scraped_count = sum(1 for x in existing if str(x.get('id','')).startswith('tk'))
     is_backfill   = scraped_count == 0
-    max_pages     = 50 if is_backfill else 5
+    max_pages     = 50 if is_backfill else 8
     print(f'Mode: {"backfill" if is_backfill else "daily"} (max {max_pages} paginas)')
 
-    # Step 1: Always scrape stemmingsuitslagen first — fast bulk lookup
+    # ── Step 1: Stemmingsuitslagen ──
     print('\nStemmingsuitslagen ophalen...')
     stemmingen = scrape_stemmingen()
 
-    # Apply stemmingen to existing moties that are still in_behandeling
-    updated = 0
+    # Apply to existing moties
+    updated_vote = 0
     for zaak_id, stemming in stemmingen.items():
         m = existing_by_zaak.get(zaak_id)
         if not m:
             continue
         changed = False
-        if stemming.get('datum') and m.get('datum','') != stemming['datum']:
+        if stemming.get('datum') and m.get('datum','') in ('', TODAY):
             m['datum'] = stemming['datum']
             changed = True
-        if stemming.get('besluit') and m.get('status') == 'in_behandeling':
+        if stemming.get('besluit') and m.get('status','') not in ('aangenomen','verworpen','aangehouden'):
             m['status'] = stemming['besluit']
+            m['archief'] = False
             changed = True
-            if m.get('archief'):
-                m['archief'] = False
         if changed:
-            updated += 1
-    print(f'  {updated} bestaande moties bijgewerkt via stemmingen')
+            updated_vote += 1
+    print(f'  {updated_vote} bestaande moties bijgewerkt met stemresultaat')
 
-    # Step 2: Scrape moties list pages for new moties
+    # ── Step 2: Scrape new moties ──
     new_items = []
+    seen_ids = {x['id'] for x in existing if 'id' in x}
+
     for page in range(max_pages):
         raw = fetch_page(page)
         if not raw:
             break
 
         results = parse_moties_from_html(raw)
-        print(f'  Geparsed: {len(results)} moties')
         if not results:
             break
+        print(f'  Pagina {page+1}: {len(results)} moties')
 
-        found_new = False
-        all_old = True
+        found_new_on_page = False
         for r in results:
-            # Use stemmingen datum if available for list-page date check
-            zaak_m = re.search(r'[?&]id=(2026Z\w+)', r['link'])
-            zaak_id = zaak_m.group(1) if zaak_m else None
-            stem_datum = stemmingen.get(zaak_id, {}).get('datum') if zaak_id else None
-            real_date = stem_datum or r['datum']
+            link    = r['link']
+            zaak_id = extract_zaak_id(link)
+            item_id = make_id(link)
 
-            if real_date >= START_DATE:
-                all_old = False
+            if link in existing_links or item_id in seen_ids:
+                continue
+
+            # Get real date
+            real_date = None
+            status    = 'in_behandeling'
+
+            if zaak_id and zaak_id in stemmingen:
+                real_date = stemmingen[zaak_id].get('datum')
+                if stemmingen[zaak_id].get('besluit'):
+                    status = stemmingen[zaak_id]['besluit']
+
+            if not real_date:
+                real_date = fetch_motie_datum(link)
+                time.sleep(0.4)
+
+            if not real_date:
+                real_date = r['list_date'] or TODAY
+
+            # Hard filter — skip anything before START_DATE
             if real_date < START_DATE:
                 continue
-            if r['link'] in existing_links:
-                continue
-            item_id = make_id(r['link'])
-            if item_id in existing_ids:
-                continue
 
-            existing_ids.add(item_id)
-            existing_links.add(r['link'])
-            found_new = True
+            found_new_on_page = True
+            seen_ids.add(item_id)
+            existing_links.add(link)
 
             thema    = detect_thema(r['titel'])
             indiener = detect_indiener(r['titel'])
-
-            # Get real date: stemmingen first, then detail page HTML
-            if stem_datum:
-                motie_datum = stem_datum
-                status = stemmingen[zaak_id].get('besluit') or 'in_behandeling'
-            else:
-                # Fetch detail page for real "Voorgesteld" date
-                motie_datum = fetch_motie_datum(r['link']) or r['datum']
-                status = 'in_behandeling'
-                time.sleep(0.4)
-
-            # Skip if before start date once we know real date
-            if motie_datum < START_DATE:
-                continue
 
             new_items.append({
                 'id':         item_id,
                 'titel':      r['titel'],
                 'indiener':   indiener,
-                'datum':      motie_datum,
+                'datum':      real_date,
                 'thema':      thema,
                 'status':     status,
-                'alignment':  detect_alignment(r['titel'], indiener, thema),
+                'alignment':  detect_alignment(r['titel'], indiener),
                 'vergadering':'',
-                'tk_url':     r['link'],
+                'tk_url':     link,
                 'toelichting':'',
                 'stemmen':    {},
                 'archief':    False,
             })
 
-        if all_old:
-            print(f'  Alle moties voor {START_DATE} — klaar')
+        if not is_backfill and not found_new_on_page and page >= 2:
+            print(f'  Geen nieuwe moties meer — klaar')
             break
 
         time.sleep(1.5)
 
-    # Fix dates for existing moties still showing TODAY as date
-    needs_date = [
-        m for m in existing
-        if m.get('datum','') >= TODAY
-        and m.get('tk_url','')
-        and str(m.get('id','')).startswith('tk')
-    ]
+    # ── Step 3: Fix dates still showing TODAY ──
+    needs_date = [m for m in existing if m.get('datum','') >= TODAY and m.get('tk_url','')]
     if needs_date:
         print(f'\nDatum fixup: {min(150, len(needs_date))} van {len(needs_date)} moties')
         for m in needs_date[:150]:
-            zaak_m = re.search(r'[?&]id=(2026Z\w+)', m.get('tk_url',''))
-            zaak_id = zaak_m.group(1) if zaak_m else None
-            if zaak_id and zaak_id in stemmingen and stemmingen[zaak_id].get('datum'):
+            zaak_id = extract_zaak_id(m.get('tk_url',''))
+            if zaak_id and stemmingen.get(zaak_id, {}).get('datum'):
                 m['datum'] = stemmingen[zaak_id]['datum']
                 continue
             nd = fetch_motie_datum(m['tk_url'])
             if nd:
-                if nd < START_DATE:
-                    m['_remove'] = True
-                else:
-                    m['datum'] = nd
+                m['datum'] = nd if nd >= START_DATE else START_DATE
             time.sleep(0.3)
-        existing = [m for m in existing if not m.get('_remove')]
 
-    # Merge
     print(f'\nNieuwe moties: {len(new_items)}')
     for m in new_items[:5]:
-        print(f'  + {m["datum"]} | {m["titel"][:70]}')
+        print(f'  + {m["datum"]} | {m["status"]:15} | {m["titel"][:60]}')
 
-    # Archive logic: in_behandeling > 7 days old
+    # ── Step 4: Archive logic ──
+    # aangenomen/verworpen → always front page (archief=False)
+    # in_behandeling       → In Process tab after 5 days
+    # aangehouden          → In Process tab after 30 days
     all_moties = existing + new_items
     for m in all_moties:
-        if m.get('status') in ('aangenomen','verworpen'):
+        status = m.get('status', '')
+        if status in ('aangenomen', 'verworpen'):
             m['archief'] = False
             continue
         try:
             age = (date.today() - date.fromisoformat(m.get('datum', TODAY))).days
-        except:
+        except Exception:
             age = 0
-        if m.get('status') == 'in_behandeling' and age > 7 and not m.get('archief'):
-            m['archief'] = True
-        elif m.get('status') == 'aangehouden' and age > 60 and not m.get('archief'):
-            m['archief'] = True
+        if status == 'in_behandeling':
+            m['archief'] = age > 5
+        elif status == 'aangehouden':
+            m['archief'] = age > 30
 
     active = sum(1 for m in all_moties if not m.get('archief'))
-    print(f'Totaal: {len(all_moties)} moties ({active} actief)')
+    voted  = sum(1 for m in all_moties if m.get('status') in ('aangenomen','verworpen'))
+    print(f'Totaal: {len(all_moties)} moties ({active} actief, {voted} gestemd)')
 
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(all_moties, f, ensure_ascii=False, indent=2)
+    print('Opgeslagen.')
 
 if __name__ == '__main__':
     main()
