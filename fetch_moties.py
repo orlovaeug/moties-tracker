@@ -466,19 +466,29 @@ def fetch_page(page=0):
 def parse_moties_from_html(raw):
     results = []
     raw = html_module.unescape(raw)
-    items = re.split(r'class=["\']search-result-item["\']', raw)
-    for item in items[1:]:
-        link_m = re.search(r'href="(/kamerstukken/moties/detail\?[^"]+)"', item)
+    # TK website uses m-card__title — split on motie detail links
+    # Find all motie detail links with their surrounding context
+    # Each card contains a link to /kamerstukken/moties/detail
+    cards = re.split(r'(?=href="/kamerstukken/moties/detail\?)', raw)
+    for card in cards[1:]:
+        link_m = re.search(r'href="(/kamerstukken/moties/detail\?[^"]+)"', card)
         if not link_m:
             continue
         link = 'https://www.tweedekamer.nl' + link_m.group(1).replace('&amp;', '&')
-        title_m = re.search(r'<h3[^>]*>(.*?)</h3>', item, re.DOTALL)
-        title = re.sub(r'<[^>]+>', '', title_m.group(1)).strip() if title_m else ''
+        # Title: in m-card__title class or any heading tag nearby
+        title = ''
+        title_m = re.search(r'class="m-card__title"[^>]*>(.*?)</(?:span|div|h\d)', card, re.DOTALL)
+        if title_m:
+            title = re.sub(r'<[^>]+>', '', title_m.group(1)).strip()
+        if not title:
+            title_m = re.search(r'<h[23][^>]*>(.*?)</h[23]>', card, re.DOTALL)
+            title = re.sub(r'<[^>]+>', '', title_m.group(1)).strip() if title_m else ''
         if not title or 'motie' not in title.lower():
             continue
+        # Date
         date_m = re.search(
             r'(\d{1,2})\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(20\d{2})',
-            item, re.IGNORECASE
+            card[:500], re.IGNORECASE
         )
         list_date = ''
         if date_m:
