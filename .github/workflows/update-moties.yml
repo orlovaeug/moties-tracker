@@ -27,10 +27,6 @@ jobs:
         run: python fetch_moties.py
         timeout-minutes: 20
 
-      - name: Fix onbekende indieners en statussen
-        run: python fix_indieners.py
-        timeout-minutes: 15
-
       - name: Embed moties in index.html
         run: python embed_moties.py
 
