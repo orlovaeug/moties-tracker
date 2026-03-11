@@ -589,6 +589,7 @@ def main():
     # ── Step 2: Scrape new moties ──
     new_items = []
     seen_ids = {x['id'] for x in existing if 'id' in x}
+    seen_zaak_ids = {extract_zaak_id(x.get('tk_url','')) for x in existing if extract_zaak_id(x.get('tk_url',''))}
     consecutive_empty = 0
 
     for page in range(max_pages):
@@ -619,6 +620,9 @@ def main():
             # Match on zaak_id (robust) or full link or item_id
             if item_id in seen_ids:
                 if page == 0: print(f'    SKIP item_id: {zaak_id}')
+                continue
+            if zaak_id and zaak_id in seen_zaak_ids:
+                if page == 0: print(f'    SKIP zaak_id: {zaak_id}')
                 continue
             if link in existing_links:
                 if page == 0: print(f'    SKIP link: {zaak_id} → {link}')
@@ -653,6 +657,7 @@ def main():
 
             found_new_on_page = True
             seen_ids.add(item_id)
+            if zaak_id: seen_zaak_ids.add(zaak_id)
             existing_links.add(link)
 
             thema    = detect_thema(r['titel'])
