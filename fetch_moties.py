@@ -465,30 +465,24 @@ def fetch_page(page=0):
 
 def parse_moties_from_html(raw):
     results = []
+    seen_links = set()
     raw = html_module.unescape(raw)
-    # TK website uses m-card__title — split on motie detail links
-    # Find all motie detail links with their surrounding context
-    # Each card contains a link to /kamerstukken/moties/detail
-    cards = re.split(r'(?=href="/kamerstukken/moties/detail\?)', raw)
-    for card in cards[1:]:
-        link_m = re.search(r'href="(/kamerstukken/moties/detail\?[^"]+)"', card)
-        if not link_m:
+    # Match each motie detail link and grab title from within the <a> tag
+    for m in re.finditer(r'<a\b[^>]*href="(/kamerstukken/moties/detail\?[^"]+)"[^>]*>(.*?)</a>', raw, re.DOTALL):
+        link = 'https://www.tweedekamer.nl' + m.group(1).replace('&amp;', '&')
+        if link in seen_links:
             continue
-        link = 'https://www.tweedekamer.nl' + link_m.group(1).replace('&amp;', '&')
-        # Title: in m-card__title class or any heading tag nearby
-        title = ''
-        title_m = re.search(r'class="m-card__title"[^>]*>(.*?)</(?:span|div|h\d)', card, re.DOTALL)
-        if title_m:
-            title = re.sub(r'<[^>]+>', '', title_m.group(1)).strip()
-        if not title:
-            title_m = re.search(r'<h[23][^>]*>(.*?)</h[23]>', card, re.DOTALL)
-            title = re.sub(r'<[^>]+>', '', title_m.group(1)).strip() if title_m else ''
+        seen_links.add(link)
+        title = re.sub(r'<[^>]+>', '', m.group(2)).strip()
+        title = re.sub(r'\s+', ' ', title)
         if not title or 'motie' not in title.lower():
             continue
-        # Date
+        # Look for date in surrounding context (200 chars before the link)
+        start = max(0, m.start() - 200)
+        ctx = raw[start:m.start()]
         date_m = re.search(
             r'(\d{1,2})\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(20\d{2})',
-            card[:500], re.IGNORECASE
+            ctx, re.IGNORECASE
         )
         list_date = ''
         if date_m:
@@ -532,7 +526,7 @@ def main():
 
     scraped_count = sum(1 for x in existing if str(x.get('id','')).startswith('tk'))
     is_backfill   = scraped_count == 0
-    max_pages     = 50 if is_backfill else 8
+    max_pages     = 50 if is_backfill else 15
     print(f'Mode: {"backfill" if is_backfill else "daily"} (max {max_pages} paginas)')
 
     # ── Step 1: Stemmingsuitslagen ──
@@ -541,10 +535,12 @@ def main():
 
     # Apply to existing moties
     updated_vote = 0
+    matched = 0
     for zaak_id, stemming in stemmingen.items():
         m = existing_by_zaak.get(zaak_id)
         if not m:
             continue
+        matched += 1
         changed = False
         if stemming.get('datum') and m.get('datum','') in ('', TODAY):
             m['datum'] = stemming['datum']
@@ -561,7 +557,12 @@ def main():
         # tk_url: /kamerstukken/moties/detail is correct — don't overwrite
         if changed:
             updated_vote += 1
-    print(f'  {updated_vote} bestaande moties bijgewerkt met stemresultaat')
+    print(f'  {updated_vote} bestaande moties bijgewerkt met stemresultaat ({matched}/{len(stemmingen)} stemmingen gematcht)')
+    if matched == 0 and stemmingen:
+        sample_ids = list(stemmingen.keys())[:3]
+        sample_existing = list(existing_by_zaak.keys())[:3]
+        print(f'  Sample stemming zaak_ids: {sample_ids}')
+        print(f'  Sample existing zaak_ids: {sample_existing}')
 
     # Fetch per-party votes for voted moties that don't have them yet (max 50 per run)
     needs_stemmen = [
