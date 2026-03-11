@@ -327,10 +327,17 @@ def scrape_stemmingen():
                 if besluit:
                     found_besluit += 1
 
+                # Extract vote score e.g. "(75-74)" from Besluit line
+                score_m = re.search(r'Besluit:[^(]*(\(\d+-\d+\))', card_text, re.IGNORECASE)
+                score = score_m.group(1) if score_m else None
+
                 if zaak_id not in stemmingen:
-                    stemmingen[zaak_id] = {'datum': session_datum, 'besluit': besluit}
-                elif besluit and not stemmingen[zaak_id].get('besluit'):
-                    stemmingen[zaak_id]['besluit'] = besluit
+                    stemmingen[zaak_id] = {'datum': session_datum, 'besluit': besluit, 'score': score}
+                else:
+                    if besluit and not stemmingen[zaak_id].get('besluit'):
+                        stemmingen[zaak_id]['besluit'] = besluit
+                    if score and not stemmingen[zaak_id].get('score'):
+                        stemmingen[zaak_id]['score'] = score
 
             print(f'    {session_datum}: {found_moties} moties, {found_besluit} besluit')
             time.sleep(0.5)
@@ -357,6 +364,28 @@ def fetch_motie_datum(url):
         return None
     m = re.search(r'Voorgesteld\s+(\d{1,2}\s+\w+\s+20\d{2})', html, re.IGNORECASE)
     return parse_dutch_date(m.group(1)) if m else None
+
+def fetch_stemmen(url):
+    """Fetch per-party vote breakdown from motie detail page."""
+    if not url.startswith('http'):
+        url = 'https://www.tweedekamer.nl' + url
+    html = fetch_html(url)
+    if not html:
+        return {}
+    # Parse markdown table: | Fracties | Zetels | Voor/Tegen |
+    # Also works on raw HTML after tag stripping
+    text = re.sub(r'<[^>]+>', ' ', html)
+    rows = re.findall(
+        r'[|]\s*([^|\n]+?)\s*[|]\s*\d+\s*[|]\s*(Voor|Tegen|Niet deelgenomen|Onthouden)\s*[|]',
+        text, re.IGNORECASE
+    )
+    stemmen = {}
+    for party, vote in rows:
+        party = party.strip()
+        if party and party.lower() not in ('fracties', 'fractie'):
+            stemmen[party] = vote.lower().replace('niet deelgenomen', 'afwezig')
+    return stemmen
+
 
 # ── Moties list scrape ──
 
@@ -455,9 +484,29 @@ def main():
             m['status'] = stemming['besluit']
             m['archief'] = False
             changed = True
+        # Store vote score e.g. "(75-74)"
+        if stemming.get('score') and not m.get('score'):
+            m['score'] = stemming['score']
+            changed = True
+        # tk_url: /kamerstukken/moties/detail is correct — don't overwrite
         if changed:
             updated_vote += 1
     print(f'  {updated_vote} bestaande moties bijgewerkt met stemresultaat')
+
+    # Fetch per-party votes for voted moties that don't have them yet (max 50 per run)
+    needs_stemmen = [
+        m for m in existing
+        if m.get('status') in ('aangenomen', 'verworpen')
+        and not m.get('stemmen')
+        and m.get('tk_url')
+    ]
+    if needs_stemmen:
+        print(f'  Partijstemmen ophalen: {min(50, len(needs_stemmen))} van {len(needs_stemmen)} moties')
+        for m in needs_stemmen[:50]:
+            stemmen = fetch_stemmen(m['tk_url'])
+            if stemmen:
+                m['stemmen'] = stemmen
+            time.sleep(0.4)
 
     # ── Step 2: Scrape new moties ──
     new_items = []
