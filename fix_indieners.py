@@ -162,47 +162,80 @@ def extract_doc_ids(url):
     return list(dict.fromkeys(re.findall(r'[?&](?:id|did)=([A-Za-z0-9]+)', url or '')))
 
 
-def fetch_odata(url):
+def fetch_odata(path, params):
+    """Fetch JSON from TK OData API with proper URL encoding."""
+    import urllib.parse
+    url = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0' + path + '?' + urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
     try:
         req = urllib.request.Request(url, headers={'Accept': 'application/json', 'User-Agent': 'MotieTracker/1.0'})
         with urllib.request.urlopen(req, timeout=15) as r:
             return json.loads(r.read())
     except Exception as e:
-        print(f"    OData fout: {e}")
+        print(f'    OData fout: {e}')
         return None
 
 
 def fetch_detail_status(url):
-    """Use TK OData API to get real status and per-party stemmen."""
+    """Use TK OData API to get real date, status and per-party stemmen."""
     ids = extract_doc_ids(url)
     if not ids:
-        return None, {}
+        return 'in_behandeling', None, {}
+
+    FRACTIE_MAP = {
+        'VVD':'VVD','D66':'D66','GL-PvdA':'GL-PvdA','GroenLinks-PvdA':'GL-PvdA',
+        'PVV':'PVV','CDA':'CDA','SP':'SP','PvdD':'PvdD','ChristenUnie':'CU','CU':'CU',
+        'SGP':'SGP','Volt':'Volt','DENK':'DENK','FvD':'FvD','JA21':'JA21','BBB':'BBB',
+        '50PLUS':'50PLUS','NSC':'NSC','Markuszower':'Gr.Markuszower',
+        'Groep Markuszower':'Gr.Markuszower','Groep-Keijzer':'Groep-Keijzer',
+    }
+    STEM_MAP = {'Voor':'voor','Tegen':'tegen','Onthouden':'onthouden'}
+
+    best_datum = None
+    best_stemmen = {}
+    best_status = 'in_behandeling'
+
     for doc_id in ids:
-        for filter_q in [
-            'Zaak/Documenten/any(d:d/Id eq %27' + doc_id + '%27)',
-            'Besluit/Zaak/Documenten/any(d:d/Id eq %27' + doc_id + '%27)',
+        # 1. Get real document date
+        doc_data = fetch_odata('/Document', {
+            '$filter': f"Id eq '{doc_id}'",
+            '$select': 'Id,Datum'
+        })
+        if doc_data and doc_data.get('value'):
+            raw = doc_data['value'][0].get('Datum','')
+            if raw and not best_datum:
+                best_datum = raw[:10]
+
+        # 2. Get stemming via Zaak
+        for filt in [
+            f"Zaak/Documenten/any(d:d/Id eq '{doc_id}')",
+            f"Besluit/Zaak/Documenten/any(d:d/Id eq '{doc_id}')",
         ]:
-            data = fetch_odata(
-                ODATA + '/Stemming?$filter=' + filter_q
-                + '&$expand=Fractie($select=Afkorting)&$select=Soort,ActorFractie'
-            )
+            data = fetch_odata('/Stemming', {
+                '$filter': filt,
+                '$expand': 'Fractie($select=Afkorting)',
+                '$select': 'Soort,ActorFractie',
+            })
             if not data or not data.get('value'):
                 continue
             stemmen = {}
             voor = tegen = 0
             for item in data['value']:
-                soort = item.get('Soort', '')
+                soort = item.get('Soort','')
                 stem = STEM_MAP.get(soort, soort.lower() if soort else '')
-                naam = (item.get('Fractie') or {}).get('Afkorting') or item.get('ActorFractie', '')
+                naam = (item.get('Fractie') or {}).get('Afkorting') or item.get('ActorFractie','')
                 naam = FRACTIE_MAP.get(naam, naam)
                 if naam and stem:
                     stemmen[naam] = stem
                 if stem == 'voor': voor += 1
                 elif stem == 'tegen': tegen += 1
             if stemmen:
-                status = 'aangenomen' if voor >= tegen else 'verworpen'
-                return status, stemmen
-    return None, {}
+                best_stemmen = stemmen
+                best_status = 'aangenomen' if voor >= tegen else 'verworpen'
+                break
+        if best_stemmen:
+            break
+
+    return best_status, best_datum, best_stemmen
 
 
 def fetch_stemmen(url):
@@ -274,7 +307,7 @@ for m in moties:
 
     # Fetch stemmen for already-voted moties that have empty stemmen
     if m.get('status') in ('aangenomen', 'verworpen') and not m.get('stemmen'):
-        _, new_stemmen = fetch_detail_status(m.get('tk_url', ''))
+        _, _, new_stemmen = fetch_detail_status(m.get('tk_url', ''))
         if new_stemmen:
             m['stemmen'] = new_stemmen
             fixed_stemmen += 1
@@ -301,7 +334,7 @@ for m in moties:
     # (OData may have failed during initial fetch, or vote happened after scraping)
     if m.get('status') == 'in_behandeling' and m.get('tk_url', '') != '' and not m.get('stemmen'):
         if True:
-            new_status, new_stemmen = fetch_detail_status(m['tk_url'])
+            new_status, _, new_stemmen = fetch_detail_status(m['tk_url'])
             if new_status and new_status != 'in_behandeling':
                 print(f"  Status: {titel[:50]} -> {new_status}")
                 m['status'] = new_status

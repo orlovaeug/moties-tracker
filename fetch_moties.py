@@ -235,81 +235,80 @@ def extract_doc_ids(url):
     return list(dict.fromkeys(ids))  # deduplicated, order preserved
 
 
-def fetch_odata(url):
-    """Fetch JSON from TK OData API."""
+def fetch_odata(path, params):
+    """Fetch JSON from TK OData API with proper URL encoding."""
+    import urllib.parse
+    url = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0' + path + '?' + urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
     try:
-        req = urllib.request.Request(url, headers={'Accept': 'application/json', 'User-Agent': HEADERS['User-Agent']})
+        req = urllib.request.Request(url, headers={'Accept': 'application/json', 'User-Agent': 'MotieTracker/1.0'})
         with urllib.request.urlopen(req, timeout=15) as r:
-            data = json.loads(r.read())
-            return data
+            return json.loads(r.read())
     except Exception as e:
-        print(f'    OData fout ({url[:80]}): {e}')
+        print(f'    OData fout: {e}')
         return None
 
 
 def fetch_detail_status(url):
-    """Use TK OData API to get real date, status and per-party stemmen for a motie."""
+    """Use TK OData API to get real date, status and per-party stemmen."""
     ids = extract_doc_ids(url)
     if not ids:
         return 'in_behandeling', None, {}
 
-    ODATA = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0'
+    FRACTIE_MAP = {
+        'VVD':'VVD','D66':'D66','GL-PvdA':'GL-PvdA','GroenLinks-PvdA':'GL-PvdA',
+        'PVV':'PVV','CDA':'CDA','SP':'SP','PvdD':'PvdD','ChristenUnie':'CU','CU':'CU',
+        'SGP':'SGP','Volt':'Volt','DENK':'DENK','FvD':'FvD','JA21':'JA21','BBB':'BBB',
+        '50PLUS':'50PLUS','NSC':'NSC','Markuszower':'Gr.Markuszower',
+        'Groep Markuszower':'Gr.Markuszower','Groep-Keijzer':'Groep-Keijzer',
+    }
+    STEM_MAP = {'Voor':'voor','Tegen':'tegen','Onthouden':'onthouden'}
+
+    best_datum = None
+    best_stemmen = {}
+    best_status = 'in_behandeling'
 
     for doc_id in ids:
-        # 1. Get document datum
-        datum = None
-        doc_data = fetch_odata(
-            ODATA + '/Document?$filter=Id eq %27' + doc_id + '%27&$select=Id,Datum'
-        )
-        if doc_data is not None and not doc_data.get('value'):
-            print(f'    OData leeg voor {doc_id}')
+        # 1. Get real document date
+        doc_data = fetch_odata('/Document', {
+            '$filter': f"Id eq '{doc_id}'",
+            '$select': 'Id,Datum'
+        })
         if doc_data and doc_data.get('value'):
-            raw_datum = doc_data['value'][0].get('Datum', '')
-            if raw_datum:
-                datum = raw_datum[:10]  # YYYY-MM-DD
+            raw = doc_data['value'][0].get('Datum','')
+            if raw and not best_datum:
+                best_datum = raw[:10]
 
-        # 2. Get stemming results via Zaak linked to this document
-        stemmen_data = fetch_odata(
-            ODATA + '/Stemming'
-            '?$filter=Zaak/Documenten/any(d:d/Id eq %27' + doc_id + '%27)'
-            '&$expand=Fractie($select=Afkorting)'
-            '&$select=Soort,ActorFractie'
-        )
-
-        if not stemmen_data or not stemmen_data.get('value'):
-            # Try via Besluit
-            stemmen_data = fetch_odata(
-                ODATA + '/Stemming'
-                '?$filter=Besluit/Zaak/Documenten/any(d:d/Id eq %27' + doc_id + '%27)'
-                '&$expand=Fractie($select=Afkorting)'
-                '&$select=Soort,ActorFractie'
-            )
-
-        stemmen = {}
-        status = 'in_behandeling'
-
-        if stemmen_data and stemmen_data.get('value'):
-            voor = 0
-            tegen = 0
-            for item in stemmen_data['value']:
-                soort = item.get('Soort', '')
+        # 2. Get stemming via Zaak
+        for filt in [
+            f"Zaak/Documenten/any(d:d/Id eq '{doc_id}')",
+            f"Besluit/Zaak/Documenten/any(d:d/Id eq '{doc_id}')",
+        ]:
+            data = fetch_odata('/Stemming', {
+                '$filter': filt,
+                '$expand': 'Fractie($select=Afkorting)',
+                '$select': 'Soort,ActorFractie',
+            })
+            if not data or not data.get('value'):
+                continue
+            stemmen = {}
+            voor = tegen = 0
+            for item in data['value']:
+                soort = item.get('Soort','')
                 stem = STEM_MAP.get(soort, soort.lower() if soort else '')
-                fractie_obj = item.get('Fractie') or {}
-                naam = fractie_obj.get('Afkorting') or item.get('ActorFractie', '')
+                naam = (item.get('Fractie') or {}).get('Afkorting') or item.get('ActorFractie','')
                 naam = FRACTIE_MAP.get(naam, naam)
                 if naam and stem:
                     stemmen[naam] = stem
-                if stem == 'voor':
-                    voor += 1
-                elif stem == 'tegen':
-                    tegen += 1
+                if stem == 'voor': voor += 1
+                elif stem == 'tegen': tegen += 1
             if stemmen:
-                status = 'aangenomen' if voor >= tegen else 'verworpen'
+                best_stemmen = stemmen
+                best_status = 'aangenomen' if voor >= tegen else 'verworpen'
+                break
+        if best_stemmen:
+            break
 
-        if datum or stemmen:
-            return status, datum, stemmen
-
-    return 'in_behandeling', None, {}
+    return best_status, best_datum, best_stemmen
 
 
 def fetch_page(page=0):
