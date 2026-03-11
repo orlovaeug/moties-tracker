@@ -252,14 +252,16 @@ def scrape_stemmingen():
 
             # Find the stemming session date from the h2 heading
             # Real page: "## Plenaire vergadering 3 maart 2026"
+            # Strip tags from top of page to find date reliably
+            detail_top_text = re.sub(r'<[^>]+>', ' ', detail[:5000])
             datum_m = re.search(
                 r'Plenaire\s+vergadering\s+(\d{1,2}\s+\w+\s+20\d{2})',
-                detail[:5000], re.IGNORECASE
+                detail_top_text, re.IGNORECASE
             )
             if not datum_m:
                 datum_m = re.search(
                     r'(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})',
-                    detail[:5000], re.IGNORECASE
+                    detail_top_text, re.IGNORECASE
                 )
             session_datum = parse_dutch_date(datum_m.group(1) if datum_m else '')
 
@@ -277,6 +279,7 @@ def scrape_stemmingen():
                 print(f'    Geen datum gevonden op {link_url[:60]}')
 
             zaak_pattern = re.compile(r'[?&]id=(\d{4}Z\w+)')
+            # Strip tags before searching for Besluit — raw HTML has <strong>Besluit:</strong> Verworpen
             besluit_pattern = re.compile(r'Besluit:\s*(Aangenomen|Verworpen|Aangehouden)', re.IGNORECASE)
 
             zaak_matches = list(zaak_pattern.finditer(detail))
@@ -288,7 +291,10 @@ def scrape_stemmingen():
                 search_end = zaak_matches[i+1].start() if i+1 < len(zaak_matches) else search_start + 2000
                 chunk = detail[search_start:min(search_end, search_start + 2000)]
 
-                bm = besluit_pattern.search(chunk)
+                # Strip HTML tags so <strong>Besluit:</strong> Verworpen becomes "Besluit: Verworpen"
+                chunk_text = re.sub(r'<[^>]+>', ' ', chunk)
+
+                bm = besluit_pattern.search(chunk_text)
                 besluit = bm.group(1).lower() if bm else None
 
                 if zaak_id not in stemmingen:
