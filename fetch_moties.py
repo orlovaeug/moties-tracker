@@ -253,6 +253,7 @@ def scrape_stemmingen():
                 continue
 
             detail = detail.replace('&amp;', '&')
+            print(f'    Page size: {len(detail)} chars, has "Besluit": {"Besluit" in detail}')
 
             # Get session date — try 3 methods:
             # 1. fromdate= in footer link (most reliable, always present)
@@ -311,6 +312,13 @@ def scrape_stemmingen():
                 besluit = bm.group(1).lower() if bm else None
                 if besluit:
                     found_besluit += 1
+                # DEBUG: show raw chunk around Besluit word
+                if i == 0 and found_besluit == 0 and len(stemmingen) < 5:
+                    besluit_pos = chunk_text.find('esluit')
+                    if besluit_pos >= 0:
+                        print(f'    DEBUG besluit context: {chunk_text[max(0,besluit_pos-5):besluit_pos+40]!r}')
+                    else:
+                        print(f'    DEBUG no "esluit" in chunk. chunk[:200]: {chunk_text[:200]!r}')
 
                 if zaak_id not in stemmingen:
                     stemmingen[zaak_id] = {'datum': session_datum, 'besluit': besluit}
