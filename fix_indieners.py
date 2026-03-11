@@ -92,24 +92,29 @@ def scrape_stemmingen(max_pages=10):
         if not detail_links:
             break
 
-        # Check if we've gone past our start date
-        dates_on_page = re.findall(
-            r'(\d{1,2})\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(20\d{2})',
-            html, re.IGNORECASE
+        # Check dates only from result titles (format: "\n10 maart 2026\n" near start)
+        # Look for dates in the search results section, not nav/footer
+        results_section = html[html.find('Zoekresultaten'):] if 'Zoekresultaten' in html else html
+        result_dates = re.findall(
+            r'\n(\d{1,2})\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(20\d{2})\n',
+            results_section[:50000], re.IGNORECASE
         )
-        if dates_on_page:
-            last_date = parse_dutch_date(' '.join(dates_on_page[-1]))
+        if result_dates:
+            last_date = parse_dutch_date(' '.join(result_dates[-1]))
             if last_date and last_date < START_DATE:
                 print(f'  Pagina {page+1}: tot {last_date} — stoppen')
-                # still process this page then break
                 for link in set(detail_links):
                     detail_results = scrape_stemming_detail('https://www.tweedekamer.nl' + link)
                     results.update(detail_results)
                 break
 
-        print(f'  Stemmingen pagina {page+1}: {len(set(detail_links))} uitslagen')
-        for link in set(detail_links):
+        unique_links = list(set(detail_links))
+        print(f'  Stemmingen pagina {page+1}: {len(unique_links)} uitslagen gevonden')
+        if unique_links:
+            print(f'    Eerste link: {unique_links[0][:80]}')
+        for link in unique_links:
             detail_results = scrape_stemming_detail('https://www.tweedekamer.nl' + link)
+            print(f'    Detail: {link[:60]} -> {len(detail_results)} moties')
             results.update(detail_results)
             time.sleep(0.3)
 
@@ -124,22 +129,31 @@ def scrape_stemming_detail(url):
         return {}
 
     results = {}
-    # Each motie block has: link with id=2026Zxxxxx, date, besluit
-    # Split on motie links
-    blocks = re.split(r'(?=href="/kamerstukken/(?:moties/)?detail\?)', html)
-
-    for block in blocks:
+    # Find all motie zaak IDs directly — works regardless of HTML structure
+    # Pattern: id=2026Zxxxxx in href attributes (may have &amp; encoding)
+    # Find all motie entries: each has an id=2026Z..., a date, and a Besluit
+    
+    # Split on any kamerstukken detail link containing a Zaak ID
+    # The href may contain &amp; so normalise first
+    html_norm = html.replace('&amp;', '&')
+    
+    # Split into blocks on each motie link
+    blocks = re.split(r'(?=href="[^"]*[?&]id=2026Z)', html_norm)
+    
+    for block in blocks[:500]:  # safety limit
         id_m = re.search(r'[?&]id=(2026Z\w+)', block)
         if not id_m:
             continue
         zaak_id = id_m.group(1)
-
-        datum = parse_dutch_date(block[:200])  # date appears near top of block
-
+        
+        # Date: look in first 400 chars of block
+        datum = parse_dutch_date(block[:400])
+        
+        # Besluit: anywhere in block
         besluit_m = re.search(r'Besluit:\s*(Aangenomen|Verworpen|Aangehouden)', block, re.IGNORECASE)
         besluit = besluit_m.group(1).lower() if besluit_m else None
-
-        if zaak_id and (datum or besluit):
+        
+        if datum or besluit:
             results[zaak_id] = {'datum': datum, 'besluit': besluit}
 
     return results
@@ -176,6 +190,12 @@ for m in moties:
 print('\nStemmingsuitslagen ophalen...')
 stemmingen = scrape_stemmingen(max_pages=15)
 print(f'  Gevonden: {len(stemmingen)} zaak-stemmingen')
+# Debug: show sample zaak IDs from stemmingen
+sample_keys = list(stemmingen.keys())[:3]
+print(f'  Sample stemmingen keys: {sample_keys}')
+# Debug: show sample zaak IDs from moties
+sample_urls = [m.get('tk_url','') for m in moties if str(m.get('id','')).startswith('tk')][:3]
+print(f'  Sample motie URLs: {[u[:70] for u in sample_urls]}')
 
 # Build lookup: zaak_id from tk_url
 removed = set()
@@ -216,8 +236,8 @@ needs_date = [m for m in moties
               if m.get('datum','') >= today.isoformat()
               and m.get('tk_url','')
               and m['id'] not in removed]
-print(f'\nDatum fixup: {min(80, len(needs_date))} van {len(needs_date)} moties')
-for m in needs_date[:80]:
+print(f'\nDatum fixup: {min(200, len(needs_date))} van {len(needs_date)} moties')
+for m in needs_date[:200]:
     url = m['tk_url']
     if not url.startswith('http'):
         url = 'https://www.tweedekamer.nl' + url
