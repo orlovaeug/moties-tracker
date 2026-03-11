@@ -302,19 +302,10 @@ fixed_sta = 0
 fixed_stemmen = 0
 today = date.today()
 
+# Pass 1: cheap fixes (no network) — indiener + alignment for all moties
 for m in moties:
     titel = m.get('titel', '')
 
-    # Fetch stemmen for already-voted moties that have empty stemmen
-    if m.get('status') in ('aangenomen', 'verworpen') and not m.get('stemmen'):
-        _, _, new_stemmen = fetch_detail_status(m.get('tk_url', ''))
-        if new_stemmen:
-            m['stemmen'] = new_stemmen
-            fixed_stemmen += 1
-            print(f"  Stemmen: {titel[:50]} ({len(new_stemmen)} fracties)")
-        time.sleep(0.3)
-
-    # Fix indiener
     if m.get('indiener') == 'Onbekend':
         detected = detect_indiener(titel)
         if detected and detected != 'Onbekend':
@@ -322,7 +313,6 @@ for m in moties:
             m['indiener'] = detected
             fixed_ind += 1
 
-    # Fix alignment als nog neutraal
     if m.get('alignment') == 'neutraal':
         new_ali = detect_alignment(titel, m.get('indiener', ''), m.get('thema', ''))
         if new_ali != 'neutraal':
@@ -330,25 +320,44 @@ for m in moties:
             m['alignment'] = new_ali
             fixed_ali += 1
 
-    # Hercheck status: only in_behandeling moties with no stemmen yet
-    # (OData may have failed during initial fetch, or vote happened after scraping)
-    if m.get('status') == 'in_behandeling' and m.get('tk_url', '') != '' and not m.get('stemmen'):
-        if True:
-            new_status, _, new_stemmen = fetch_detail_status(m['tk_url'])
-            if new_status and new_status != 'in_behandeling':
-                print(f"  Status: {titel[:50]} -> {new_status}")
-                m['status'] = new_status
-                fixed_sta += 1
-                if new_status in ('aangenomen', 'verworpen'):
-                    if m.get('archief'):
-                        m['archief'] = False
-                        print(f"  Uit archief: {titel[:50]}")
-                    if new_stemmen and not m.get('stemmen'):
-                        m['stemmen'] = new_stemmen
-                        print(f"  Stemmen: {len(new_stemmen)} fracties")
-            time.sleep(0.4)
+# Pass 2: OData batch — max 40 calls total per run to stay within timeout
+# Priority: (a) voted moties missing stemmen, (b) in_behandeling missing stemmen
+BATCH = 200
+odata_done = 0
+
+needs_odata = (
+    [m for m in moties if m.get('status') in ('aangenomen','verworpen') and not m.get('stemmen') and m.get('tk_url','')]
+    + [m for m in moties if m.get('status') == 'in_behandeling' and not m.get('stemmen') and m.get('tk_url','')]
+)
+# oldest first so backlog drains over multiple runs
+needs_odata.sort(key=lambda x: x.get('datum',''))
+
+print(f'OData batch: {min(BATCH, len(needs_odata))} van {len(needs_odata)} moties')
+for m in needs_odata[:BATCH]:
+    titel = m.get('titel','')[:50]
+    new_status, new_datum, new_stemmen = fetch_detail_status(m['tk_url'])
+
+    # Fix wrong date (scraper shows indexing date, OData gives real date)
+    if new_datum and m.get('datum','') >= today.isoformat():
+        m['datum'] = new_datum
+        print(f"  Datum: {titel} -> {new_datum}")
+
+    if new_stemmen and not m.get('stemmen'):
+        m['stemmen'] = new_stemmen
+        fixed_stemmen += 1
+        print(f"  Stemmen: {titel} ({len(new_stemmen)} fracties)")
+
+    if new_status != 'in_behandeling' and m.get('status') == 'in_behandeling':
+        m['status'] = new_status
+        fixed_sta += 1
+        print(f"  Status: {titel} -> {new_status}")
+        if new_status in ('aangenomen','verworpen') and m.get('archief'):
+            m['archief'] = False
+
+    odata_done += 1
+    time.sleep(0.3)
 
 with open('moties.json', 'w', encoding='utf-8') as f:
     json.dump(moties, f, ensure_ascii=False, indent=2)
 
-print(f"\n✅ {fixed_ind} indieners + {fixed_ali} alignments + {fixed_sta} statussen + {fixed_stemmen} stemmen gecorrigeerd")
+print(f"\n✅ {fixed_ind} indieners + {fixed_ali} alignments + {fixed_sta} statussen + {fixed_stemmen} stemmen gecorrigeerd ({odata_done} OData calls)")

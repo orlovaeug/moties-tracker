@@ -438,9 +438,13 @@ def main():
             thema = detect_thema(r['titel'])
             indiener = detect_indiener(r['titel'])
 
-            # Use OData API to get real date, status and stemmen
-            detail_status, detail_datum, detail_stemmen = fetch_detail_status(r['link'])
-            time.sleep(0.3)
+            # During backfill skip OData (too slow for 700+ moties)
+            # fix_indieners.py resolves dates/statussen in daily batches of 40
+            if scraped_count > 0:
+                detail_status, detail_datum, detail_stemmen = fetch_detail_status(r['link'])
+                time.sleep(0.3)
+            else:
+                detail_status, detail_datum, detail_stemmen = 'in_behandeling', None, {}
             motie_datum = detail_datum or r['datum']
 
             new_items.append({
