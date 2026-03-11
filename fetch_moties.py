@@ -395,7 +395,7 @@ def fetch_agenda():
         "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Activiteit"
         "?$filter=" + urllib.parse.quote(filter_str)
         + "&$orderby=" + urllib.parse.quote("Datum asc,Aanvangstijd asc")
-        + "&$select=Nummer,Onderwerp,Datum,Aanvangstijd,Locatie,Soort"
+        + "&$select=Id,Nummer,Onderwerp,Datum,Aanvangstijd,Locatie,Soort"
         + "&$top=60"
     )
     try:
@@ -414,12 +414,20 @@ def fetch_agenda():
         agenda = []
         for a in plenair:
             datum = (a.get('Datum') or '')[:10]
+            nummer = a.get('Nummer','')
+            item_id = a.get('Id','')
+            # Per TK Open Data docs: URL uses Nummer field
+            if nummer:
+                tk_url = f"https://www.tweedekamer.nl/debat_en_vergadering/plenaire_vergaderingen/details/activiteit?id={nummer}"
+            else:
+                tk_url = "https://www.tweedekamer.nl/debat_en_vergadering/plenaire_vergaderingen"
             agenda.append({
                 'datum':   datum,
                 'tijd':    (a.get('Aanvangstijd') or '')[:5],
                 'titel':   a.get('Onderwerp') or a.get('Nummer') or 'Vergadering',
                 'locatie': a.get('Locatie') or 'Plenaire zaal',
                 'soort':   a.get('Soort') or 'Plenair',
+                'url':     tk_url,
             })
         print(f'  Agenda: {len(agenda)} activiteiten geladen')
         return agenda
