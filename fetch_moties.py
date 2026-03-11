@@ -241,7 +241,7 @@ def scrape_stemmingen():
 
         print(f'  Stemmingen pagina {page+1}: {len(detail_links)} sessies')
 
-        stop_after_page = False
+        oldest_on_page = None
         for link in detail_links:
             link_url = 'https://www.tweedekamer.nl' + link.replace('&amp;', '&')
             detail = fetch_html(link_url)
@@ -250,44 +250,43 @@ def scrape_stemmingen():
 
             detail = detail.replace('&amp;', '&')
 
-            # Find the stemming date — look for it in the page title/header area
-            # It appears as "Stemmingsuitslagen DD maand YYYY" or just in h1/h2
+            # Find the stemming session date from the h2 heading
+            # Real page: "## Plenaire vergadering 3 maart 2026"
             datum_m = re.search(
-                r'(?:Stemmingsuitslagen|Stemming(?:en)?|Plenaire\s+vergadering)[^<]{0,50}'
-                r'(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})',
+                r'Plenaire\s+vergadering\s+(\d{1,2}\s+\w+\s+20\d{2})',
                 detail[:5000], re.IGNORECASE
             )
             if not datum_m:
-                # Fallback: first date in the page body
                 datum_m = re.search(
                     r'(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})',
                     detail[:5000], re.IGNORECASE
                 )
             session_datum = parse_dutch_date(datum_m.group(1) if datum_m else '')
 
+            # Track oldest session on this list page
+            if session_datum:
+                if oldest_on_page is None or session_datum < oldest_on_page:
+                    oldest_on_page = session_datum
+
+            # Skip sessions entirely before our window
             if session_datum and session_datum < START_DATE:
                 print(f'    Sessie {session_datum} voor {START_DATE} — overslaan')
-                stop_after_page = True
                 continue
 
             if not session_datum:
                 print(f'    Geen datum gevonden op {link_url[:60]}')
 
-            # Find all motie entries — each has a zaak ID link + nearby Besluit text
-            # Strategy: find all zaak ID occurrences, then search for Besluit in next 1500 chars
             zaak_pattern = re.compile(r'[?&]id=(\d{4}Z\w+)')
-            besluit_pattern = re.compile(r'Besluit[:\s]+(Aangenomen|Verworpen|Aangehouden)', re.IGNORECASE)
+            besluit_pattern = re.compile(r'Besluit:\s*(Aangenomen|Verworpen|Aangehouden)', re.IGNORECASE)
 
-            # Find all positions of zaak IDs
             zaak_matches = list(zaak_pattern.finditer(detail))
-            print(f'    {session_datum}: {len(zaak_matches)} moties gevonden')
+            print(f'    {session_datum}: {len(zaak_matches)} zaak-IDs, besluit zoeken...')
 
             for i, zm in enumerate(zaak_matches):
                 zaak_id = zm.group(1)
-                # Search for Besluit between this zaak_id and the next
                 search_start = zm.start()
-                search_end = zaak_matches[i+1].start() if i+1 < len(zaak_matches) else search_start + 1500
-                chunk = detail[search_start:min(search_end, search_start + 1500)]
+                search_end = zaak_matches[i+1].start() if i+1 < len(zaak_matches) else search_start + 2000
+                chunk = detail[search_start:min(search_end, search_start + 2000)]
 
                 bm = besluit_pattern.search(chunk)
                 besluit = bm.group(1).lower() if bm else None
@@ -299,7 +298,9 @@ def scrape_stemmingen():
 
             time.sleep(0.5)
 
-        if stop_after_page:
+        # Only stop when the oldest session on this entire list page is before START_DATE
+        if oldest_on_page and oldest_on_page < START_DATE:
+            print(f'  Oudste sessie op pagina {page+1}: {oldest_on_page} — stoppen')
             break
         time.sleep(1)
 
