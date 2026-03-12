@@ -314,15 +314,24 @@ def scrape_stemmingen():
             found_moties = 0
 
             for card in cards:
-                id_m = re.search(r'[?&]id=(\d{4}Z\w+)', card)
+                id_m = re.search(r'href="([^"]*[?&]id=(\d{4}Z\w+)[^"]*)"', card)
                 if not id_m:
-                    continue
-                zaak_id = id_m.group(1)
+                    id_m2 = re.search(r'[?&]id=(\d{4}Z\w+)', card)
+                    if not id_m2:
+                        continue
+                    zaak_id = id_m2.group(1)
+                    href = ''
+                else:
+                    href = 'https://www.tweedekamer.nl' + id_m.group(1) if id_m.group(1).startswith('/') else id_m.group(1)
+                    zaak_id = id_m.group(2)
                 found_moties += 1
 
                 # Strip tags and search full card for Besluit
                 card_text = re.sub(r'<[^>]+>', ' ', card)
-                bm = re.search(r'Besluit:\s*(Aangenomen|Verworpen|Aangehouden)', card_text, re.IGNORECASE)
+                bm = re.search(r'Besluit[:\s]+(Aangenomen|Verworpen|Aangehouden)', card_text, re.IGNORECASE)
+                if not bm:
+                    # Some pages show "Aangenomen" / "Verworpen" as standalone status
+                    bm = re.search(r'\b(Aangenomen|Verworpen|Aangehouden)\b', card_text, re.IGNORECASE)
                 besluit = bm.group(1).lower() if bm else None
                 if besluit:
                     found_besluit += 1
@@ -332,12 +341,14 @@ def scrape_stemmingen():
                 score = score_m.group(1) if score_m else None
 
                 if zaak_id not in stemmingen:
-                    stemmingen[zaak_id] = {'datum': session_datum, 'besluit': besluit, 'score': score}
+                    stemmingen[zaak_id] = {'datum': session_datum, 'besluit': besluit, 'score': score, 'href': href}
                 else:
                     if besluit and not stemmingen[zaak_id].get('besluit'):
                         stemmingen[zaak_id]['besluit'] = besluit
                     if score and not stemmingen[zaak_id].get('score'):
                         stemmingen[zaak_id]['score'] = score
+                    if href and not stemmingen[zaak_id].get('href'):
+                        stemmingen[zaak_id]['href'] = href
 
             print(f'    {session_datum}: {found_moties} moties, {found_besluit} besluit')
             time.sleep(0.5)
@@ -419,13 +430,15 @@ def fetch_stemmen(url):
 
 
 def fetch_stemmen_odata(zaak_nummer):
-    """Fetch per-party votes: reuse fetch_zaak_besluit to get BesluitId, then get Stemming."""
+    """Fetch per-party votes via single OData expand chain: Zaak->Besluit->Stemming.
+    No GUID filters — avoids all Edm.Guid type errors.
+    """
     PARTY_NORM = {
         'GroenLinks-PvdA': 'GL-PvdA', 'ChristenUnie': 'CU',
         'Groep Markuszower': 'Gr.Markuszower', 'Lid Keijzer': 'Groep-Keijzer', 'FVD': 'FvD',
         'Partij voor de Dieren': 'PvdD', 'Socialistische Partij': 'SP',
         'Volkspartij voor Vrijheid en Democratie': 'VVD',
-        u'Democraten 66': 'D66', u'Christen-Democratisch App\u00e8l': 'CDA',
+        'Democraten 66': 'D66', 'Christen-Democratisch App\u00e8l': 'CDA',
         'Partij voor de Vrijheid': 'PVV', 'Nieuw Sociaal Contract': 'NSC',
         'BoerBurgerBeweging': 'BBB', 'Forum voor Democratie': 'FvD',
         'Staatkundig Gereformeerde Partij': 'SGP',
@@ -434,19 +447,28 @@ def fetch_stemmen_odata(zaak_nummer):
     BASE = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/'
     HDR = {**HEADERS, 'Accept': 'application/json'}
     try:
-        # Get BesluitId from Zaak expand
-        _, besluit_id = fetch_zaak_besluit(zaak_nummer)
-        if not besluit_id:
-            return {}
-        time.sleep(0.2)
-        # Get Stemming records for this Besluit
-        url = (BASE + 'Stemming?$filter=' + urllib.parse.quote(f"BesluitId eq {besluit_id}")
-               + '&$select=Soort,ActorNaam,ActorFractie&$top=50')
+        expand = 'Besluit($expand=Stemming($select=Soort,ActorNaam,ActorFractie);$select=Id,BesluitTekst)'
+        url = (BASE + 'Zaak?$filter=' + urllib.parse.quote(f"Nummer eq '{zaak_nummer}'")
+               + '&$expand=' + expand
+               + '&$select=Id,Nummer&$top=1')
         req = urllib.request.Request(url, headers=HDR)
-        with urllib.request.urlopen(req, timeout=15) as r:
+        with urllib.request.urlopen(req, timeout=20) as r:
             data = json.loads(r.read().decode())
+        items = data.get('value', [])
+        if not items:
+            return {}
+        besluiten = items[0].get('Besluit', [])
+        # Find besluit with stemming records
+        stemmingen_raw = []
+        for b in besluiten:
+            s = b.get('Stemming', [])
+            if s:
+                stemmingen_raw = s
+                break
+        if not stemmingen_raw:
+            return {}
         stemmen = {}
-        for item in data.get('value', []):
+        for item in stemmingen_raw:
             naam = (item.get('ActorFractie') or item.get('ActorNaam') or '').strip()
             naam = PARTY_NORM.get(naam, naam)
             soort = (item.get('Soort') or '').lower()
@@ -461,79 +483,6 @@ def fetch_stemmen_odata(zaak_nummer):
         except:
             print(f'    OData stemmen fout ({zaak_nummer}): {e}')
         return {}
-
-def fetch_motie_detail(url):
-    """Fetch both date and title from a motie detail page in one HTTP request."""
-    if not url.startswith('http'):
-        url = 'https://www.tweedekamer.nl' + url
-    html = fetch_html(url)
-    if not html:
-        return None, None
-    # Title from <title> tag
-    title = None
-    m = re.search(r'<title[^>]*>(.*?)</title>', html, re.IGNORECASE | re.DOTALL)
-    if m:
-        t = re.sub(r'<[^>]+>', '', m.group(1)).strip()
-        t = t.split('|')[0].strip()
-        if t and len(t) > 10 and t.lower() not in ('motie', 'moties'):
-            title = t
-    if not title:
-        m = re.search(r'<h1[^>]*>(.*?)</h1>', html, re.IGNORECASE | re.DOTALL)
-        if m:
-            t = re.sub(r'<[^>]+>', '', m.group(1)).strip()
-            t = re.sub(r'\s+', ' ', t)
-            if t and len(t) > 10:
-                title = t
-    # Date
-    datum = None
-    for pattern in [
-        r'Datum[:\s]+(\d{1,2}\s+\w+\s+20\d{2})',
-        r'Voorgesteld\s+(\d{1,2}\s+\w+\s+20\d{2})',
-        r'(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})',
-    ]:
-        m = re.search(pattern, html, re.IGNORECASE)
-        if m:
-            d = parse_dutch_date(m.group(1))
-            if d and d >= START_DATE:
-                datum = d
-                break
-    return datum, title
-
-def fetch_zaak_besluit(zaak_nummer):
-    """Fetch besluit via Zaak?$expand=Besluit. BesluitTekst contains aangenomen/verworpen."""
-    BASE = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/'
-    HDR = {**HEADERS, 'Accept': 'application/json'}
-    try:
-        # Get Zaak with expanded Besluit in one call
-        url = (BASE + 'Zaak?$filter=' + urllib.parse.quote(f"Nummer eq '{zaak_nummer}'")
-               + '&$expand=Besluit($select=Id,BesluitTekst,StemmingsSoort)'
-               + '&$select=Id,Nummer&$top=1')
-        req = urllib.request.Request(url, headers=HDR)
-        with urllib.request.urlopen(req, timeout=15) as r:
-            data = json.loads(r.read().decode())
-        items = data.get('value', [])
-        if not items:
-            return None, None
-        besluiten = items[0].get('Besluit', [])
-        if not besluiten:
-            return None, None
-        b = besluiten[0]
-        tekst = (b.get('BesluitTekst') or '').lower()
-        besluit_id = b.get('Id', '')
-        if 'aangenomen' in tekst:
-            return 'aangenomen', besluit_id
-        elif 'verworpen' in tekst:
-            return 'verworpen', besluit_id
-        elif 'aangehouden' in tekst:
-            return 'aangehouden', besluit_id
-        return None, besluit_id
-    except Exception as e:
-        try:
-            body = e.read().decode()[:300]
-            print(f'    OData besluit fout ({zaak_nummer}): {e} | {body}')
-        except:
-            print(f'    OData besluit fout ({zaak_nummer}): {e}')
-        return None, None
 
 
 def fetch_agenda():
@@ -709,14 +658,15 @@ def main():
         print(f'  Ongematchte stemmingen ({len(unmatched_stemmingen)}): ophalen...')
         added_from_stemming = 0
         for zaak_id in unmatched_stemmingen[:80]:
+            # Always use canonical moties URL
             link = f'https://www.tweedekamer.nl/kamerstukken/moties/detail?id={zaak_id}'
             if link in existing_links:
                 continue
             item_id = make_id(link)
             try:
-                real_date, real_title = fetch_motie_detail(link)
+                real_date, real_title, real_besluit = fetch_motie_detail(link)
             except Exception:
-                import traceback; traceback.print_exc()
+                pass  # 404 or non-motie
                 continue
             time.sleep(0.4)
             if not real_title:
@@ -725,7 +675,7 @@ def main():
                 real_date = stemmingen[zaak_id].get('datum') or TODAY
             if not real_date or real_date < START_DATE:
                 continue
-            status = stemmingen[zaak_id].get('besluit') or 'in_behandeling'
+            status = real_besluit or stemmingen[zaak_id].get('besluit') or 'in_behandeling'
             thema    = detect_thema(real_title)
             indiener = detect_indiener(real_title)
             new_m = {
@@ -748,8 +698,9 @@ def main():
             if extract_zaak_id(x.get('tk_url', ''))
         }
 
-    # ── Step 1b: Fix moties still in_behandeling but actually in stemmingen dict ──
+    # ── Step 1b: Fix moties still in_behandeling ──
     fixed_besluit = 0
+    needs_detail_check = []
     for m in existing:
         if m.get('status') != 'in_behandeling':
             continue
@@ -766,8 +717,23 @@ def main():
             if stemming.get('score') and not m.get('score'):
                 m['score'] = stemming['score']
             fixed_besluit += 1
+        elif stemming:
+            needs_detail_check.append(m)
     if fixed_besluit:
         print(f'  {fixed_besluit} in_behandeling moties bijgewerkt via stemmingen dict')
+    if needs_detail_check:
+        print(f'  Detail check: {min(30, len(needs_detail_check))} moties zonder besluit')
+        fixed2 = 0
+        for m in needs_detail_check[:30]:
+            _, _, besluit = fetch_motie_detail(m['tk_url'])
+            time.sleep(0.3)
+            if besluit:
+                m['status'] = besluit
+                m['archief'] = False
+                m.pop('stemmen_na', None)
+                fixed2 += 1
+        if fixed2:
+            print(f'    {fixed2} moties bijgewerkt via detail pagina')
 
     # Reset stemmen_na for moties that were voted but still have no party breakdown
     # (stemmen_na was set when title was broken; now title is correct, retry)
@@ -792,8 +758,11 @@ def main():
         fetched_stemmen = 0
         for m in needs_stemmen[:60]:
             stemmen = {}
-            # HTML scrape of stemmingsuitslag detail page (most reliable)
-            if m.get('tk_url'):
+            zaak_id = extract_zaak_id(m.get('tk_url', ''))
+            if zaak_id:
+                stemmen = fetch_stemmen_odata(zaak_id)
+                time.sleep(0.3)
+            if not stemmen and m.get('tk_url'):
                 stemmen = fetch_stemmen(m['tk_url'])
                 time.sleep(0.4)
             if stemmen:
