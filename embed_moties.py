@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 embed_moties.py — bakt moties.json en agenda.json in index.html
+Uses safe string replacement, NOT regex with DOTALL (which eats JS code).
 """
 import json, re, os
 from datetime import date
@@ -8,7 +9,6 @@ from datetime import date
 with open('moties.json', 'r', encoding='utf-8') as f:
     fresh = json.load(f)
 
-# Load agenda if available
 agenda = []
 if os.path.exists('agenda.json'):
     with open('agenda.json', 'r', encoding='utf-8') as f:
@@ -17,23 +17,42 @@ if os.path.exists('agenda.json'):
 with open('index.html', 'r', encoding='utf-8') as f:
     html = f.read()
 
-# 1. Replace INIT array
-new_init = 'var INIT=' + json.dumps(fresh, ensure_ascii=False, separators=(',', ':')) + ';'
-html = re.sub(r'var INIT=\[.*?\];', new_init, html, flags=re.DOTALL)
+def replace_js_var(html, varname, new_value_json):
+    """
+    Safely replace  var NAME=[...];  by scanning for the exact opening token
+    and matching bracket depth — so large JSON blobs never swallow surrounding code.
+    """
+    token = f'var {varname}=['
+    start = html.find(token)
+    if start == -1:
+        return html
+    bracket_start = start + len(token) - 1  # index of '['
+    depth = 0
+    i = bracket_start
+    while i < len(html):
+        if html[i] == '[':
+            depth += 1
+        elif html[i] == ']':
+            depth -= 1
+            if depth == 0:
+                break
+        i += 1
+    end = i + 1
+    if end < len(html) and html[end] == ';':
+        end += 1
+    new_decl = f'var {varname}={new_value_json};'
+    return html[:start] + new_decl + html[end:]
 
-# 2. Replace AGENDA array (or insert after INIT if not present)
-new_agenda = 'var AGENDA=' + json.dumps(agenda, ensure_ascii=False, separators=(',', ':')) + ';'
-if re.search(r'var AGENDA=\[.*?\];', html, flags=re.DOTALL):
-    html = re.sub(r'var AGENDA=\[.*?\];', new_agenda, html, flags=re.DOTALL)
-else:
-    html = html.replace('var INIT=', new_agenda + '\nvar INIT=', 1)
+new_init   = json.dumps(fresh,  ensure_ascii=False, separators=(',', ':'))
+new_agenda = json.dumps(agenda, ensure_ascii=False, separators=(',', ':'))
 
-# 3. Bump storage key
+html = replace_js_var(html, 'INIT',   new_init)
+html = replace_js_var(html, 'AGENDA', new_agenda)
+html = replace_js_var(html, 'NIEUW',  '[]')
+
+# Bump storage key
 today = date.today().strftime('%Y%m%d')
 html = re.sub(r'var SK="motie-v[\w]+"', f'var SK="motie-v{today}"', html)
-
-# 4. Clear NIEUW
-html = re.sub(r'var NIEUW=\[.*?\];', 'var NIEUW=[];', html, flags=re.DOTALL)
 
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html)
