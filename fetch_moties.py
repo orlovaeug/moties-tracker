@@ -418,6 +418,76 @@ def fetch_stemmen(url):
     return stemmen
 
 
+def fetch_stemmen_odata(zaak_nummer):
+    """Fetch per-party vote breakdown from OData API using zaak nummer (e.g. 2026Z04934)."""
+    PARTY_NORM = {
+        'GroenLinks-PvdA': 'GL-PvdA', 'ChristenUnie': 'CU',
+        'Groep Markuszower': 'Gr.Markuszower', 'Lid Keijzer': 'Groep-Keijzer', 'FVD': 'FvD',
+        'Partij voor de Dieren': 'PvdD', 'Socialistische Partij': 'SP',
+        'Volkspartij voor Vrijheid en Democratie': 'VVD',
+        'Democraten 66': 'D66', 'Christen-Democratisch Appèl': 'CDA',
+        'Partij voor de Vrijheid': 'PVV', 'Nieuw Sociaal Contract': 'NSC',
+        'BoerBurgerBeweging': 'BBB', 'Forum voor Democratie': 'FvD',
+        'Staatkundig Gereformeerde Partij': 'SGP',
+        'DENK': 'DENK', 'Volt': 'Volt', 'JA21': 'JA21', '50PLUS': '50PLUS',
+    }
+    VOTE_NORM = {'voor': 'voor', 'tegen': 'tegen', 'onthouden': 'onthouden',
+                 'niet deelgenomen': 'afwezig', 'afwezig': 'afwezig'}
+    filter_str = f"Zaak/Nummer eq '{zaak_nummer}'"
+    url = (
+        "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Stemming"
+        "?$filter=" + urllib.parse.quote(filter_str)
+        + "&$expand=Fractie($select=NaamNL,NaamEN)"
+        + "&$select=Soort,Fractie"
+        + "&$top=50"
+    )
+    try:
+        req = urllib.request.Request(url, headers={**HEADERS, 'Accept': 'application/json'})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            data = json.loads(r.read().decode('utf-8'))
+        stemmen = {}
+        for item in data.get('value', []):
+            fractie = item.get('Fractie') or {}
+            naam = fractie.get('NaamNL') or fractie.get('NaamEN') or ''
+            naam = PARTY_NORM.get(naam, naam)
+            soort = (item.get('Soort') or '').lower()
+            vote = VOTE_NORM.get(soort, soort)
+            if naam and vote:
+                stemmen[naam] = vote
+        return stemmen
+    except Exception as e:
+        print(f'    OData stemmen fout ({zaak_nummer}): {e}')
+        return {}
+
+
+def fetch_zaak_besluit(zaak_nummer):
+    """Fetch besluit (aangenomen/verworpen) for a zaak from OData."""
+    filter_str = f"Nummer eq '{zaak_nummer}'"
+    url = (
+        "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Zaak"
+        "?$filter=" + urllib.parse.quote(filter_str)
+        + "&$select=Nummer,Besluit,GewijzigdOp"
+        + "&$top=1"
+    )
+    try:
+        req = urllib.request.Request(url, headers={**HEADERS, 'Accept': 'application/json'})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            data = json.loads(r.read().decode('utf-8'))
+        items = data.get('value', [])
+        if not items:
+            return None
+        besluit = (items[0].get('Besluit') or '').lower()
+        if 'aangenomen' in besluit:
+            return 'aangenomen'
+        elif 'verworpen' in besluit:
+            return 'verworpen'
+        elif 'aangehouden' in besluit:
+            return 'aangehouden'
+        return None
+    except Exception as e:
+        return None
+
+
 def fetch_agenda():
     """Fetch plenaire agenda from TK OData API."""
     today = date.today().isoformat()
@@ -594,6 +664,30 @@ def main():
     if needs_votes:
         print(f'  Moties gestemd maar zonder stemmen-breakdown ({len(needs_votes)}): {[extract_zaak_id(m.get("tk_url","")) for m in needs_votes[:5]]}')
 
+    # ── Step 1b: Fix moties still in_behandeling but actually voted (OData check) ──
+    in_behandeling_old = [
+        m for m in existing
+        if m.get('status') == 'in_behandeling'
+        and m.get('datum','') <= TODAY
+        and m.get('tk_url')
+    ]
+    if in_behandeling_old:
+        print(f'  OData besluit check: {min(30, len(in_behandeling_old))} moties in behandeling')
+        fixed_besluit = 0
+        for m in in_behandeling_old[:30]:
+            zaak_id = extract_zaak_id(m.get('tk_url',''))
+            if not zaak_id:
+                continue
+            besluit = fetch_zaak_besluit(zaak_id)
+            if besluit:
+                m['status'] = besluit
+                m['archief'] = False
+                m.pop('stemmen_na', None)
+                fixed_besluit += 1
+            time.sleep(0.3)
+        if fixed_besluit:
+            print(f'    {fixed_besluit} moties status bijgewerkt via OData')
+
     # Reset stemmen_na for moties that were voted but still have no party breakdown
     # (stemmen_na was set when title was broken; now title is correct, retry)
     reset_count = 0
@@ -615,15 +709,23 @@ def main():
     if needs_stemmen:
         print(f'  Partijstemmen ophalen: {len(needs_stemmen)} moties')
         fetched_stemmen = 0
-        for m in needs_stemmen:
-            stemmen = fetch_stemmen(m['tk_url'])
+        for m in needs_stemmen[:60]:
+            zaak_id = extract_zaak_id(m.get('tk_url',''))
+            stemmen = {}
+            # Try OData API first (most reliable)
+            if zaak_id:
+                stemmen = fetch_stemmen_odata(zaak_id)
+                time.sleep(0.3)
+            # Fallback: HTML scrape of detail page
+            if not stemmen and m.get('tk_url'):
+                stemmen = fetch_stemmen(m['tk_url'])
+                time.sleep(0.4)
             if stemmen:
                 m['stemmen'] = stemmen
                 fetched_stemmen += 1
             else:
-                # No table found — likely handopsteken, mark to avoid retrying
+                # No votes found — likely handopsteken
                 m['stemmen_na'] = True
-            time.sleep(0.4)
         print(f'    {fetched_stemmen} moties partijstemmen opgehaald')
 
     # ── Step 2: Scrape new moties ──
