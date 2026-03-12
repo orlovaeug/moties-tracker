@@ -44,7 +44,7 @@ LEDEN_PARTIJ = {
     "Omtzigt":"NSC","Pieter Omtzigt":"NSC","Van Hijum":"NSC","Struijs":"NSC",
     "Boelsma-Hoekstra":"NSC","Lammers":"NSC","Crijns":"NSC","Podt":"NSC","Hartman":"NSC",
     # BBB
-    "Van der Plas":"BBB","Caroline van der Plas":"BBB","Hamstra":"BBB",
+    "Van der Plas":"BBB","Caroline van der Plas":"BBB","Hamstra":"BBB","Aardema":"BBB","Tuinman":"BBB",
     "Wendel":"BBB","Jumelet":"BBB","Van Oosterhout":"BBB","Vermeer":"BBB","Kostić":"BBB",
     # GL-PvdA
     "Klaver":"GL-PvdA","Jesse Klaver":"GL-PvdA","Timmermans":"GL-PvdA",
@@ -62,7 +62,7 @@ LEDEN_PARTIJ = {
     "Krul":"CDA","Van den Berg":"CDA","Van Ark":"CDA","Armut":"CDA",
     "Van den Brink":"CDA","Inge van Dijk":"CDA",
     # SP
-    "Jimmy Dijk":"SP","Beckerman":"SP","Temmink":"SP","Van Nispen":"SP","Leijten":"SP",
+    "Jimmy Dijk":"SP","Dobbe":"SP","Beckerman":"SP","Temmink":"SP","Van Nispen":"SP","Leijten":"SP","Fleur":"SP",
     # PvdD
     "Simons":"PvdD","Teunissen":"PvdD","Vestering":"PvdD","Van Raan":"PvdD",
     # CU
@@ -70,9 +70,9 @@ LEDEN_PARTIJ = {
     # SGP
     "Diederik van Dijk":"SGP","Stoffer":"SGP","Flach":"SGP",
     # Volt
-    "Dassen":"Volt","Koekkoek":"Volt",
+    "Dassen":"Volt","Koekkoek":"Volt","Nanninga":"Volt",
     # DENK
-    "Stephan van Baarle":"DENK","Van Baarle":"DENK","El Abassi":"DENK","Ergin":"DENK",
+    "Stephan van Baarle":"DENK","Van Baarle":"DENK","El Abassi":"DENK","Ergin":"DENK","Kırcalı":"DENK","Kircali":"DENK",
     # JA21
     "Eerdmans":"JA21",
     # FvD
