@@ -617,19 +617,46 @@ def main():
             item_id = make_id(link)
 
             # Match on zaak_id (robust) or full link or item_id
+            # If existing entry has a broken title, update it instead of skipping
+            def _is_broken(t):
+                t = (t or '').strip().lower()
+                return t in ('moties','motie','') or len(t) < 10
+
             if item_id in seen_ids:
-                if page == 0: print(f'    SKIP item_id: {zaak_id}')
+                ex = next((x for x in existing if x.get('id') == item_id), None)
+                if ex and _is_broken(ex.get('titel','')):
+                    ex['titel']     = r['titel']
+                    ex['indiener']  = detect_indiener(r['titel'])
+                    ex['thema']     = detect_thema(r['titel'])
+                    ex['alignment'] = detect_alignment(r['titel'], ex['indiener'])
+                    print(f'    FIX titel: {zaak_id} → {r["titel"][:60]}')
+                elif page == 0:
+                    print(f'    SKIP item_id: {zaak_id}')
                 continue
             if zaak_id and zaak_id in seen_zaak_ids:
-                if page == 0: print(f'    SKIP zaak_id: {zaak_id}')
+                ex = next((x for x in existing if extract_zaak_id(x.get('tk_url','')) == zaak_id), None)
+                if ex and _is_broken(ex.get('titel','')):
+                    ex['titel']     = r['titel']
+                    ex['indiener']  = detect_indiener(r['titel'])
+                    ex['thema']     = detect_thema(r['titel'])
+                    ex['alignment'] = detect_alignment(r['titel'], ex['indiener'])
+                    print(f'    FIX titel (zaak): {zaak_id} → {r["titel"][:60]}')
+                elif page == 0:
+                    print(f'    SKIP zaak_id: {zaak_id}')
                 continue
             if link in existing_links:
                 if page == 0: print(f'    SKIP link: {zaak_id} → {link}')
                 continue
             if zaak_id and zaak_id in existing_by_zaak:
                 matched_m = existing_by_zaak[zaak_id]
-                if page == 0:
-                    print(f'    SKIP zaak_id match: {zaak_id} → stored url: {matched_m.get("tk_url","?")}')
+                if _is_broken(matched_m.get('titel','')):
+                    matched_m['titel']     = r['titel']
+                    matched_m['indiener']  = detect_indiener(r['titel'])
+                    matched_m['thema']     = detect_thema(r['titel'])
+                    matched_m['alignment'] = detect_alignment(r['titel'], matched_m['indiener'])
+                    print(f'    FIX titel (by_zaak): {zaak_id} → {r["titel"][:60]}')
+                elif page == 0:
+                    print(f'    SKIP zaak_id match: {zaak_id} → {matched_m.get("tk_url","?")}')
                 continue
 
             # Get real date
