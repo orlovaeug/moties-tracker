@@ -409,6 +409,47 @@ def fetch_motie_title(url):
             return t
     return None
 
+
+def fetch_motie_detail(url):
+    """Fetch date, title, and besluit from motie detail page in one HTTP request."""
+    if not url.startswith('http'):
+        url = 'https://www.tweedekamer.nl' + url
+    html = fetch_html(url)
+    if not html:
+        return None, None, None
+    text = re.sub(r'<[^>]+>', ' ', html)
+    title = None
+    m = re.search(r'<title[^>]*>(.*?)</title>', html, re.IGNORECASE | re.DOTALL)
+    if m:
+        t = re.sub(r'<[^>]+>', '', m.group(1)).strip()
+        t = t.split('|')[0].strip()
+        if t and len(t) > 10 and t.lower() not in ('motie', 'moties'):
+            title = t
+    if not title:
+        m = re.search(r'<h1[^>]*>(.*?)</h1>', html, re.IGNORECASE | re.DOTALL)
+        if m:
+            t = re.sub(r'<[^>]+>', '', m.group(1)).strip()
+            t = re.sub(r'\s+', ' ', t)
+            if t and len(t) > 10:
+                title = t
+    datum = None
+    for pattern in [
+        r'Datum[:\s]+(\d{1,2}\s+\w+\s+20\d{2})',
+        r'Voorgesteld\s+(\d{1,2}\s+\w+\s+20\d{2})',
+        r'(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})',
+    ]:
+        m = re.search(pattern, html, re.IGNORECASE)
+        if m:
+            d = parse_dutch_date(m.group(1))
+            if d and d >= START_DATE:
+                datum = d
+                break
+    besluit = None
+    bm = re.search(r'Besluit[:\s]+(Aangenomen|Verworpen|Aangehouden)', text, re.IGNORECASE)
+    if bm:
+        besluit = bm.group(1).lower()
+    return datum, title, besluit
+
 def fetch_stemmen(url):
     """Fetch per-party vote breakdown from motie detail page."""
     if not url.startswith('http'):
