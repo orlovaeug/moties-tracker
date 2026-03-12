@@ -666,38 +666,71 @@ def main():
         if changed:
             updated_vote += 1
     print(f'  {updated_vote} bestaande moties bijgewerkt met stemresultaat ({matched}/{len(stemmingen)} stemmingen gematcht)')
-    # Debug: show which stemmingen zaak_ids have no match in existing
+    # ── Step 1a: fetch moties that were voted but not yet in our list ──
     unmatched_stemmingen = [zid for zid in stemmingen if zid not in existing_by_zaak]
     if unmatched_stemmingen:
-        print(f'  Ongematchte stemmingen ({len(unmatched_stemmingen)}): {unmatched_stemmingen[:10]}')
-    # Debug: show existing moties with voted status but empty stemmen
-    needs_votes = [m for m in existing if m.get('status') in ('aangenomen','verworpen') and not m.get('stemmen') and not m.get('stemmen_na')]
-    if needs_votes:
-        print(f'  Moties gestemd maar zonder stemmen-breakdown ({len(needs_votes)}): {[extract_zaak_id(m.get("tk_url","")) for m in needs_votes[:5]]}')
-
-    # ── Step 1b: Fix moties still in_behandeling but actually voted (OData check) ──
-    in_behandeling_old = [
-        m for m in existing
-        if m.get('status') == 'in_behandeling'
-        and m.get('datum','') <= TODAY
-        and m.get('tk_url')
-    ]
-    if in_behandeling_old:
-        print(f'  OData besluit check: {min(30, len(in_behandeling_old))} moties in behandeling')
-        fixed_besluit = 0
-        for m in in_behandeling_old[:30]:
-            zaak_id = extract_zaak_id(m.get('tk_url',''))
-            if not zaak_id:
+        print(f'  Ongematchte stemmingen ({len(unmatched_stemmingen)}): ophalen...')
+        added_from_stemming = 0
+        for zaak_id in unmatched_stemmingen[:80]:
+            link = f'https://www.tweedekamer.nl/kamerstukken/moties/detail?id={zaak_id}'
+            if link in existing_links:
                 continue
-            besluit, _ = fetch_zaak_besluit(zaak_id)
-            if besluit:
-                m['status'] = besluit
-                m['archief'] = False
-                m.pop('stemmen_na', None)
-                fixed_besluit += 1
-            time.sleep(0.3)
-        if fixed_besluit:
-            print(f'    {fixed_besluit} moties status bijgewerkt via OData')
+            item_id = make_id(link)
+            if item_id in seen_ids:
+                continue
+            real_date, real_title = fetch_motie_detail(link)
+            time.sleep(0.4)
+            if not real_title:
+                continue
+            if not real_date:
+                real_date = stemmingen[zaak_id].get('datum') or TODAY
+            if real_date < START_DATE:
+                continue
+            status = stemmingen[zaak_id].get('besluit') or 'in_behandeling'
+            thema    = detect_thema(real_title)
+            indiener = detect_indiener(real_title)
+            new_m = {
+                'id': item_id, 'titel': real_title, 'indiener': indiener,
+                'datum': real_date, 'thema': thema, 'status': status,
+                'alignment': detect_alignment(real_title, indiener),
+                'vergadering': '', 'tk_url': link, 'toelichting': '',
+                'stemmen': {}, 'archief': False,
+            }
+            if stemmingen[zaak_id].get('score'):
+                new_m['score'] = stemmingen[zaak_id]['score']
+            existing.append(new_m)
+            existing_by_zaak[zaak_id] = new_m
+            existing_links.add(link)
+            seen_ids.add(item_id)
+            added_from_stemming += 1
+        print(f'  {added_from_stemming} nieuwe moties toegevoegd vanuit stemmingen')
+        # Rebuild existing_by_zaak after additions
+        existing_by_zaak = {
+            extract_zaak_id(x.get('tk_url', '')): x
+            for x in existing
+            if extract_zaak_id(x.get('tk_url', ''))
+        }
+
+    # ── Step 1b: Fix moties still in_behandeling but actually in stemmingen dict ──
+    fixed_besluit = 0
+    for m in existing:
+        if m.get('status') != 'in_behandeling':
+            continue
+        zaak_id = extract_zaak_id(m.get('tk_url', ''))
+        if not zaak_id:
+            continue
+        stemming = stemmingen.get(zaak_id)
+        if stemming and stemming.get('besluit'):
+            m['status'] = stemming['besluit']
+            m['archief'] = False
+            m.pop('stemmen_na', None)
+            if stemming.get('datum') and m.get('datum', '') in ('', TODAY):
+                m['datum'] = stemming['datum']
+            if stemming.get('score') and not m.get('score'):
+                m['score'] = stemming['score']
+            fixed_besluit += 1
+    if fixed_besluit:
+        print(f'  {fixed_besluit} in_behandeling moties bijgewerkt via stemmingen dict')
 
     # Reset stemmen_na for moties that were voted but still have no party breakdown
     # (stemmen_na was set when title was broken; now title is correct, retry)
@@ -721,14 +754,9 @@ def main():
         print(f'  Partijstemmen ophalen: {len(needs_stemmen)} moties')
         fetched_stemmen = 0
         for m in needs_stemmen[:60]:
-            zaak_id = extract_zaak_id(m.get('tk_url',''))
             stemmen = {}
-            # Try OData API first (most reliable)
-            if zaak_id:
-                stemmen = fetch_stemmen_odata(zaak_id)
-                time.sleep(0.3)
-            # Fallback: HTML scrape of detail page
-            if not stemmen and m.get('tk_url'):
+            # HTML scrape of stemmingsuitslag detail page (most reliable)
+            if m.get('tk_url'):
                 stemmen = fetch_stemmen(m['tk_url'])
                 time.sleep(0.4)
             if stemmen:
