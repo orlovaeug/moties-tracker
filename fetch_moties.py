@@ -464,33 +464,32 @@ def fetch_page(page=0):
         return ''
 
 def parse_moties_from_html(raw):
-    results = []
-    seen_links = set()
+    seen_links = {}  # link -> best title found so far
+    seen_dates = {}  # link -> date
     raw = html_module.unescape(raw)
-    # Match each motie detail link and grab title from within the <a> tag
     for m in re.finditer(r'<a\b[^>]*href="(/kamerstukken/moties/detail\?[^"]+)"[^>]*>(.*?)</a>', raw, re.DOTALL):
         link = 'https://www.tweedekamer.nl' + m.group(1).replace('&amp;', '&')
-        if link in seen_links:
-            continue
-        seen_links.add(link)
         title = re.sub(r'<[^>]+>', '', m.group(2)).strip()
         title = re.sub(r'\s+', ' ', title)
-        if not title or 'motie' not in title.lower():
+        # Skip nav/breadcrumb links — real titles are long and contain 'motie'
+        if not title or len(title) < 15 or 'motie' not in title.lower():
             continue
-        # Look for date in surrounding context (200 chars before the link)
-        start = max(0, m.start() - 200)
-        ctx = raw[start:m.start()]
-        date_m = re.search(
-            r'(\d{1,2})\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(20\d{2})',
-            ctx, re.IGNORECASE
-        )
-        list_date = ''
-        if date_m:
-            mo = MONTHS.get(date_m.group(2).lower(), 0)
-            if mo:
-                list_date = f"{date_m.group(3)}-{mo:02d}-{int(date_m.group(1)):02d}"
-        results.append({'titel': title, 'list_date': list_date, 'link': link})
-    return results
+        # Keep the longest title for this link (breadcrumb = short, real title = long)
+        if link not in seen_links or len(title) > len(seen_links[link]):
+            seen_links[link] = title
+            # Date from context
+            start = max(0, m.start() - 300)
+            ctx = raw[start:m.start()]
+            date_m = re.search(
+                r'(\d{1,2})\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(20\d{2})',
+                ctx, re.IGNORECASE
+            )
+            if date_m:
+                mo = MONTHS.get(date_m.group(2).lower(), 0)
+                seen_dates[link] = f"{date_m.group(3)}-{mo:02d}-{int(date_m.group(1)):02d}" if mo else ''
+            else:
+                seen_dates[link] = ''
+    return [{'titel': seen_links[l], 'list_date': seen_dates.get(l,''), 'link': l} for l in seen_links]
 
 # ── Main ──
 
@@ -687,6 +686,24 @@ def main():
             consecutive_empty = 0
 
         time.sleep(1.5)
+
+    # ── Step 2b: Fix broken titles (e.g. "Moties" from nav link) ──
+    broken_titles = [m for m in existing if m.get('titel','').strip().lower() in ('moties','motie','')]
+    if broken_titles:
+        print(f'\n  Kapotte titels herstellen: {len(broken_titles)} moties')
+        for m in broken_titles[:50]:
+            if not m.get('tk_url'): continue
+            real = fetch_motie_datum(m['tk_url'])  # reuse fetch, we'll extract title separately
+            html_raw = fetch_html(m['tk_url'])
+            if html_raw:
+                t = re.search(r'<h1[^>]*>(.*?)</h1>', html_raw, re.DOTALL)
+                if t:
+                    title = re.sub(r'<[^>]+>','',t.group(1)).strip()
+                    if title and len(title) > 10:
+                        m['titel'] = title
+                        m['indiener'] = detect_indiener(title)
+                        m['thema'] = detect_thema(title)
+            time.sleep(0.4)
 
     # ── Step 3: Fix dates still showing TODAY ──
     needs_date = [m for m in existing if m.get('datum','') >= TODAY and m.get('tk_url','')]
