@@ -419,7 +419,10 @@ def fetch_stemmen(url):
 
 
 def fetch_stemmen_odata(zaak_nummer):
-    """Fetch per-party vote breakdown from OData API using zaak nummer (e.g. 2026Z04934)."""
+    """Fetch per-party vote breakdown from OData API using zaak nummer (e.g. 2026Z04934).
+    Uses ActorFractie field directly — no $expand needed.
+    Filter: Besluit/Zaak/Nummer eq 'XXXX'
+    """
     PARTY_NORM = {
         'GroenLinks-PvdA': 'GL-PvdA', 'ChristenUnie': 'CU',
         'Groep Markuszower': 'Gr.Markuszower', 'Lid Keijzer': 'Groep-Keijzer', 'FVD': 'FvD',
@@ -429,16 +432,14 @@ def fetch_stemmen_odata(zaak_nummer):
         'Partij voor de Vrijheid': 'PVV', 'Nieuw Sociaal Contract': 'NSC',
         'BoerBurgerBeweging': 'BBB', 'Forum voor Democratie': 'FvD',
         'Staatkundig Gereformeerde Partij': 'SGP',
-        'DENK': 'DENK', 'Volt': 'Volt', 'JA21': 'JA21', '50PLUS': '50PLUS',
     }
-    VOTE_NORM = {'voor': 'voor', 'tegen': 'tegen', 'onthouden': 'onthouden',
-                 'niet deelgenomen': 'afwezig', 'afwezig': 'afwezig'}
-    filter_str = f"Zaak/Nummer eq '{zaak_nummer}'"
+    VOTE_NORM = {'voor': 'voor', 'tegen': 'tegen', 'niet deelgenomen': 'afwezig'}
+    # Stemming links to Besluit, which links to Zaak — filter via navigation
+    filter_str = f"Besluit/Zaak/Nummer eq '{zaak_nummer}'"
     url = (
         "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Stemming"
         "?$filter=" + urllib.parse.quote(filter_str)
-        + "&$expand=Fractie($select=NaamNL,NaamEN)"
-        + "&$select=Soort,Fractie"
+        + "&$select=Soort,ActorNaam,ActorFractie"
         + "&$top=50"
     )
     try:
@@ -447,12 +448,12 @@ def fetch_stemmen_odata(zaak_nummer):
             data = json.loads(r.read().decode('utf-8'))
         stemmen = {}
         for item in data.get('value', []):
-            fractie = item.get('Fractie') or {}
-            naam = fractie.get('NaamNL') or fractie.get('NaamEN') or ''
+            # ActorFractie = fractie name, ActorNaam = persoon or fractie name
+            naam = (item.get('ActorFractie') or item.get('ActorNaam') or '').strip()
             naam = PARTY_NORM.get(naam, naam)
             soort = (item.get('Soort') or '').lower()
             vote = VOTE_NORM.get(soort, soort)
-            if naam and vote:
+            if naam and vote and naam not in stemmen:
                 stemmen[naam] = vote
         return stemmen
     except Exception as e:
@@ -462,7 +463,7 @@ def fetch_stemmen_odata(zaak_nummer):
 
 def fetch_zaak_besluit(zaak_nummer):
     """Fetch besluit (aangenomen/verworpen) for a zaak from OData."""
-    filter_str = f"Nummer eq '{zaak_nummer}'"
+    filter_str = f"Nummer eq '{zaak_nummer}' and Soort eq 'Motie'"
     url = (
         "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Zaak"
         "?$filter=" + urllib.parse.quote(filter_str)
