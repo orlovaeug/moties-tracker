@@ -95,7 +95,7 @@ CONFORM_KEYWORDS = [
 ]
 
 THEMA_KEYWORDS = {
-    "Defensie":["defensie","militair","navo","leger","oekra","wapen","krijgsmacht","luchtmacht","marine"],
+    "Defensie":["defensie","militair","navo","leger","oekra","wapen","krijgsmacht","luchtmacht","marine","vredesmissie","uitzend","evertsen","fregat","missie"],
     "Bestaanszekerheid":["aow","pensioen","uitkering","armoede","minimumloon","bijstand","bestaanszekerheid"],
     "Klimaat & Energie":["klimaat","energie","windmolen","kerncentrale","co2","netcongestie","zonnepaneel","warmtepomp","fossiel"],
     "Wonen & Bouwen":["woning","huur","hypotheek","bouwen","nieuwbouw","woningmarkt","huurder","corporatie"],
@@ -121,13 +121,15 @@ def detect_thema(text):
     return best
 
 def detect_indiener(titel):
+    # Strip " - [Debat title]" suffix appended by TK website
+    titel_clean = re.sub(r'\s+-\s+[A-Z][^-]{5,}$', '', titel).strip()
     m = re.search(
         r'(?:(?:Nader\s+)?[Gg]ewijzigde\s+)?[Mm]otie\s+van\s+(?:het\s+lid|de\s+leden)\s+'
         r'([A-Z][a-zA-Z\u00C0-\u017E\-]+(?:\s+[a-zA-Z\u00C0-\u017E\-]+){0,4}?)'
         r'(?:\s+c\.s\.|\s+over\s|\s+en\s+[A-Z]|\s+-\s+[A-Z]|$)',
-        titel
+        titel_clean
     )
-    name_ctx = m.group(1).strip() if m else titel
+    name_ctx = m.group(1).strip() if m else titel_clean
     for naam in sorted(LEDEN_PARTIJ.keys(), key=len, reverse=True):
         pat = r'(?<![A-Za-z\u00C0-\u017E])' + re.escape(naam) + r'(?![A-Za-z\u00C0-\u017E])'
         if re.search(pat, name_ctx, re.IGNORECASE):
@@ -766,15 +768,19 @@ def main():
         print(f'  Detail check: {min(30, len(needs_detail_check))} moties zonder besluit')
         fixed2 = 0
         for m in needs_detail_check[:30]:
-            _, _, besluit = fetch_motie_detail(m['tk_url'])
-            time.sleep(0.3)
+            zaak_id = extract_zaak_id(m.get('tk_url', ''))
+            if not zaak_id:
+                continue
+            besluit, _ = fetch_zaak_besluit(zaak_id)
+            time.sleep(0.4)
             if besluit:
                 m['status'] = besluit
                 m['archief'] = False
                 m.pop('stemmen_na', None)
                 fixed2 += 1
+                print(f'    OData fix: {zaak_id} -> {besluit}')
         if fixed2:
-            print(f'    {fixed2} moties bijgewerkt via detail pagina')
+            print(f'    {fixed2} moties bijgewerkt via OData')
 
     # Reset stemmen_na for moties that were voted but still have no party breakdown
     # (stemmen_na was set when title was broken; now title is correct, retry)
