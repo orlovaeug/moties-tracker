@@ -462,6 +462,43 @@ def fetch_stemmen_odata(zaak_nummer):
             print(f'    OData stemmen fout ({zaak_nummer}): {e}')
         return {}
 
+def fetch_motie_detail(url):
+    """Fetch both date and title from a motie detail page in one HTTP request."""
+    if not url.startswith('http'):
+        url = 'https://www.tweedekamer.nl' + url
+    html = fetch_html(url)
+    if not html:
+        return None, None
+    # Title from <title> tag
+    title = None
+    m = re.search(r'<title[^>]*>(.*?)</title>', html, re.IGNORECASE | re.DOTALL)
+    if m:
+        t = re.sub(r'<[^>]+>', '', m.group(1)).strip()
+        t = t.split('|')[0].strip()
+        if t and len(t) > 10 and t.lower() not in ('motie', 'moties'):
+            title = t
+    if not title:
+        m = re.search(r'<h1[^>]*>(.*?)</h1>', html, re.IGNORECASE | re.DOTALL)
+        if m:
+            t = re.sub(r'<[^>]+>', '', m.group(1)).strip()
+            t = re.sub(r'\s+', ' ', t)
+            if t and len(t) > 10:
+                title = t
+    # Date
+    datum = None
+    for pattern in [
+        r'Datum[:\s]+(\d{1,2}\s+\w+\s+20\d{2})',
+        r'Voorgesteld\s+(\d{1,2}\s+\w+\s+20\d{2})',
+        r'(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})',
+    ]:
+        m = re.search(pattern, html, re.IGNORECASE)
+        if m:
+            d = parse_dutch_date(m.group(1))
+            if d and d >= START_DATE:
+                datum = d
+                break
+    return datum, title
+
 def fetch_zaak_besluit(zaak_nummer):
     """Fetch besluit via Zaak?$expand=Besluit. BesluitTekst contains aangenomen/verworpen."""
     BASE = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/'
