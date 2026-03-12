@@ -585,11 +585,24 @@ def main():
         if changed:
             updated_vote += 1
     print(f'  {updated_vote} bestaande moties bijgewerkt met stemresultaat ({matched}/{len(stemmingen)} stemmingen gematcht)')
-    if matched == 0 and stemmingen:
-        sample_ids = list(stemmingen.keys())[:3]
-        sample_existing = list(existing_by_zaak.keys())[:3]
-        print(f'  Sample stemming zaak_ids: {sample_ids}')
-        print(f'  Sample existing zaak_ids: {sample_existing}')
+    # Debug: show which stemmingen zaak_ids have no match in existing
+    unmatched_stemmingen = [zid for zid in stemmingen if zid not in existing_by_zaak]
+    if unmatched_stemmingen:
+        print(f'  Ongematchte stemmingen ({len(unmatched_stemmingen)}): {unmatched_stemmingen[:10]}')
+    # Debug: show existing moties with voted status but empty stemmen
+    needs_votes = [m for m in existing if m.get('status') in ('aangenomen','verworpen') and not m.get('stemmen') and not m.get('stemmen_na')]
+    if needs_votes:
+        print(f'  Moties gestemd maar zonder stemmen-breakdown ({len(needs_votes)}): {[extract_zaak_id(m.get("tk_url","")) for m in needs_votes[:5]]}')
+
+    # Reset stemmen_na for moties that were voted but still have no party breakdown
+    # (stemmen_na was set when title was broken; now title is correct, retry)
+    reset_count = 0
+    for m in existing:
+        if m.get('stemmen_na') and not m.get('stemmen') and m.get('status') in ('aangenomen','verworpen'):
+            m.pop('stemmen_na', None)
+            reset_count += 1
+    if reset_count:
+        print(f'  stemmen_na gereset voor {reset_count} moties (leeg stemmen, wel status)')
 
     # Fetch per-party votes for voted moties that don't have them yet (max 50 per run)
     needs_stemmen = [
