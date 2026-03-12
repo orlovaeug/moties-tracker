@@ -375,6 +375,29 @@ def fetch_motie_datum(url):
                 return d
     return None
 
+def fetch_motie_title(url):
+    """Fetch the real title from a motie detail page <title> tag."""
+    if not url.startswith('http'):
+        url = 'https://www.tweedekamer.nl' + url
+    html = fetch_html(url)
+    if not html:
+        return None
+    # Try <title> tag first — format: "Real Title | Tweede Kamer..."
+    m = re.search(r'<title[^>]*>(.*?)</title>', html, re.IGNORECASE | re.DOTALL)
+    if m:
+        t = re.sub(r'<[^>]+>', '', m.group(1)).strip()
+        t = t.split('|')[0].strip()  # strip "| Tweede Kamer der Staten-Generaal"
+        if t and len(t) > 10 and t.lower() not in ('motie','moties'):
+            return t
+    # Try h1
+    m = re.search(r'<h1[^>]*>(.*?)</h1>', html, re.IGNORECASE | re.DOTALL)
+    if m:
+        t = re.sub(r'<[^>]+>', '', m.group(1)).strip()
+        t = re.sub(r'\s+', ' ', t)
+        if t and len(t) > 10:
+            return t
+    return None
+
 def fetch_stemmen(url):
     """Fetch per-party vote breakdown from motie detail page."""
     if not url.startswith('http'):
@@ -636,22 +659,32 @@ def main():
             if item_id in seen_ids:
                 ex = next((x for x in existing if x.get('id') == item_id), None)
                 if ex and _is_broken(ex.get('titel','')):
-                    ex['titel']     = r['titel']
-                    ex['indiener']  = detect_indiener(r['titel'])
-                    ex['thema']     = detect_thema(r['titel'])
-                    ex['alignment'] = detect_alignment(r['titel'], ex['indiener'])
-                    print(f'    FIX titel: {zaak_id} → {r["titel"][:60]}')
+                    real = fetch_motie_title(link)
+                    time.sleep(0.3)
+                    if real:
+                        ex['titel']     = real
+                        ex['indiener']  = detect_indiener(real)
+                        ex['thema']     = detect_thema(real)
+                        ex['alignment'] = detect_alignment(real, ex['indiener'])
+                        print(f'    FIX titel: {zaak_id} → {real[:60]}')
+                    else:
+                        print(f'    FIX failed: {zaak_id}')
                 elif page == 0:
                     print(f'    SKIP item_id: {zaak_id}')
                 continue
             if zaak_id and zaak_id in seen_zaak_ids:
                 ex = next((x for x in existing if extract_zaak_id(x.get('tk_url','')) == zaak_id), None)
                 if ex and _is_broken(ex.get('titel','')):
-                    ex['titel']     = r['titel']
-                    ex['indiener']  = detect_indiener(r['titel'])
-                    ex['thema']     = detect_thema(r['titel'])
-                    ex['alignment'] = detect_alignment(r['titel'], ex['indiener'])
-                    print(f'    FIX titel (zaak): {zaak_id} → {r["titel"][:60]}')
+                    real = fetch_motie_title(link)
+                    time.sleep(0.3)
+                    if real:
+                        ex['titel']     = real
+                        ex['indiener']  = detect_indiener(real)
+                        ex['thema']     = detect_thema(real)
+                        ex['alignment'] = detect_alignment(real, ex['indiener'])
+                        print(f'    FIX titel (zaak): {zaak_id} → {real[:60]}')
+                    else:
+                        print(f'    FIX failed: {zaak_id}')
                 elif page == 0:
                     print(f'    SKIP zaak_id: {zaak_id}')
                 continue
