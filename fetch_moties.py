@@ -676,15 +676,17 @@ def main():
             if link in existing_links:
                 continue
             item_id = make_id(link)
-            if item_id in seen_ids:
+            try:
+                real_date, real_title = fetch_motie_detail(link)
+            except Exception:
+                import traceback; traceback.print_exc()
                 continue
-            real_date, real_title = fetch_motie_detail(link)
             time.sleep(0.4)
             if not real_title:
                 continue
             if not real_date:
                 real_date = stemmingen[zaak_id].get('datum') or TODAY
-            if real_date < START_DATE:
+            if not real_date or real_date < START_DATE:
                 continue
             status = stemmingen[zaak_id].get('besluit') or 'in_behandeling'
             thema    = detect_thema(real_title)
@@ -701,10 +703,8 @@ def main():
             existing.append(new_m)
             existing_by_zaak[zaak_id] = new_m
             existing_links.add(link)
-            seen_ids.add(item_id)
             added_from_stemming += 1
         print(f'  {added_from_stemming} nieuwe moties toegevoegd vanuit stemmingen')
-        # Rebuild existing_by_zaak after additions
         existing_by_zaak = {
             extract_zaak_id(x.get('tk_url', '')): x
             for x in existing
