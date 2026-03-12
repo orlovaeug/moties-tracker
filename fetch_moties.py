@@ -419,63 +419,32 @@ def fetch_stemmen(url):
 
 
 def fetch_stemmen_odata(zaak_nummer):
-    """Fetch per-party votes via OData. Two-step:
-    1. Get Zaak Id (GUID) from Nummer
-    2. Get Stemming records via Besluit/ZaakId
-    """
+    """Fetch per-party votes: reuse fetch_zaak_besluit to get BesluitId, then get Stemming."""
     PARTY_NORM = {
         'GroenLinks-PvdA': 'GL-PvdA', 'ChristenUnie': 'CU',
         'Groep Markuszower': 'Gr.Markuszower', 'Lid Keijzer': 'Groep-Keijzer', 'FVD': 'FvD',
         'Partij voor de Dieren': 'PvdD', 'Socialistische Partij': 'SP',
         'Volkspartij voor Vrijheid en Democratie': 'VVD',
-        'Democraten 66': 'D66', 'Christen-Democratisch Appèl': 'CDA',
+        u'Democraten 66': 'D66', u'Christen-Democratisch App\u00e8l': 'CDA',
         'Partij voor de Vrijheid': 'PVV', 'Nieuw Sociaal Contract': 'NSC',
         'BoerBurgerBeweging': 'BBB', 'Forum voor Democratie': 'FvD',
         'Staatkundig Gereformeerde Partij': 'SGP',
     }
     VOTE_NORM = {'voor': 'voor', 'tegen': 'tegen', 'niet deelgenomen': 'afwezig'}
+    BASE = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/'
+    HDR = {**HEADERS, 'Accept': 'application/json'}
     try:
-        # Step 1: get Zaak GUID
-        url1 = (
-            "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Zaak"
-            "?$filter=" + urllib.parse.quote(f"Nummer eq '{zaak_nummer}'")
-            + "&$select=Id&$top=1"
-        )
-        req = urllib.request.Request(url1, headers={**HEADERS, 'Accept': 'application/json'})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            data = json.loads(r.read().decode('utf-8'))
-        items = data.get('value', [])
-        if not items:
-            return {}
-        zaak_id_guid = items[0].get('Id','')
-        if not zaak_id_guid:
+        # Get BesluitId from Zaak expand
+        _, besluit_id = fetch_zaak_besluit(zaak_nummer)
+        if not besluit_id:
             return {}
         time.sleep(0.2)
-
-        # Step 2: get Besluit for this Zaak (GUID needs single quotes in OData)
-        url2 = (
-            "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Besluit"
-            "?$filter=" + urllib.parse.quote(f"ZaakId eq '{zaak_id_guid}'")
-            + "&$select=Id,StemmingsSoort&$top=5"
-        )
-        req = urllib.request.Request(url2, headers={**HEADERS, 'Accept': 'application/json'})
+        # Get Stemming records for this Besluit
+        url = (BASE + 'Stemming?$filter=' + urllib.parse.quote(f"BesluitId eq \'{besluit_id}\'")
+               + '&$select=Soort,ActorNaam,ActorFractie&$top=50')
+        req = urllib.request.Request(url, headers=HDR)
         with urllib.request.urlopen(req, timeout=15) as r:
-            data = json.loads(r.read().decode('utf-8'))
-        besluiten = data.get('value', [])
-        if not besluiten:
-            return {}
-        besluit_id = besluiten[0].get('Id','')
-        time.sleep(0.2)
-
-        # Step 3: get Stemmingen for this Besluit (GUID needs single quotes)
-        url3 = (
-            "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Stemming"
-            "?$filter=" + urllib.parse.quote(f"BesluitId eq '{besluit_id}'")
-            + "&$select=Soort,ActorNaam,ActorFractie&$top=50"
-        )
-        req = urllib.request.Request(url3, headers={**HEADERS, 'Accept': 'application/json'})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            data = json.loads(r.read().decode('utf-8'))
+            data = json.loads(r.read().decode())
         stemmen = {}
         for item in data.get('value', []):
             naam = (item.get('ActorFractie') or item.get('ActorNaam') or '').strip()
@@ -493,48 +462,41 @@ def fetch_stemmen_odata(zaak_nummer):
             print(f'    OData stemmen fout ({zaak_nummer}): {e}')
         return {}
 
-
 def fetch_zaak_besluit(zaak_nummer):
-    """Fetch besluit for a zaak: first get Zaak GUID, then get Besluit record."""
+    """Fetch besluit via Zaak?$expand=Besluit. BesluitTekst contains aangenomen/verworpen."""
     BASE = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/'
     HDR = {**HEADERS, 'Accept': 'application/json'}
     try:
-        # Step 1: get Zaak GUID by Nummer
-        url1 = BASE + 'Zaak?$filter=' + urllib.parse.quote(f"Nummer eq '{zaak_nummer}'") + '&$select=Id&$top=1'
-        req = urllib.request.Request(url1, headers=HDR)
+        # Get Zaak with expanded Besluit in one call
+        url = (BASE + 'Zaak?$filter=' + urllib.parse.quote(f"Nummer eq '{zaak_nummer}'")
+               + '&$expand=Besluit($select=Id,BesluitTekst,StemmingsSoort)'
+               + '&$select=Id,Nummer&$top=1')
+        req = urllib.request.Request(url, headers=HDR)
         with urllib.request.urlopen(req, timeout=15) as r:
             data = json.loads(r.read().decode())
         items = data.get('value', [])
         if not items:
-            return None
-        zaak_guid = items[0].get('Id', '')
-        if not zaak_guid:
-            return None
-        time.sleep(0.2)
-
-        # Step 2: get Besluit for this Zaak
-        url2 = BASE + 'Besluit?$filter=' + urllib.parse.quote(f"ZaakId eq '{zaak_guid}'") + '&$select=Id,StemmingsSoort&$top=1'
-        req = urllib.request.Request(url2, headers=HDR)
-        with urllib.request.urlopen(req, timeout=15) as r:
-            data = json.loads(r.read().decode())
-        besluiten = data.get('value', [])
+            return None, None
+        besluiten = items[0].get('Besluit', [])
         if not besluiten:
-            return None
-        soort = (besluiten[0].get('StemmingsSoort') or '').lower()
-        if 'aangenomen' in soort:
-            return 'aangenomen'
-        elif 'verworpen' in soort:
-            return 'verworpen'
-        elif 'aangehouden' in soort:
-            return 'aangehouden'
-        return None
+            return None, None
+        b = besluiten[0]
+        tekst = (b.get('BesluitTekst') or '').lower()
+        besluit_id = b.get('Id', '')
+        if 'aangenomen' in tekst:
+            return 'aangenomen', besluit_id
+        elif 'verworpen' in tekst:
+            return 'verworpen', besluit_id
+        elif 'aangehouden' in tekst:
+            return 'aangehouden', besluit_id
+        return None, besluit_id
     except Exception as e:
         try:
             body = e.read().decode()[:300]
             print(f'    OData besluit fout ({zaak_nummer}): {e} | {body}')
         except:
             print(f'    OData besluit fout ({zaak_nummer}): {e}')
-        return None
+        return None, None
 
 
 def fetch_agenda():
@@ -727,7 +689,7 @@ def main():
             zaak_id = extract_zaak_id(m.get('tk_url',''))
             if not zaak_id:
                 continue
-            besluit = fetch_zaak_besluit(zaak_id)
+            besluit, _ = fetch_zaak_besluit(zaak_id)
             if besluit:
                 m['status'] = besluit
                 m['archief'] = False
