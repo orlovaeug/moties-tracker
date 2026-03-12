@@ -486,7 +486,11 @@ def fetch_stemmen_odata(zaak_nummer):
                 stemmen[naam] = vote
         return stemmen
     except Exception as e:
-        print(f'    OData stemmen fout ({zaak_nummer}): {e}')
+        try:
+            body = e.read().decode()[:300]
+            print(f'    OData stemmen fout ({zaak_nummer}): {e} | {body}')
+        except:
+            print(f'    OData stemmen fout ({zaak_nummer}): {e}')
         return {}
 
 
@@ -525,7 +529,11 @@ def fetch_zaak_besluit(zaak_nummer):
             return 'aangehouden'
         return None
     except Exception as e:
-        print(f'    OData besluit fout ({zaak_nummer}): {e}')
+        try:
+            body = e.read().decode()[:300]
+            print(f'    OData besluit fout ({zaak_nummer}): {e} | {body}')
+        except:
+            print(f'    OData besluit fout ({zaak_nummer}): {e}')
         return None
 
 
