@@ -471,8 +471,13 @@ def parse_moties_from_html(raw):
         link = 'https://www.tweedekamer.nl' + m.group(1).replace('&amp;', '&')
         title = re.sub(r'<[^>]+>', '', m.group(2)).strip()
         title = re.sub(r'\s+', ' ', title)
+        # Clean up garbled titles like "Motie : Motie van het lid X"
+        title = re.sub(r'^[Mm]otie\s*:\s*', '', title).strip()
         # Skip nav/breadcrumb links — real titles are long and contain 'motie'
         if not title or len(title) < 15 or 'motie' not in title.lower():
+            continue
+        # Skip if still garbled (contains colon-separated duplicate)
+        if '\n' in title:
             continue
         # Keep the longest title for this link (breadcrumb = short, real title = long)
         if link not in seen_links or len(title) > len(seen_links[link]):
@@ -619,8 +624,14 @@ def main():
             # Match on zaak_id (robust) or full link or item_id
             # If existing entry has a broken title, update it instead of skipping
             def _is_broken(t):
-                t = (t or '').strip().lower()
-                return t in ('moties','motie','') or len(t) < 10
+                t = (t or '').strip()
+                tl = t.lower()
+                if not t or len(tl) < 10: return True
+                if tl in ('moties','motie'): return True
+                if '\n' in t: return True  # garbled multiline title
+                if tl.startswith('motie\n') or tl.startswith('motie :\n'): return True
+                if 'indiener' not in tl and 'lid' not in tl and 'leden' not in tl and len(tl) < 30: return True
+                return False
 
             if item_id in seen_ids:
                 ex = next((x for x in existing if x.get('id') == item_id), None)
