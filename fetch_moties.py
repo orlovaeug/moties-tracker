@@ -221,6 +221,14 @@ def extract_zaak_id(url_or_str):
     m = re.search(r'[?&]id=(\d{4}Z\w+)', url_or_str)
     return m.group(1) if m else None
 
+def extract_doc_id(url_or_str):
+    """Extract document ID (2026D...) from URL — used as fallback when zaak ID absent."""
+    # Try did= parameter first, then id= with D-type
+    m = re.search(r'[?&]did=(\d{4}D\w+)', url_or_str)
+    if m: return m.group(1)
+    m = re.search(r'[?&]id=(\d{4}D\w+)', url_or_str)
+    return m.group(1) if m else None
+
 # ── Live Kamerleden scrape ──
 
 def fetch_leden_partij():
@@ -342,16 +350,28 @@ def scrape_stemmingen():
             found_moties = 0
 
             for card in cards:
+                # Try Z-type zaak ID first (e.g. 2026Z04934)
                 id_m = re.search(r'href="([^"]*[?&]id=(\d{4}Z\w+)[^"]*)"', card)
                 if not id_m:
                     id_m2 = re.search(r'[?&]id=(\d{4}Z\w+)', card)
-                    if not id_m2:
-                        continue
-                    zaak_id = id_m2.group(1)
-                    href = ''
+                    if id_m2:
+                        zaak_id = id_m2.group(1)
+                        href = ''
+                    else:
+                        # No Z-type ID — try D-type doc ID (e.g. ?id=2026D11247)
+                        # These appear on stemmingsuitslagen when only the document
+                        # is linked, not the zaak. We record it; cross-ref happens below.
+                        id_d = re.search(r'[?&](?:id|did)=(\d{4}D\w+)', card)
+                        if not id_d:
+                            continue
+                        # Store as doc_id key; will be resolved via existing_by_doc later
+                        zaak_id = None
+                        doc_id = id_d.group(1)
+                        href = ''
                 else:
                     href = 'https://www.tweedekamer.nl' + id_m.group(1) if id_m.group(1).startswith('/') else id_m.group(1)
                     zaak_id = id_m.group(2)
+                    doc_id = None
                 found_moties += 1
 
                 card_text = re.sub(r'<[^>]+>', ' ', card)
@@ -365,15 +385,19 @@ def scrape_stemmingen():
                 score_m = re.search(r'Besluit:[^(]*(\(\d+-\d+\))', card_text, re.IGNORECASE)
                 score = score_m.group(1) if score_m else None
 
-                if zaak_id not in stemmingen:
-                    stemmingen[zaak_id] = {'datum': session_datum, 'besluit': besluit, 'score': score, 'href': href}
+                # Store by zaak_id (Z-type) or doc_id (D-type) as fallback
+                key = zaak_id if zaak_id else doc_id if 'doc_id' in dir() else None
+                if not key:
+                    continue
+                if key not in stemmingen:
+                    stemmingen[key] = {'datum': session_datum, 'besluit': besluit, 'score': score, 'href': href}
                 else:
-                    if besluit and not stemmingen[zaak_id].get('besluit'):
-                        stemmingen[zaak_id]['besluit'] = besluit
-                    if score and not stemmingen[zaak_id].get('score'):
-                        stemmingen[zaak_id]['score'] = score
-                    if href and not stemmingen[zaak_id].get('href'):
-                        stemmingen[zaak_id]['href'] = href
+                    if besluit and not stemmingen[key].get('besluit'):
+                        stemmingen[key]['besluit'] = besluit
+                    if score and not stemmingen[key].get('score'):
+                        stemmingen[key]['score'] = score
+                    if href and not stemmingen[key].get('href'):
+                        stemmingen[key]['href'] = href
 
             print(f'    {session_datum}: {found_moties} moties, {found_besluit} besluit')
             time.sleep(0.5)
@@ -724,6 +748,13 @@ def main():
         for x in existing
         if extract_zaak_id(x.get('tk_url',''))
     }
+    # Secondary index: doc ID (2026D...) -> motie
+    # Covers moties where the stemmingsuitslagen page links by did= not id=
+    existing_by_doc = {
+        extract_doc_id(x.get('tk_url','')): x
+        for x in existing
+        if extract_doc_id(x.get('tk_url',''))
+    }
 
     print(f'Bestaande moties: {len(existing)}')
 
@@ -747,10 +778,12 @@ def main():
     # Apply to existing moties
     updated_vote = 0
     matched = 0
-    for zaak_id, stemming in stemmingen.items():
-        m = existing_by_zaak.get(zaak_id)
+    for key, stemming in stemmingen.items():
+        # key is either a zaak_id (2026Z...) or doc_id (2026D...)
+        m = existing_by_zaak.get(key) or existing_by_doc.get(key)
         if not m:
             continue
+        zaak_id = key
         matched += 1
         changed = False
         if stemming.get('datum') and m.get('datum','') in ('', TODAY):
@@ -769,7 +802,10 @@ def main():
     print(f'  {updated_vote} bestaande moties bijgewerkt met stemresultaat ({matched}/{len(stemmingen)} stemmingen gematcht)')
 
     # ── Step 1a: fetch moties that were voted but not yet in our list ──
-    unmatched_stemmingen = [zid for zid in stemmingen if zid not in existing_by_zaak]
+    unmatched_stemmingen = [
+        kid for kid in stemmingen
+        if kid not in existing_by_zaak and kid not in existing_by_doc
+    ]
     if unmatched_stemmingen:
         print(f'  Ongematchte stemmingen ({len(unmatched_stemmingen)}): ophalen...')
         added_from_stemming = 0
@@ -820,7 +856,8 @@ def main():
         if m.get('status') != 'in_behandeling':
             continue
         zaak_id = extract_zaak_id(m.get('tk_url', ''))
-        stemming = stemmingen.get(zaak_id) if zaak_id else None
+        doc_id = extract_doc_id(m.get('tk_url', ''))
+        stemming = stemmingen.get(zaak_id) or (stemmingen.get(doc_id) if doc_id else None)
         if stemming and stemming.get('besluit'):
             m['status'] = stemming['besluit']
             m['archief'] = False
