@@ -62,7 +62,8 @@ LEDEN_PARTIJ = {
     "Krul":"CDA","Van den Berg":"CDA","Van Ark":"CDA","Armut":"CDA",
     "Van den Brink":"CDA","Inge van Dijk":"CDA",
     # SP
-    "Jimmy Dijk":"SP","Dobbe":"SP","Beckerman":"SP","Temmink":"SP","Van Nispen":"SP","Leijten":"SP","Fleur":"SP",
+    "Jimmy Dijk":"SP","Dobbe":"SP","Beckerman":"SP","Temmink":"SP",
+    "Van Nispen":"SP","Leijten":"SP",
     # PvdD
     "Simons":"PvdD","Teunissen":"PvdD","Vestering":"PvdD","Van Raan":"PvdD",
     # CU
@@ -72,7 +73,8 @@ LEDEN_PARTIJ = {
     # Volt
     "Dassen":"Volt","Koekkoek":"Volt","Nanninga":"Volt",
     # DENK
-    "Stephan van Baarle":"DENK","Van Baarle":"DENK","El Abassi":"DENK","Ergin":"DENK","Kırcalı":"DENK","Kircali":"DENK",
+    "Stephan van Baarle":"DENK","Van Baarle":"DENK","El Abassi":"DENK",
+    "Ergin":"DENK","Kırcalı":"DENK","Kircali":"DENK",
     # JA21
     "Eerdmans":"JA21",
     # FvD
@@ -84,6 +86,45 @@ LEDEN_PARTIJ = {
     # 50PLUS
     "Baay-Timmerman":"50PLUS",
 }
+
+# ── Party name normalization (OData / HTML variants → canonical) ──────────────
+PARTY_NORM_GLOBAL = {
+    'GroenLinks-PvdA': 'GL-PvdA',
+    'ChristenUnie': 'CU',
+    'Groep Markuszower': 'Gr.Markuszower',
+    'Lid Keijzer': 'Groep-Keijzer',
+    'FVD': 'FvD',
+    'FvD': 'FvD',
+    'Partij voor de Dieren': 'PvdD',
+    'Socialistische Partij': 'SP',
+    'Volkspartij voor Vrijheid en Democratie': 'VVD',
+    'Democraten 66': 'D66',
+    'Christen-Democratisch Appèl': 'CDA',
+    'Christen-Democratisch App\u00e8l': 'CDA',
+    'Partij voor de Vrijheid': 'PVV',
+    'Nieuw Sociaal Contract': 'NSC',
+    'BoerBurgerBeweging': 'BBB',
+    'Forum voor Democratie': 'FvD',
+    'Staatkundig Gereformeerde Partij': 'SGP',
+    # Short aliases that appear in HTML tables
+    'GL-PvdA': 'GL-PvdA',
+    'PVV': 'PVV', 'VVD': 'VVD', 'NSC': 'NSC', 'BBB': 'BBB',
+    'D66': 'D66', 'CDA': 'CDA', 'SP': 'SP', 'PvdD': 'PvdD',
+    'CU': 'CU', 'SGP': 'SGP', 'Volt': 'Volt', 'DENK': 'DENK',
+    'JA21': 'JA21', '50PLUS': '50PLUS',
+    'Gr.Markuszower': 'Gr.Markuszower', 'Groep-Keijzer': 'Groep-Keijzer',
+}
+
+def norm_party(name):
+    """Normalize a party name to canonical form."""
+    return PARTY_NORM_GLOBAL.get(name, name)
+
+def norm_stemmen(stemmen):
+    """Normalize all party keys in a stemmen dict to canonical names."""
+    if not stemmen:
+        return stemmen
+    return {norm_party(k): v for k, v in stemmen.items()}
+
 
 STRIJDIG_KEYWORDS = [
     "klimaatdoel","kinderopvang gratis","eigen risico afschaffen",
@@ -204,8 +245,11 @@ def fetch_leden_partij():
         parts = full_name.split()
         for i in range(len(parts)-1, -1, -1):
             if parts[i][0].isupper():
-                if parts[i] not in result:
-                    result[parts[i]] = party
+                last = parts[i]
+                # Only add last-name shortcut if it doesn't already exist in LEDEN_PARTIJ
+                # with a DIFFERENT party (avoid clobbering known entries)
+                if last not in result:
+                    result[last] = party
                 break
     print(f'  Kamerleden geladen: {len(result)} namen')
     return result
@@ -215,14 +259,6 @@ def fetch_leden_partij():
 def scrape_stemmingen():
     """
     Scrape stemmingsuitslagen since START_DATE.
-    
-    Real page structure (confirmed from live fetch):
-    - URL: /stemmingsuitslagen/detail?id=2026P03693
-    - Heading: "Plenaire vergadering 10 maart 2026" (in <h2>, after ~8KB of nav)
-    - Motie links: href="/kamerstukken/detail?id=2026Z04746&did=2026D06518"
-    - Besluit: plain text "Besluit: Aangenomen. (75-74)" — NOT inside <strong>
-    - Footer link: "Bekijk de overige stemmingen van 10 maart 2026" with fromdate=2026-03-10
-    
     Returns dict: zaak_id -> {datum, besluit}
     """
     stemmingen = {}
@@ -255,15 +291,12 @@ def scrape_stemmingen():
                 continue
 
             detail = detail.replace('&amp;', '&')
-            # Get session date — try 3 methods:
-            # 1. fromdate= in footer link (most reliable, always present)
             session_datum = None
             footer_m = re.search(r'fromdate=(20\d{2}-\d{2}-\d{2})', detail)
             if footer_m:
                 session_datum = footer_m.group(1)
             
             if not session_datum:
-                # 2. Strip tags and find "Plenaire vergadering DD maand YYYY"
                 detail_text = re.sub(r'<[^>]+>', ' ', detail)
                 pv_m = re.search(
                     r'Plenaire\s+vergadering\s+(\d{1,2}\s+\w+\s+20\d{2})',
@@ -273,7 +306,6 @@ def scrape_stemmingen():
                     session_datum = parse_dutch_date(pv_m.group(1))
             
             if not session_datum:
-                # 3. Any Dutch date in page text
                 detail_text = re.sub(r'<[^>]+>', ' ', detail)
                 any_m = re.search(
                     r'(\d{1,2}\s+(?:januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+20\d{2})',
@@ -286,30 +318,24 @@ def scrape_stemmingen():
                 print(f'    Geen datum gevonden: {link_url[:80]}')
                 continue
 
-            # Track oldest on page
             if oldest_on_page is None or session_datum < oldest_on_page:
                 oldest_on_page = session_datum
 
-            # Skip sessions before our window
             if session_datum < START_DATE:
                 print(f'    Sessie {session_datum} voor {START_DATE} — overslaan')
                 continue
 
-            # Split page into per-motie sections
-            # Try multiple card boundary patterns used by TK website
             for split_pat in [
                 r'(?=class="js-clickable[^"]*")',
                 r'(?=class="search-result)',
-                r'(?=<article)',
-                r'(?=<li[^>]*kamerstuk)',
+                r'(?=<article)',
+                r'(?=<li[^>]*kamerstuk)',
             ]:
                 cards = re.split(split_pat, detail)
                 if len(cards) > 2:
                     break
             
-            # Fallback: split on every occurrence of the motie link pattern
             if len(cards) <= 2:
-                # Split directly before each href containing a zaak ID
                 cards = re.split(r'(?=href="[^"]*[?&]id=\d{4}Z)', detail)
 
             found_besluit = 0
@@ -328,17 +354,14 @@ def scrape_stemmingen():
                     zaak_id = id_m.group(2)
                 found_moties += 1
 
-                # Strip tags and search full card for Besluit
                 card_text = re.sub(r'<[^>]+>', ' ', card)
                 bm = re.search(r'Besluit[:\s]+(Aangenomen|Verworpen|Aangehouden)', card_text, re.IGNORECASE)
                 if not bm:
-                    # Some pages show "Aangenomen" / "Verworpen" as standalone status
                     bm = re.search(r'\b(Aangenomen|Verworpen|Aangehouden)\b', card_text, re.IGNORECASE)
                 besluit = bm.group(1).lower() if bm else None
                 if besluit:
                     found_besluit += 1
 
-                # Extract vote score e.g. "(75-74)" from Besluit line
                 score_m = re.search(r'Besluit:[^(]*(\(\d+-\d+\))', card_text, re.IGNORECASE)
                 score = score_m.group(1) if score_m else None
 
@@ -355,7 +378,6 @@ def scrape_stemmingen():
             print(f'    {session_datum}: {found_moties} moties, {found_besluit} besluit')
             time.sleep(0.5)
 
-        # Stop when oldest session on this page is before START_DATE
         if oldest_on_page and oldest_on_page < START_DATE:
             print(f'  Oudste sessie: {oldest_on_page} — stoppen')
             break
@@ -367,7 +389,7 @@ def scrape_stemmingen():
     return stemmingen
 
 
-# ── Motie detail page for real date ──
+# ── Motie detail page ──
 
 def fetch_motie_datum(url):
     if not url.startswith('http'):
@@ -375,7 +397,6 @@ def fetch_motie_datum(url):
     html = fetch_html(url)
     if not html:
         return None
-    # Try multiple date patterns on the detail page
     for pattern in [
         r'Datum[:\s]+(\d{1,2}\s+\w+\s+20\d{2})',
         r'Voorgesteld\s+(\d{1,2}\s+\w+\s+20\d{2})',
@@ -395,14 +416,12 @@ def fetch_motie_title(url):
     html = fetch_html(url)
     if not html:
         return None
-    # Try <title> tag first — format: "Real Title | Tweede Kamer..."
     m = re.search(r'<title[^>]*>(.*?)</title>', html, re.IGNORECASE | re.DOTALL)
     if m:
         t = re.sub(r'<[^>]+>', '', m.group(1)).strip()
-        t = t.split('|')[0].strip()  # strip "| Tweede Kamer der Staten-Generaal"
+        t = t.split('|')[0].strip()
         if t and len(t) > 10 and t.lower() not in ('motie','moties'):
             return t
-    # Try h1
     m = re.search(r'<h1[^>]*>(.*?)</h1>', html, re.IGNORECASE | re.DOTALL)
     if m:
         t = re.sub(r'<[^>]+>', '', m.group(1)).strip()
@@ -459,7 +478,6 @@ def fetch_stemmen(url):
     html = fetch_html(url)
     if not html:
         return {}
-    # Parse HTML table rows: <tr><td>PVV</td><td>37</td><td>Tegen</td></tr>
     stemmen = {}
     for tr in re.findall(r'<tr\b[^>]*>(.*?)</tr>', html, re.IGNORECASE | re.DOTALL):
         cells = re.findall(r'<td\b[^>]*>(.*?)</td>', tr, re.IGNORECASE | re.DOTALL)
@@ -468,7 +486,8 @@ def fetch_stemmen(url):
             vote_raw = re.sub(r'<[^>]+>', '', cells[2]).strip()
             vote_match = re.match(r'(Voor|Tegen|Niet deelgenomen|Onthouden)', vote_raw, re.IGNORECASE)
             if party and vote_match and party.lower() not in ('fracties', 'fractie'):
-                stemmen[party] = vote_match.group(1).lower().replace('niet deelgenomen', 'afwezig')
+                canon = norm_party(party)
+                stemmen[canon] = vote_match.group(1).lower().replace('niet deelgenomen', 'afwezig')
     return stemmen
 
 
@@ -510,18 +529,8 @@ def fetch_zaak_besluit(zaak_nummer):
 
 def fetch_stemmen_odata(zaak_nummer):
     """Fetch per-party votes via single OData expand chain: Zaak->Besluit->Stemming.
-    No GUID filters — avoids all Edm.Guid type errors.
+    Returns dict with canonical party names.
     """
-    PARTY_NORM = {
-        'GroenLinks-PvdA': 'GL-PvdA', 'ChristenUnie': 'CU',
-        'Groep Markuszower': 'Gr.Markuszower', 'Lid Keijzer': 'Groep-Keijzer', 'FVD': 'FvD',
-        'Partij voor de Dieren': 'PvdD', 'Socialistische Partij': 'SP',
-        'Volkspartij voor Vrijheid en Democratie': 'VVD',
-        'Democraten 66': 'D66', 'Christen-Democratisch App\u00e8l': 'CDA',
-        'Partij voor de Vrijheid': 'PVV', 'Nieuw Sociaal Contract': 'NSC',
-        'BoerBurgerBeweging': 'BBB', 'Forum voor Democratie': 'FvD',
-        'Staatkundig Gereformeerde Partij': 'SGP',
-    }
     VOTE_NORM = {'voor': 'voor', 'tegen': 'tegen', 'niet deelgenomen': 'afwezig'}
     BASE = 'https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/'
     HDR = {**HEADERS, 'Accept': 'application/json'}
@@ -537,7 +546,6 @@ def fetch_stemmen_odata(zaak_nummer):
         if not items:
             return {}
         besluiten = items[0].get('Besluit', [])
-        # Find besluit with stemming records
         stemmingen_raw = []
         for b in besluiten:
             s = b.get('Stemming', [])
@@ -549,7 +557,7 @@ def fetch_stemmen_odata(zaak_nummer):
         stemmen = {}
         for item in stemmingen_raw:
             naam = (item.get('ActorFractie') or item.get('ActorNaam') or '').strip()
-            naam = PARTY_NORM.get(naam, naam)
+            naam = norm_party(naam)   # ← always normalize
             soort = (item.get('Soort') or '').lower()
             vote = VOTE_NORM.get(soort, soort)
             if naam and vote and naam not in stemmen:
@@ -568,7 +576,6 @@ def fetch_agenda():
     """Fetch plenaire agenda from TK OData API."""
     today = date.today().isoformat()
     future = (date.today() + __import__('datetime').timedelta(days=21)).isoformat()
-    # Filter on date range only — no Soort filter (value may differ)
     filter_str = f"Datum ge {today} and Datum le {future} and Verwijderd eq false"
     url = (
         "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Activiteit"
@@ -594,8 +601,6 @@ def fetch_agenda():
         for a in plenair:
             datum = (a.get('Datum') or '')[:10]
             nummer = a.get('Nummer','')
-            item_id = a.get('Id','')
-            # Per TK Open Data docs: URL uses Nummer field
             if nummer:
                 tk_url = f"https://www.tweedekamer.nl/debat_en_vergadering/plenaire_vergaderingen/details/activiteit?id={nummer}"
             else:
@@ -633,25 +638,20 @@ def fetch_page(page=0):
         return ''
 
 def parse_moties_from_html(raw):
-    seen_links = {}  # link -> best title found so far
-    seen_dates = {}  # link -> date
+    seen_links = {}
+    seen_dates = {}
     raw = html_module.unescape(raw)
     for m in re.finditer(r'<a\b[^>]*href="(/kamerstukken/moties/detail\?[^"]+)"[^>]*>(.*?)</a>', raw, re.DOTALL):
         link = 'https://www.tweedekamer.nl' + m.group(1).replace('&amp;', '&')
         title = re.sub(r'<[^>]+>', '', m.group(2)).strip()
         title = re.sub(r'\s+', ' ', title)
-        # Clean up garbled titles like "Motie : Motie van het lid X"
         title = re.sub(r'^[Mm]otie\s*:\s*', '', title).strip()
-        # Skip nav/breadcrumb links — real titles are long and contain 'motie'
         if not title or len(title) < 15 or 'motie' not in title.lower():
             continue
-        # Skip if still garbled (contains colon-separated duplicate)
         if '\n' in title:
             continue
-        # Keep the longest title for this link (breadcrumb = short, real title = long)
         if link not in seen_links or len(title) > len(seen_links[link]):
             seen_links[link] = title
-            # Date from context
             start = max(0, m.start() - 300)
             ctx = raw[start:m.start()]
             date_m = re.search(
@@ -676,11 +676,47 @@ def main():
     except FileNotFoundError:
         existing = []
 
-    # Purge any existing moties before START_DATE (cleanup from previous bad runs)
+    # Purge any existing moties before START_DATE
     before = len(existing)
     existing = [m for m in existing if m.get('datum','') >= START_DATE]
     if len(existing) < before:
         print(f'Gezuiverd: {before - len(existing)} moties voor {START_DATE} verwijderd')
+
+    # ── FIX: Normalize party names in existing stemmen ──────────────────────
+    normalized_stemmen = 0
+    for m in existing:
+        if m.get('stemmen'):
+            new_stemmen = norm_stemmen(m['stemmen'])
+            if new_stemmen != m['stemmen']:
+                m['stemmen'] = new_stemmen
+                normalized_stemmen += 1
+    if normalized_stemmen:
+        print(f'Partijnamen genormaliseerd in {normalized_stemmen} bestaande moties')
+
+    # ── FIX: Re-detect thema and indiener for moties that may have wrong values ──
+    # Re-run for all moties where thema might be wrong (e.g. "Bereikbaarheid" for
+    # a ship/defence motie, or indiener "Onbekend" for known members)
+    redetected = 0
+    for m in existing:
+        if not m.get('titel'):
+            continue
+        new_thema = detect_thema(m['titel'])
+        new_indiener = detect_indiener(m['titel'])
+        changed = False
+        # Always re-detect thema (cheap, fixes bad classifications)
+        if new_thema != m.get('thema'):
+            m['thema'] = new_thema
+            changed = True
+        # Fix indiener only if currently "Onbekend" or empty
+        if m.get('indiener') in ('Onbekend', '', None) and new_indiener != 'Onbekend':
+            m['indiener'] = new_indiener
+            changed = True
+        if changed:
+            # Also re-run alignment with updated indiener
+            m['alignment'] = detect_alignment(m['titel'], m['indiener'])
+            redetected += 1
+    if redetected:
+        print(f'Thema/indiener herdetectie: {redetected} moties bijgewerkt')
 
     existing_links   = {x.get('tk_url','') for x in existing}
     existing_by_zaak = {
@@ -691,11 +727,13 @@ def main():
 
     print(f'Bestaande moties: {len(existing)}')
 
-    # Load live Kamerleden
+    # Load live Kamerleden — but DON'T overwrite existing LEDEN_PARTIJ entries
     print('Kamerleden ophalen...')
     live_leden = fetch_leden_partij()
     if live_leden:
-        LEDEN_PARTIJ.update(live_leden)
+        for naam, partij in live_leden.items():
+            if naam not in LEDEN_PARTIJ:   # ← only add, never overwrite
+                LEDEN_PARTIJ[naam] = partij
 
     scraped_count = sum(1 for x in existing if str(x.get('id','')).startswith('tk'))
     is_backfill   = scraped_count == 0
@@ -721,23 +759,21 @@ def main():
         if stemming.get('besluit') and m.get('status','') not in ('aangenomen','verworpen','aangehouden'):
             m['status'] = stemming['besluit']
             m['archief'] = False
-            m.pop('stemmen_na', None)  # reset so party votes get fetched
+            m.pop('stemmen_na', None)
             changed = True
-        # Store vote score e.g. "(75-74)"
         if stemming.get('score') and not m.get('score'):
             m['score'] = stemming['score']
             changed = True
-        # tk_url: /kamerstukken/moties/detail is correct — don't overwrite
         if changed:
             updated_vote += 1
     print(f'  {updated_vote} bestaande moties bijgewerkt met stemresultaat ({matched}/{len(stemmingen)} stemmingen gematcht)')
+
     # ── Step 1a: fetch moties that were voted but not yet in our list ──
     unmatched_stemmingen = [zid for zid in stemmingen if zid not in existing_by_zaak]
     if unmatched_stemmingen:
         print(f'  Ongematchte stemmingen ({len(unmatched_stemmingen)}): ophalen...')
         added_from_stemming = 0
         for zaak_id in unmatched_stemmingen[:80]:
-            # Always use canonical moties URL
             link = f'https://www.tweedekamer.nl/kamerstukken/moties/detail?id={zaak_id}'
             if link in existing_links:
                 continue
@@ -745,7 +781,6 @@ def main():
             try:
                 real_date, real_title, real_besluit = fetch_motie_detail(link)
             except Exception:
-                pass  # 404 or non-motie
                 continue
             time.sleep(0.4)
             if not real_title:
@@ -778,15 +813,14 @@ def main():
         }
 
     # ── Step 1b: Fix moties still in_behandeling ──
+    # Pass 1: fast fix via stemmingen dict
     fixed_besluit = 0
-    needs_detail_check = []
+    still_in_behandeling = []
     for m in existing:
         if m.get('status') != 'in_behandeling':
             continue
         zaak_id = extract_zaak_id(m.get('tk_url', ''))
-        if not zaak_id:
-            continue
-        stemming = stemmingen.get(zaak_id)
+        stemming = stemmingen.get(zaak_id) if zaak_id else None
         if stemming and stemming.get('besluit'):
             m['status'] = stemming['besluit']
             m['archief'] = False
@@ -796,14 +830,19 @@ def main():
             if stemming.get('score') and not m.get('score'):
                 m['score'] = stemming['score']
             fixed_besluit += 1
-        elif stemming:
-            needs_detail_check.append(m)
+        else:
+            # Not in stemmingen dict — could still have been voted; queue for OData check
+            still_in_behandeling.append(m)
     if fixed_besluit:
         print(f'  {fixed_besluit} in_behandeling moties bijgewerkt via stemmingen dict')
-    if needs_detail_check:
-        print(f'  Detail check: {min(30, len(needs_detail_check))} moties zonder besluit')
+
+    # Pass 2: OData check for ALL remaining in_behandeling moties
+    # Catches moties absent from stemmingen scrape (older sessions, zaak-ID mismatch, etc.)
+    if still_in_behandeling:
+        check_count = min(60, len(still_in_behandeling))
+        print(f'  OData besluit-check: {check_count} resterende in_behandeling moties')
         fixed2 = 0
-        for m in needs_detail_check[:30]:
+        for m in still_in_behandeling[:60]:
             zaak_id = extract_zaak_id(m.get('tk_url', ''))
             if not zaak_id:
                 continue
@@ -818,8 +857,8 @@ def main():
         if fixed2:
             print(f'    {fixed2} moties bijgewerkt via OData')
 
-    # Reset stemmen_na for moties that were voted but still have no party breakdown
-    # (stemmen_na was set when title was broken; now title is correct, retry)
+    # Reset stemmen_na for moties now confirmed voted (status fixed above by OData/stemmingen)
+    # Must run AFTER step 1b so newly-fixed statuses are included
     reset_count = 0
     for m in existing:
         if m.get('stemmen_na') and not m.get('stemmen') and m.get('status') in ('aangenomen','verworpen'):
@@ -828,7 +867,7 @@ def main():
     if reset_count:
         print(f'  stemmen_na gereset voor {reset_count} moties (leeg stemmen, wel status)')
 
-    # Fetch per-party votes for voted moties that don't have them yet (max 50 per run)
+    # Fetch per-party votes for voted moties that don't have them yet (max 80 per run)
     needs_stemmen = [
         m for m in existing
         if m.get('status') in ('aangenomen', 'verworpen')
@@ -839,7 +878,7 @@ def main():
     if needs_stemmen:
         print(f'  Partijstemmen ophalen: {len(needs_stemmen)} moties')
         fetched_stemmen = 0
-        for m in needs_stemmen[:60]:
+        for m in needs_stemmen[:80]:
             stemmen = {}
             zaak_id = extract_zaak_id(m.get('tk_url', ''))
             if zaak_id:
@@ -849,10 +888,9 @@ def main():
                 stemmen = fetch_stemmen(m['tk_url'])
                 time.sleep(0.4)
             if stemmen:
-                m['stemmen'] = stemmen
+                m['stemmen'] = norm_stemmen(stemmen)   # ← normalize on store
                 fetched_stemmen += 1
             else:
-                # No votes found — likely handopsteken
                 m['stemmen_na'] = True
         print(f'    {fetched_stemmen} moties partijstemmen opgehaald')
 
@@ -887,14 +925,12 @@ def main():
             zaak_id = extract_zaak_id(link)
             item_id = make_id(link)
 
-            # Match on zaak_id (robust) or full link or item_id
-            # If existing entry has a broken title, update it instead of skipping
             def _is_broken(t):
                 t = (t or '').strip()
                 tl = t.lower()
                 if not t or len(tl) < 10: return True
                 if tl in ('moties','motie'): return True
-                if '\n' in t: return True  # garbled multiline title
+                if '\n' in t: return True
                 if tl.startswith('motie\n') or tl.startswith('motie :\n'): return True
                 if 'indiener' not in tl and 'lid' not in tl and 'leden' not in tl and len(tl) < 30: return True
                 return False
@@ -946,7 +982,6 @@ def main():
                     print(f'    SKIP zaak_id match: {zaak_id} → {matched_m.get("tk_url","?")}')
                 continue
 
-            # Get real date
             real_date = None
             status    = 'in_behandeling'
 
@@ -962,8 +997,6 @@ def main():
             if not real_date:
                 real_date = r['list_date'] or TODAY
 
-            # Hard filter — skip anything clearly before START_DATE
-            # If date is uncertain (TODAY), always keep it
             if real_date != TODAY and real_date < START_DATE:
                 print(f'    SKIP (datum {real_date} < {START_DATE}): {r["titel"][:60]}')
                 continue
@@ -1001,13 +1034,12 @@ def main():
 
         time.sleep(1.5)
 
-    # ── Step 2b: Fix broken titles (e.g. "Moties" from nav link) ──
+    # ── Step 2b: Fix broken titles ──
     broken_titles = [m for m in existing if m.get('titel','').strip().lower() in ('moties','motie','')]
     if broken_titles:
         print(f'\n  Kapotte titels herstellen: {len(broken_titles)} moties')
         for m in broken_titles[:50]:
             if not m.get('tk_url'): continue
-            real = fetch_motie_datum(m['tk_url'])  # reuse fetch, we'll extract title separately
             html_raw = fetch_html(m['tk_url'])
             if html_raw:
                 t = re.search(r'<h1[^>]*>(.*?)</h1>', html_raw, re.DOTALL)
@@ -1017,6 +1049,7 @@ def main():
                         m['titel'] = title
                         m['indiener'] = detect_indiener(title)
                         m['thema'] = detect_thema(title)
+                        m['alignment'] = detect_alignment(title, m['indiener'])
             time.sleep(0.4)
 
     # ── Step 3: Fix dates still showing TODAY ──
@@ -1038,9 +1071,6 @@ def main():
         print(f'  + {m["datum"]} | {m["status"]:15} | {m["titel"][:60]}')
 
     # ── Step 4: Archive logic ──
-    # aangenomen/verworpen → always front page (archief=False)
-    # in_behandeling       → In Process tab after 5 days
-    # aangehouden          → In Process tab after 30 days
     all_moties = existing + new_items
     for m in all_moties:
         status = m.get('status', '')

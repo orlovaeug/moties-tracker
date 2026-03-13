@@ -13,7 +13,6 @@ def fetch(url):
     with urllib.request.urlopen(req, timeout=20) as r:
         return html_module.unescape(r.read().decode('utf-8', errors='replace'))
 
-# Step 1: get list page and print first few detail links
 list_url = ('https://www.tweedekamer.nl/kamerstukken/stemmingsuitslagen'
             '?qry=%2A&fld_tk_categorie=Kamerstukken'
             '&fld_prl_kamerstuk=Stemmingsuitslagen&srt=date%3Adesc%3Adate&page=0')
@@ -31,31 +30,25 @@ if not detail_links:
     print("NO DETAIL LINKS FOUND — printing 2000 chars of list page:")
     print(html[3000:5000])
 else:
-    # Step 2: fetch first detail page and print key sections
     detail_url = 'https://www.tweedekamer.nl' + detail_links[0].replace('&amp;', '&')
     print(f"\n=== DETAIL PAGE: {detail_url} ===")
     detail = fetch(detail_url).replace('&amp;', '&')
     
-    # Print first 3000 chars to find date
     print("\n--- First 3000 chars ---")
-    # strip tags for readability
     clean = re.sub(r'<[^>]+>', ' ', detail[:3000])
     clean = re.sub(r'\s+', ' ', clean)
     print(clean[:2000])
     
-    # Find all zaak IDs
     zaak_ids = re.findall(r'[?&]id=(\d{4}Z\w+)', detail)
     print(f"\n--- Zaak IDs found: {len(zaak_ids)} ---")
     for z in zaak_ids[:10]:
         print(f"  {z}")
     
-    # Find all Besluit occurrences
     besluit_hits = [(m.start(), m.group()) for m in re.finditer(r'Besluit[^<]{0,50}', detail, re.IGNORECASE)]
     print(f"\n--- Besluit occurrences: {len(besluit_hits)} ---")
     for pos, txt in besluit_hits[:5]:
         print(f"  pos={pos}: {txt!r}")
     
-    # Show a 300-char window around first zaak ID + first besluit
     if zaak_ids:
         first_zaak_pos = detail.find(zaak_ids[0])
         print(f"\n--- 500 chars around first zaak ID ({zaak_ids[0]}) at pos {first_zaak_pos} ---")

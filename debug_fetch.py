@@ -20,7 +20,6 @@ with urllib.request.urlopen(req, timeout=25) as r:
 
 print(f"Got {len(raw)} bytes")
 
-# Show raw HTML around first motie link
 idx = raw.find('/kamerstukken/moties/detail?')
 if idx < 0:
     print("ERROR: No motie detail links found at all!")
@@ -31,7 +30,6 @@ else:
     print("Context (500 chars before, 300 after):")
     print(repr(raw[max(0,idx-500):idx+300]))
     
-    # Count all motie links
     links = re.findall(r'/kamerstukken/moties/detail\?[^"\'>\s]+', raw)
     print(f"\nTotal motie detail links on page: {len(links)}")
     print("First 5:", links[:5])
