@@ -1,38 +1,43 @@
 # Motie Tracker — Bugfix Changes
-## Only fetch_moties.py was changed. index.html / worker.js / debug_*.py unchanged.
+## index.html is UNCHANGED — use your original file.
 
 ---
 
-## Fix 1 — Party name normalization in stemmen
-Added PARTY_NORM_GLOBAL dict and norm_stemmen() helper.
-OData/HTML returns: "GroenLinks-PvdA", "FVD", "ChristenUnie", "Groep Markuszower"
-Normalized to: "GL-PvdA", "FvD", "CU", "Gr.Markuszower"
-Applied at fetch time AND retroactively on all existing moties at startup.
+## fetch_moties.py changes
 
-## Fix 2 — indiener: "Onbekend" for known members (e.g. Dobbe)
-Live Kamerleden scraper was overwriting LEDEN_PARTIJ entries.
-Fix: only ADD new names, never overwrite existing.
+Fix 1 — Party name normalization
+  OData/HTML names like "GroenLinks-PvdA", "FVD", "ChristenUnie", "Groep Markuszower"
+  normalized to "GL-PvdA", "FvD", "CU", "Gr.Markuszower" everywhere.
 
-## Fix 3 — Wrong thema (e.g. "Bereikbaarheid" for Evertsen/Defensie motie)
-Thema was set once at first scrape and never re-evaluated.
-Fix: bulk re-detection pass at startup for every existing motie.
+Fix 2 — indiener "Onbekend" for known members (e.g. Dobbe)
+  Live Kamerleden scraper no longer overwrites existing LEDEN_PARTIJ entries.
 
-## Fix 4 — status: "in_behandeling" + empty stemmen for Van Baarle/Evertsen
-ROOT CAUSE: stemmingsuitslagen pages sometimes link moties by document ID
-(?id=2026D11247) instead of zaak ID (?id=2026Z04934). The old regex only
-matched Z-type IDs, so this motie was silently missing from the stemmingen
-dict — never matched, never updated.
+Fix 3 — Wrong thema on startup
+  Bulk re-detection of thema + indiener for all existing moties at startup.
 
-Fix:
-- Added extract_doc_id() helper (extracts 2026D... from ?id= or ?did=)
-- Added existing_by_doc secondary index (doc_id -> motie)
-- Stemmingen dict now also stores D-type keys
-- All lookup points (apply loop, Step 1b, unmatched check) try doc_id fallback
+Fix 4 — Doc-ID matching (root cause of Van Baarle/Evertsen stuck in_behandeling)
+  stemmingsuitslagen pages sometimes link moties by document ID (?id=2026D...)
+  not zaak ID (?id=2026Z...). Added extract_doc_id(), existing_by_doc index,
+  and doc-ID fallback in all match points.
 
-## Fix 5 — stemmen_na blocking vote fetch after status fix
-stemmen_na was set while status was in_behandeling (correct then).
-Reset now runs AFTER Step 1b, so newly-fixed moties get votes fetched.
+Fix 5 — stemmen_na blocking vote fetch
+  Reset now runs AFTER Step 1b status fixes.
 
-## Fix 6 — Step 1b OData fallback scope
-Old: only checked moties in stemmingen dict with missing besluit.
-New: checks ALL remaining in_behandeling moties via OData unconditionally.
+Fix 6 — Step 1b OData checks ALL in_behandeling moties
+  Not just those already in the stemmingen dict.
+
+Fix 7 — Unmatched stemmingen handling
+  Cap raised 80→200, D-type keys skipped in URL construction,
+  existing_by_doc rebuilt after loop, improved logging.
+
+---
+
+## fix_moties_json.py (NEW — standalone patcher)
+  Run once directly against moties.json to fix all existing data:
+    python3 fix_moties_json.py
+
+  Pass 1: normalize party names in all stemmen
+  Pass 2: re-detect thema + indiener for every motie
+  Pass 3: OData lookup for every in_behandeling motie → get besluit + stemmen
+  Pass 4: fetch missing stemmen for already-voted moties with empty stemmen{}
+  Makes moties.backup.json before saving.

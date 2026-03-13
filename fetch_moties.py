@@ -778,6 +778,17 @@ def main():
     # Apply to existing moties
     updated_vote = 0
     matched = 0
+
+    # ── Diagnostics ──
+    z_hits = sum(1 for k in stemmingen if k in existing_by_zaak)
+    d_hits = sum(1 for k in stemmingen if k in existing_by_doc)
+    unmatched_keys = [k for k in stemmingen if k not in existing_by_zaak and k not in existing_by_doc]
+    print(f'  DEBUG: stemmingen={len(stemmingen)}, zaak_hits={z_hits}, doc_hits={d_hits}, unmatched={len(unmatched_keys)}')
+    if unmatched_keys:
+        print(f'  DEBUG unmatched sample: {unmatched_keys[:8]}')
+    if existing_by_zaak:
+        print(f'  DEBUG existing_by_zaak sample: {list(existing_by_zaak.keys())[:5]}')
+
     for key, stemming in stemmingen.items():
         # key is either a zaak_id (2026Z...) or doc_id (2026D...)
         m = existing_by_zaak.get(key) or existing_by_doc.get(key)
@@ -799,7 +810,9 @@ def main():
             changed = True
         if changed:
             updated_vote += 1
-    print(f'  {updated_vote} bestaande moties bijgewerkt met stemresultaat ({matched}/{len(stemmingen)} stemmingen gematcht)')
+    already_final = matched - updated_vote
+    unmatched_count = len(stemmingen) - matched
+    print(f'  Stemresultaten: {updated_vote} bijgewerkt, {already_final} al correct, {unmatched_count} niet gevonden in moties.json')
 
     # ── Step 1a: fetch moties that were voted but not yet in our list ──
     unmatched_stemmingen = [
@@ -809,7 +822,13 @@ def main():
     if unmatched_stemmingen:
         print(f'  Ongematchte stemmingen ({len(unmatched_stemmingen)}): ophalen...')
         added_from_stemming = 0
-        for zaak_id in unmatched_stemmingen[:80]:
+        for stem_key in unmatched_stemmingen[:200]:
+            stemming_entry = stemmingen[stem_key]
+            # Only Z-type keys map directly to a motie URL
+            # D-type keys (doc IDs) can't be used to construct a motie URL — skip
+            if not re.match(r'\d{4}Z', stem_key):
+                continue
+            zaak_id = stem_key
             link = f'https://www.tweedekamer.nl/kamerstukken/moties/detail?id={zaak_id}'
             if link in existing_links:
                 continue
@@ -822,10 +841,10 @@ def main():
             if not real_title:
                 continue
             if not real_date:
-                real_date = stemmingen[zaak_id].get('datum') or TODAY
+                real_date = stemming_entry.get('datum') or TODAY
             if not real_date or real_date < START_DATE:
                 continue
-            status = real_besluit or stemmingen[zaak_id].get('besluit') or 'in_behandeling'
+            status = real_besluit or stemming_entry.get('besluit') or 'in_behandeling'
             thema    = detect_thema(real_title)
             indiener = detect_indiener(real_title)
             new_m = {
@@ -835,8 +854,8 @@ def main():
                 'vergadering': '', 'tk_url': link, 'toelichting': '',
                 'stemmen': {}, 'archief': False,
             }
-            if stemmingen[zaak_id].get('score'):
-                new_m['score'] = stemmingen[zaak_id]['score']
+            if stemming_entry.get('score'):
+                new_m['score'] = stemming_entry['score']
             existing.append(new_m)
             existing_by_zaak[zaak_id] = new_m
             existing_links.add(link)
@@ -846,6 +865,11 @@ def main():
             extract_zaak_id(x.get('tk_url', '')): x
             for x in existing
             if extract_zaak_id(x.get('tk_url', ''))
+        }
+        existing_by_doc = {
+            extract_doc_id(x.get('tk_url', '')): x
+            for x in existing
+            if extract_doc_id(x.get('tk_url', ''))
         }
 
     # ── Step 1b: Fix moties still in_behandeling ──
