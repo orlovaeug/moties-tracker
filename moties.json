@@ -11,7 +11,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z04842&did=2026D11033",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk9f4e88c752",
@@ -25,7 +25,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z04829&did=2026D10996",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk718295bcb2",
@@ -6636,7 +6636,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z02734&did=2026D06129",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk3de15e7625",
@@ -6650,7 +6650,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z02733&did=2026D06128",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk9fe4aaba68",
@@ -6664,7 +6664,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z02117&did=2026D04907",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tka776f8c352",
@@ -6678,7 +6678,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z02101&did=2026D04880",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk56888a270c",
@@ -6692,7 +6692,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z02096&did=2026D04875",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk9e9534539b",
@@ -6706,7 +6706,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z02097&did=2026D04876",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk86e86dc769",
@@ -6720,7 +6720,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z01465&did=2026D03495",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tkc3d4dc9c78",
@@ -6797,7 +6797,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z04861&did=2026D11069",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tkfa7728fc78",
@@ -6811,7 +6811,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z04860&did=2026D11067",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tkd46280994b",
@@ -7619,6 +7619,258 @@
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05132&did=2026D11643",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk53532565a0",
+    "titel": "Gewijzigde motie van het lid Bikker c.s. over voorstellen ter verbetering van de toegankelijkheid van de Tweede Kamer doen en deze ook realiseren (t.v.v. 36800-XVI-173) - Vaststelling van de begrotingsstaten van het Ministerie van Volksgezondheid, Welzijn en Sport (XVI) voor het jaar 2026",
+    "indiener": "CU",
+    "datum": "2026-03-17",
+    "thema": "Financiën",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05260&did=2026D12022",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk003794e829",
+    "titel": "Motie van het lid Mooiman over vastleggen dat ook bij betaalbare koop de minimale instandhoudingstermijn start vanaf de ingebruikname van de woning - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "Onbekend",
+    "datum": "2026-03-17",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05245&did=2026D12000",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk5aa1f52633",
+    "titel": "Motie van de leden Mooiman en Flach over vastleggen dat ook uitstromende huurders van jongerenwoningen behoren tot de aandachtsgroep \"starters\" - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "Onbekend",
+    "datum": "2026-03-17",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05247&did=2026D12002",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk7f0a1074dc",
+    "titel": "Motie van het lid Mooiman over een haalbaarheidsonderzoek naar samenwerking tussen Nederlandse en Vlaamse gemeenten inzake versterking van de uitvoeringscapaciteit om woningbouw te versnellen - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "Onbekend",
+    "datum": "2026-03-17",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05249&did=2026D12004",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkb70faf5f9c",
+    "titel": "Motie van het lid Mooiman over vastleggen dat door het Rijk verzamelde woongegevens ook op gemeentelijk niveau beschikbaar worden gesteld - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "Onbekend",
+    "datum": "2026-03-16",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05248&did=2026D12003",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkeb0e192be5",
+    "titel": "Motie van de leden Flach en Mooiman over de definitie van \"starters\" harmoniseren en het leeftijdscriterium verruimen - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "SGP",
+    "datum": "2026-03-16",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05243&did=2026D11998",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkfec3522e3b",
+    "titel": "Motie van de leden Flach en Nobel over knelpunten inventariseren bij vergunningverlening voor (woning)bouwprojecten - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "SGP",
+    "datum": "2026-03-16",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05244&did=2026D11999",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk56eb32a13d",
+    "titel": "Motie van de leden Nobel en Steen over voorrang op bestaande regelingen voor gemeenten die de doelstelling van minimaal 25% aan betaalbare koopwoningen behalen - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "Onbekend",
+    "datum": "2026-03-16",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05242&did=2026D11997",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk9c9f47cbb4",
+    "titel": "Motie van de leden Nobel en Flach over gemeenten stimuleren en belonen om alternatieve huisvesting te realiseren voor statushouders en andere doelgroepen die een flexibele woning nodig hebben - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "Onbekend",
+    "datum": "2026-03-17",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05241&did=2026D11996",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk9b3cb3bf58",
+    "titel": "Motie van het lid Beckerman over gemeenten die meer sociale huurwoningen realiseren dan het landelijke minimum niet sanctioneren of financieel benadelen - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "SP",
+    "datum": "2026-03-16",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05257&did=2026D12012",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk4f8b2d61e6",
+    "titel": "Motie van het lid Beckerman over waarborgen dat het aantal en het aandeel sociale huurwoningen niet afneemt - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "SP",
+    "datum": "2026-03-16",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05256&did=2026D12011",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk46b6eafb7f",
+    "titel": "Motie van het lid Beckerman over urgentie mogelijk maken voor mensen die volgens de ETHOS-definitie dakloos zijn of dreigen te worden - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "SP",
+    "datum": "2026-03-16",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05255&did=2026D12010",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkd9239a2e5f",
+    "titel": "Motie van de leden De Hoop en Grinwis over sturen op 30% sociale huur en 37% woningen in het middensegment als een woningbouwregio een halfjaar na inwerkingtreding van de wet nog geen afspraken heeft gemaakt - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "Onbekend",
+    "datum": "2026-03-16",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05253&did=2026D12008",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkba0d6047ac",
+    "titel": "Motie van het lid Beckerman over de doelen van het Nationaal Actieplan Dakloosheid ongewijzigd nastreven en hiervoor een plan presenteren - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "SP",
+    "datum": "2026-03-16",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05254&did=2026D12009",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk3932e2e9e2",
+    "titel": "Motie van het lid Clemminck over geen rijksbijdragen voor woningbouwprojecten in gemeenten die verdergaande betaalbaarheidseisen hanteren dan de landelijke norm - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "Onbekend",
+    "datum": "2026-03-16",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05252&did=2026D12007",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkadd9964995",
+    "titel": "Motie van het lid Clemminck over in het Besluit volkshuisvesting opnemen dat twee derde van de nieuwbouw betaalbaar is, waarvan 25% sociale huur - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "Onbekend",
+    "datum": "2026-03-16",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05251&did=2026D12006",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkb60e18ddff",
+    "titel": "Motie van het lid Clemminck over het wetsvoorstel dat de mogelijkheid tot voorrang van statushouders bij sociale huurwoningen beëindigt spoedig in procedure brengen - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "Onbekend",
+    "datum": "2026-03-17",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05250&did=2026D12005",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk01301227a0",
+    "titel": "Gewijzigde motie van het lid Ergin over de integratieparadox meenemen in de herziening van de actieagenda (t.v.v. 32824-502) - Integratiebeleid",
+    "indiener": "DENK",
+    "datum": "2026-03-16",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05182&did=2026D11825",
     "toelichting": "",
     "stemmen": {},
     "archief": false
