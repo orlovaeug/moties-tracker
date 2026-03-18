@@ -85,7 +85,7 @@ LEDEN_PARTIJ = {
     "Keijzer":"Groep-Keijzer",
     "Baay-Timmerman":"50PLUS",
     # Extra members seen in recent moties
-    "Lahlah":"GL-PvdA",
+    "Lahlah":"GL-PvdA", "Clemminck":"JA21", "de Hoop":"GL-PvdA","Nobel":"VVD","Mooiman":"PVV", "Kostic":"PvdD", "Jansen":"PVV", "Koorevaar":"CDA", "Goudzwaard":"JA21",
     "Tijs van den Brink":"CDA","Van den Brink":"CDA",
 }
 
