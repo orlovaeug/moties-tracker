@@ -9329,7 +9329,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05320&did=2026D12193",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk6454496a9d",
@@ -9343,7 +9343,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05327&did=2026D12202",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tkcfc886d1ac",
@@ -9357,7 +9357,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05326&did=2026D12201",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tkf26afbb161",
@@ -9371,7 +9371,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05325&did=2026D12200",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk00b32788aa",
@@ -9385,7 +9385,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05324&did=2026D12199",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk34383cfc46",
@@ -9399,7 +9399,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05323&did=2026D12197",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tkc0c087187d",
@@ -9413,7 +9413,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05322&did=2026D12196",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tkd79e139494",
@@ -9427,7 +9427,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05321&did=2026D12194",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk21cd109442",
@@ -9441,7 +9441,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05318&did=2026D12191",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk820e45ea8a",
@@ -9455,7 +9455,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05319&did=2026D12192",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk5fe2ebaebc",
@@ -9469,7 +9469,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05317&did=2026D12177",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk6647b4d07d",
@@ -9483,7 +9483,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05314&did=2026D12172",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk3bb62929c0",
@@ -9497,7 +9497,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05313&did=2026D12171",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk9c558fca35",
@@ -9511,7 +9511,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05310&did=2026D12167",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk3a7c4ae3fe",
@@ -9525,7 +9525,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05311&did=2026D12168",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk42840b3bfa",
@@ -9553,7 +9553,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05307&did=2026D12163",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk60b829d7ed",
@@ -9567,7 +9567,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05308&did=2026D12165",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tkffcbee290d",
@@ -11039,6 +11039,62 @@
     "alignment": "conform",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05676&did=2026D12933",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk8ac692aeb2",
+    "titel": "Gewijzigde motie van het lid Van der Plas over onderzoeken of de ontwikkeling van actief hoogveen in de Engbertsdijksvenen ecologisch en hydrologisch daadwerkelijk haalbaar is (t.v.v. 29659-164) - Evaluatie Staatsbosbeheer",
+    "indiener": "BBB",
+    "datum": "2026-03-23",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05756&did=2026D13105",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk7768adbc5a",
+    "titel": "Gewijzigde motie van het lid Mooiman c.s. over vastleggen dat ook uitstromende huurders van jongerenwoningen behoren tot de aandachtsgroep \"starters\" (t.v.v. 36881-14) - Wijziging van het voorstel van wet tot wijziging van de Algemene wet bestuursrecht, de Huisvestingswet 2014, de Omgevingswet, de Wet maatschappelijke ondersteuning 2015 en de Woningwet in verband met de versterking van de regie op de volkshuisvesting en met het oog op enkele andere met de volkshuisvesting samenhangende maatregelen (Wet versterking regie volkshuisvesting)",
+    "indiener": "PVV",
+    "datum": "2026-03-23",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05747&did=2026D13080",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk982b1bd961",
+    "titel": "Gewijzigde motie van de leden Ten Hove en Van der Plas over actief beheer van de wolvenpopulatie mogelijk maken (t.v.v. 36800-XIV-70) - Vaststelling van de begrotingsstaten van het Ministerie van Landbouw, Visserij, Voedselzekerheid en Natuur (XIV) en het Diergezondheidsfonds (F) voor het jaar 2026",
+    "indiener": "Onbekend",
+    "datum": "2026-03-23",
+    "thema": "Landbouw & Natuur",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05746&did=2026D13079",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk77a7baca5f",
+    "titel": "Gewijzigde motie van het lid Ten Hove c.s. over reële en werkbare beoordelingskaders voor wolfwerende rasters (t.v.v. 36800-XIV-69) - Vaststelling van de begrotingsstaten van het Ministerie van Landbouw, Visserij, Voedselzekerheid en Natuur (XIV) en het Diergezondheidsfonds (F) voor het jaar 2026",
+    "indiener": "Onbekend",
+    "datum": "2026-03-23",
+    "thema": "Landbouw & Natuur",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z05745&did=2026D13078",
     "toelichting": "",
     "stemmen": {},
     "archief": false
