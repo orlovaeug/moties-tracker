@@ -121,7 +121,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z04525&did=2026D10232",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk9f11ffe540",
@@ -25182,6 +25182,34 @@
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z07515&did=2026D16734",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkfe83ad4439",
+    "titel": "Gewijzigde motie van het lid Nobel over onderzoeken hoe strenger handhaven op afschaffing van lokale duurzaamheidseisen kan bijdragen aan hogere en uniformere duurzaamheidsambities (t.v.v. 32847-1438) - Integrale visie op de woningmarkt",
+    "indiener": "VVD",
+    "datum": "2026-04-10",
+    "thema": "Wonen & Bouwen",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z07606&did=2026D17025",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkada67530d8",
+    "titel": "Gewijzigde motie van de leden Goudzwaard en Boelsma-Hoekstra over de Europese maritieme-industriestrategie betrekken bij de eindevaluatie van de Sectoragenda Maritieme Maakindustrie (t.v.v. 31409-502) - Zee- en binnenvaart",
+    "indiener": "JA21",
+    "datum": "2026-04-10",
+    "thema": "Asiel & Migratie",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z07604&did=2026D17023",
     "toelichting": "",
     "stemmen": {},
     "archief": false
