@@ -31556,7 +31556,8 @@
       "PvdD": "tegen",
       "Keijzer": "voor"
     },
-    "archief": false
+    "archief": false,
+    "score": "(45-102)"
   },
   {
     "id": "tk84c0500ac6",
@@ -32982,13 +32983,14 @@
     "indiener": "Gr.Markuszower",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08807&did=2026D19658",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkfe9e039a04",
@@ -32996,13 +32998,14 @@
     "indiener": "PvdD",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08812&did=2026D19663",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tke9656c4426",
@@ -33010,13 +33013,14 @@
     "indiener": "CDA",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "conform",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08816&did=2026D19667",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk65733d1e74",
@@ -33024,13 +33028,14 @@
     "indiener": "NSC",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08820&did=2026D19671",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkbb7b388b49",
@@ -33038,13 +33043,14 @@
     "indiener": "NSC",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08819&did=2026D19670",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk6a5117b9aa",
@@ -33052,13 +33058,14 @@
     "indiener": "SP",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08818&did=2026D19669",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkc3f284711e",
@@ -33066,7 +33073,7 @@
     "indiener": "SP",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangehouden",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08817&did=2026D19668",
@@ -33080,13 +33087,14 @@
     "indiener": "PvdD",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08813&did=2026D19664",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk092e0b12e4",
@@ -33094,13 +33102,14 @@
     "indiener": "SGP",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08815&did=2026D19666",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkc2f3e96dd0",
@@ -33122,13 +33131,14 @@
     "indiener": "Gr.Markuszower",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08808&did=2026D19659",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk579208929a",
@@ -33136,13 +33146,14 @@
     "indiener": "BBB",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08810&did=2026D19661",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk551e8ea22a",
@@ -33150,13 +33161,14 @@
     "indiener": "BBB",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08811&did=2026D19662",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk9511a22ff0",
@@ -33164,13 +33176,14 @@
     "indiener": "CU",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08803&did=2026D19654",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkf0b0469c34",
@@ -33178,13 +33191,14 @@
     "indiener": "Gr.Markuszower",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08809&did=2026D19660",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk1392cc4b75",
@@ -33192,13 +33206,14 @@
     "indiener": "CU",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08804&did=2026D19655",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk080975bc5a",
@@ -33206,13 +33221,14 @@
     "indiener": "VVD",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "conform",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08805&did=2026D19656",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk3dcf58280f",
@@ -33220,13 +33236,14 @@
     "indiener": "VVD",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "conform",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08806&did=2026D19657",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkb055a3bcbb",
@@ -33234,13 +33251,14 @@
     "indiener": "GL-PvdA",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08793&did=2026D19644",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk3b57e3604f",
@@ -33262,13 +33280,14 @@
     "indiener": "CU",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08802&did=2026D19653",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk24adae48a4",
@@ -33276,13 +33295,14 @@
     "indiener": "DENK",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08796&did=2026D19647",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkbcbf7afd5e",
@@ -33290,13 +33310,14 @@
     "indiener": "Volt",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08800&did=2026D19651",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkdbec4be2b2",
@@ -33304,13 +33325,14 @@
     "indiener": "Volt",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08799&did=2026D19650",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk26664dca2d",
@@ -33318,13 +33340,14 @@
     "indiener": "DENK",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08798&did=2026D19649",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkd2afad7a27",
@@ -33332,13 +33355,14 @@
     "indiener": "DENK",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08797&did=2026D19648",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkb5b302e601",
@@ -33346,13 +33370,14 @@
     "indiener": "JA21",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08792&did=2026D19643",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk331625d600",
@@ -33360,13 +33385,14 @@
     "indiener": "DENK",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08795&did=2026D19646",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk5c278b8f93",
@@ -33374,13 +33400,14 @@
     "indiener": "GL-PvdA",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08794&did=2026D19645",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk967e7d5430",
@@ -33388,13 +33415,14 @@
     "indiener": "JA21",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08791&did=2026D19642",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkc043c7ae38",
@@ -33402,13 +33430,14 @@
     "indiener": "JA21",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08790&did=2026D19641",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkeff77e4982",
@@ -33416,13 +33445,14 @@
     "indiener": "JA21",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08789&did=2026D19640",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk6759f6cf3d",
@@ -33430,13 +33460,14 @@
     "indiener": "PVV",
     "datum": "2026-04-22",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08788&did=2026D19639",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk36dccd439a",
@@ -33444,13 +33475,14 @@
     "indiener": "BBB",
     "datum": "2026-04-23",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08839&did=2026D19727",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk4f4cadbe4e",
@@ -33458,13 +33490,14 @@
     "indiener": "GL-PvdA",
     "datum": "2026-04-23",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08840&did=2026D19728",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk6e001ebf8a",
@@ -33486,13 +33519,14 @@
     "indiener": "PvdD",
     "datum": "2026-04-23",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08842&did=2026D19730",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tka081065a04",
@@ -33500,13 +33534,14 @@
     "indiener": "BBB",
     "datum": "2026-04-23",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08837&did=2026D19724",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk2990097798",
@@ -33514,13 +33549,14 @@
     "indiener": "GL-PvdA",
     "datum": "2026-04-23",
     "thema": "Klimaat & Energie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08855&did=2026D19748",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk9624f604d4",
@@ -33528,13 +33564,14 @@
     "indiener": "PVV",
     "datum": "2026-04-23",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08845&did=2026D19734",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk332b0b3e82",
@@ -33542,13 +33579,14 @@
     "indiener": "JA21",
     "datum": "2026-04-23",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08849&did=2026D19738",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk8a850f6bc3",
@@ -33556,13 +33594,14 @@
     "indiener": "PVV",
     "datum": "2026-04-23",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08847&did=2026D19736",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkc2100771e9",
@@ -33570,13 +33609,14 @@
     "indiener": "PVV",
     "datum": "2026-04-23",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08846&did=2026D19735",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkdf744cc3f2",
@@ -33584,12 +33624,378 @@
     "indiener": "SGP",
     "datum": "2026-04-23",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "aangehouden",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08844&did=2026D19733",
     "toelichting": "",
     "stemmen": {},
     "archief": false
+  },
+  {
+    "id": "tk4547fdb11e",
+    "titel": "Motie van het lid Vermeer - Voorjaarsnota 2026",
+    "indiener": "BBB",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08959&did=2026D19989",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk978910d605",
+    "titel": "Motie van het lid Vermeer - Voorjaarsnota 2026",
+    "indiener": "BBB",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08958&did=2026D19988",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkcd3ada0a03",
+    "titel": "Motie van het lid Vermeer - Voorjaarsnota 2026",
+    "indiener": "BBB",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08957&did=2026D19987",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk337f000b57",
+    "titel": "Motie van het lid Jimmy Dijk - Voorjaarsnota 2026",
+    "indiener": "SP",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08956&did=2026D19986",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk6f5705d970",
+    "titel": "Motie van het lid Jimmy Dijk - Voorjaarsnota 2026",
+    "indiener": "SP",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08955&did=2026D19985",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk52795134a0",
+    "titel": "Motie van het lid Dassen - Voorjaarsnota 2026",
+    "indiener": "Volt",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08953&did=2026D19980",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk0ab2158198",
+    "titel": "Motie van het lid Dassen - Voorjaarsnota 2026",
+    "indiener": "Volt",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08952&did=2026D19979",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk1e618ee94b",
+    "titel": "Motie van de leden Grinwis en Flach - Voorjaarsnota 2026",
+    "indiener": "CU",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08951&did=2026D19978",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk27f132df26",
+    "titel": "Motie van de leden Grinwis en Stultiens - Voorjaarsnota 2026",
+    "indiener": "CU",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08949&did=2026D19974",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk5f75ab4871",
+    "titel": "Motie van het lid Teunissen - Voorjaarsnota 2026",
+    "indiener": "PvdD",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08948&did=2026D19973",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkcd0d430f6b",
+    "titel": "Motie van het lid Teunissen - Voorjaarsnota 2026",
+    "indiener": "PvdD",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08947&did=2026D19972",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkc8388822de",
+    "titel": "Motie van het lid Ergin - Voorjaarsnota 2026",
+    "indiener": "DENK",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08946&did=2026D19971",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk94f832d181",
+    "titel": "Motie van het lid Ergin - Voorjaarsnota 2026",
+    "indiener": "DENK",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08945&did=2026D19970",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tke77994b88d",
+    "titel": "Motie van de leden Dekker en Tony van Dijck - Voorjaarsnota 2026",
+    "indiener": "Onbekend",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08943&did=2026D19968",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk9b2a6b5e73",
+    "titel": "Motie van het lid Inge van Dijk c.s. - Voorjaarsnota 2026",
+    "indiener": "CDA",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08942&did=2026D19967",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tke4653b9dc0",
+    "titel": "Motie van het lid Inge van Dijk c.s. - Voorjaarsnota 2026",
+    "indiener": "CDA",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08941&did=2026D19965",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk0da00c68ca",
+    "titel": "Motie van het lid Eerdmans - Voorjaarsnota 2026",
+    "indiener": "JA21",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08940&did=2026D19962",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk61bfd46ee2",
+    "titel": "Motie van de leden Tony van Dijck en Wilders - Voorjaarsnota 2026",
+    "indiener": "Onbekend",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08935&did=2026D19956",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk80cdcf95a1",
+    "titel": "Motie van het lid Stultiens - Voorjaarsnota 2026",
+    "indiener": "Onbekend",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08932&did=2026D19953",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk825d5bb115",
+    "titel": "Motie van het lid Eerdmans - Voorjaarsnota 2026",
+    "indiener": "JA21",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08939&did=2026D19961",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkabc141d75d",
+    "titel": "Motie van de leden Tony van Dijck en Wilders - Voorjaarsnota 2026",
+    "indiener": "Onbekend",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08937&did=2026D19958",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk76d0ac45ba",
+    "titel": "Motie van de leden Tony van Dijck en Wilders - Voorjaarsnota 2026",
+    "indiener": "Onbekend",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08936&did=2026D19957",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk6e5b81224b",
+    "titel": "Motie van het lid Stultiens - Voorjaarsnota 2026",
+    "indiener": "Onbekend",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08934&did=2026D19955",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkf10dcae2b8",
+    "titel": "Motie van het lid Stultiens - Voorjaarsnota 2026",
+    "indiener": "Onbekend",
+    "datum": "2026-04-23",
+    "thema": "Overig",
+    "status": "in_behandeling",
+    "alignment": "neutraal",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08933&did=2026D19954",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkb4c116b1de",
+    "titel": "Gewijzigde motie van het lid Dassen over onderzoeken of uitgestelde levering met batterijopslag binnen de SDE++ mogelijk gemaakt kan worden voor nieuwe en bestaande projecten (t.v.v. 36933-16) - Noodpakket energie, mobiliteit en economie",
+    "indiener": "Volt",
+    "datum": "2026-04-23",
+    "thema": "Bereikbaarheid",
+    "status": "aangenomen",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08888&did=2026D19798",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false,
+    "stemmen_na": true
+  },
+  {
+    "id": "tk4cf64d66d3",
+    "titel": "Gewijzigde motie van het lid Koorevaar c.s. over beschikkingen die hebben geleid tot substantiële verlagingen of afkeuringen van vergoedingen binnen de ecoregeling met prioriteit opnieuw beoordelen (t.v.v. 21501-32-1781) - Landbouw- en Visserijraad",
+    "indiener": "CDA",
+    "datum": "2026-04-23",
+    "thema": "Landbouw & Natuur",
+    "status": "aangenomen",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z08859&did=2026D19762",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false,
+    "stemmen_na": true
   }
 ]
