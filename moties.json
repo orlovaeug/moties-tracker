@@ -36669,7 +36669,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09699&did=2026D21852",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tke999ddf2d7",
@@ -36879,7 +36879,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09916&did=2026D22307",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tka4fda3260e",
@@ -36893,7 +36893,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09917&did=2026D22308",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk35c9862b1c",
@@ -36907,7 +36907,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09915&did=2026D22306",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tkb0ebe5da2f",
@@ -37525,7 +37525,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09831&did=2026D22118",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk1229520420",
@@ -37571,7 +37571,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09814&did=2026D22064",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tkaef669073c",
@@ -37585,7 +37585,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09813&did=2026D22063",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk3b6e18f335",
@@ -37599,7 +37599,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09810&did=2026D22058",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk90d4a8ed4a",
@@ -37613,7 +37613,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09812&did=2026D22062",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk3dd3bbcd85",
@@ -37627,7 +37627,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09807&did=2026D22055",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk35036d0f41",
@@ -37641,7 +37641,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09808&did=2026D22056",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk3f63fb1c13",
@@ -37655,7 +37655,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09800&did=2026D22039",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk9c47567892",
@@ -37669,7 +37669,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09802&did=2026D22041",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk24ff56abdf",
@@ -37683,7 +37683,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09797&did=2026D22033",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk0c29d4d5f2",
@@ -37697,7 +37697,7 @@
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z09762&did=2026D21971",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": true
   },
   {
     "id": "tk399a856ae2",
@@ -37719,7 +37719,7 @@
     "indiener": "50PLUS",
     "datum": "2026-05-18",
     "thema": "Financiën",
-    "status": "in_behandeling",
+    "status": "aangehouden",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10104&did=2026D22726",
@@ -37887,7 +37887,7 @@
     "indiener": "GL-PvdA",
     "datum": "2026-05-18",
     "thema": "Financiën",
-    "status": "in_behandeling",
+    "status": "aangehouden",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10167&did=2026D22866",
@@ -37919,6 +37919,20 @@
     "alignment": "neutraal",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10133&did=2026D22773",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkf9e50a84c9",
+    "titel": "Nader gewijzigde motie van het lid Vermeer over werken aan een passende financiële positie van spoedeisendehulpposten in regionale ziekenhuizen binnen het geldende VWS-begrotingskader en het normenkader (t.v.v. 36915-27) - Voorjaarsnota 2026",
+    "indiener": "BBB",
+    "datum": "2026-05-19",
+    "thema": "Financiën",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10183&did=2026D22922",
     "toelichting": "",
     "stemmen": {},
     "archief": false
