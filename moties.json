@@ -39402,13 +39402,14 @@
     "indiener": "VVD",
     "datum": "2026-05-20",
     "thema": "Buitenlandse Zaken",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "conform",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10433&did=2026D23644",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkc0c1bd4a59",
@@ -39416,13 +39417,14 @@
     "indiener": "Onbekend",
     "datum": "2026-05-20",
     "thema": "Buitenlandse Zaken",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "neutraal",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10435&did=2026D23646",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tke85b94b1fb",
@@ -39584,13 +39586,14 @@
     "indiener": "Onbekend",
     "datum": "2026-05-21",
     "thema": "Buitenlandse Zaken",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "neutraal",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10537&did=2026D23834",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkd61a60a19d",
@@ -39598,13 +39601,14 @@
     "indiener": "Onbekend",
     "datum": "2026-05-21",
     "thema": "Buitenlandse Zaken",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "neutraal",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10536&did=2026D23833",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk4407bd64c9",
@@ -39612,7 +39616,7 @@
     "indiener": "Onbekend",
     "datum": "2026-05-21",
     "thema": "Buitenlandse Zaken",
-    "status": "in_behandeling",
+    "status": "aangehouden",
     "alignment": "neutraal",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10535&did=2026D23832",
@@ -39626,13 +39630,14 @@
     "indiener": "Onbekend",
     "datum": "2026-05-21",
     "thema": "Wonen & Bouwen",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "neutraal",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10534&did=2026D23831",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk8fbbe5aad1",
@@ -39640,7 +39645,7 @@
     "indiener": "DENK",
     "datum": "2026-05-21",
     "thema": "Buitenlandse Zaken",
-    "status": "in_behandeling",
+    "status": "aangehouden",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10532&did=2026D23829",
@@ -39654,13 +39659,14 @@
     "indiener": "DENK",
     "datum": "2026-05-21",
     "thema": "Buitenlandse Zaken",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10530&did=2026D23818",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkc91985a2cd",
@@ -39668,13 +39674,14 @@
     "indiener": "DENK",
     "datum": "2026-05-21",
     "thema": "Buitenlandse Zaken",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10529&did=2026D23817",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkfd3177cff2",
@@ -39682,13 +39689,14 @@
     "indiener": "DENK",
     "datum": "2026-05-21",
     "thema": "Defensie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10528&did=2026D23816",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkbb0be436a3",
@@ -39696,13 +39704,14 @@
     "indiener": "DENK",
     "datum": "2026-05-21",
     "thema": "Buitenlandse Zaken",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10527&did=2026D23815",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk8dda8e138f",
@@ -39710,13 +39719,14 @@
     "indiener": "Onbekend",
     "datum": "2026-05-21",
     "thema": "Buitenlandse Zaken",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "neutraal",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10526&did=2026D23814",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk7995b0c0a7",
@@ -39724,13 +39734,14 @@
     "indiener": "CU",
     "datum": "2026-05-21",
     "thema": "Defensie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10524&did=2026D23812",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkf2861977d8",
@@ -39738,13 +39749,14 @@
     "indiener": "CU",
     "datum": "2026-05-21",
     "thema": "Defensie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10525&did=2026D23813",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk117f233496",
@@ -39752,13 +39764,14 @@
     "indiener": "SP",
     "datum": "2026-05-21",
     "thema": "Defensie",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10520&did=2026D23800",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk316c01313d",
@@ -39766,13 +39779,14 @@
     "indiener": "SP",
     "datum": "2026-05-21",
     "thema": "Defensie",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10523&did=2026D23811",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk6a86ed9402",
@@ -39780,13 +39794,14 @@
     "indiener": "JA21",
     "datum": "2026-05-21",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10516&did=2026D23786",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk7727487cb2",
@@ -39794,13 +39809,14 @@
     "indiener": "SGP",
     "datum": "2026-05-21",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10517&did=2026D23788",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkffb4876506",
@@ -39808,13 +39824,14 @@
     "indiener": "Onbekend",
     "datum": "2026-05-21",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "neutraal",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10518&did=2026D23789",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tka09495dd66",
@@ -39822,13 +39839,14 @@
     "indiener": "BBB",
     "datum": "2026-05-21",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10505&did=2026D23772",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk16ec248a51",
@@ -39836,13 +39854,14 @@
     "indiener": "PVV",
     "datum": "2026-05-21",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10510&did=2026D23779",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk798ef2b6b2",
@@ -39850,13 +39869,14 @@
     "indiener": "BBB",
     "datum": "2026-05-21",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10504&did=2026D23770",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkced3676a0f",
@@ -39864,13 +39884,14 @@
     "indiener": "PVV",
     "datum": "2026-05-21",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10511&did=2026D23780",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk3f60aff3c8",
@@ -39878,13 +39899,14 @@
     "indiener": "PVV",
     "datum": "2026-05-21",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10513&did=2026D23784",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk7641d26ebe",
@@ -39892,13 +39914,14 @@
     "indiener": "Onbekend",
     "datum": "2026-05-21",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "neutraal",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10515&did=2026D23785",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkb86830e4a3",
@@ -39906,13 +39929,14 @@
     "indiener": "BBB",
     "datum": "2026-05-21",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "aangenomen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10506&did=2026D23773",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tkc9fd65055c",
@@ -39920,7 +39944,7 @@
     "indiener": "BBB",
     "datum": "2026-05-21",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "aangehouden",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10507&did=2026D23774",
@@ -39934,13 +39958,14 @@
     "indiener": "BBB",
     "datum": "2026-05-21",
     "thema": "Landbouw & Natuur",
-    "status": "in_behandeling",
+    "status": "verworpen",
     "alignment": "strijdig",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10502&did=2026D23769",
     "toelichting": "",
     "stemmen": {},
-    "archief": false
+    "archief": false,
+    "stemmen_na": true
   },
   {
     "id": "tk48efb6fe8c",
@@ -40218,6 +40243,202 @@
     "alignment": "neutraal",
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10476&did=2026D23710",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk4095bd8cd9",
+    "titel": "Motie van het lid Ceder - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "CU",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10685&did=2026D24166",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk050e64402b",
+    "titel": "Motie van het lid Van Baarle - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "DENK",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10683&did=2026D24164",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk5953f2dbd1",
+    "titel": "Motie van het lid Ceder - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "CU",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10684&did=2026D24165",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkc4125a27fc",
+    "titel": "Motie van het lid Van Baarle - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "DENK",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10681&did=2026D24162",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tka0cd4af237",
+    "titel": "Motie van het lid Van Baarle - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "DENK",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10682&did=2026D24163",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk597cb7ba59",
+    "titel": "Motie van het lid Van der Plas - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "BBB",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10679&did=2026D24159",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk99f1e18c48",
+    "titel": "Motie van de leden Van Baarle en Westerveld - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "DENK",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10680&did=2026D24161",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tke69baa3593",
+    "titel": "Motie van het lid Vondeling - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "Onbekend",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10678&did=2026D24158",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk58d4a2bb00",
+    "titel": "Motie van het lid Vondeling - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "Onbekend",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10677&did=2026D24157",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk0e4cc08dc8",
+    "titel": "Motie van de leden Vondeling en Ceulemans - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "Onbekend",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10676&did=2026D24156",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tkc317f6ec81",
+    "titel": "Motie van het lid Russcher - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "Onbekend",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10675&did=2026D24155",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk570bb4319f",
+    "titel": "Motie van het lid Diederik van Dijk c.s. - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "SGP",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10673&did=2026D24150",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk21afd7644f",
+    "titel": "Motie van het lid Westerveld - Wijziging van de Wet terugkeer en vreemdelingenbewaring en enige andere wetten met het oog op het handhaven van de mogelijkheden om maatregelen te nemen ten aanzien van overlastgevende vreemdelingen, het verruimen van de mogelijkheden tot ongewenstverklaring en het verhogen van het strafmaximum van artikel 197 van het Wetboek van Strafrecht (novelle Wet terugkeer en vreemdelingenbewaring)",
+    "indiener": "GL-PvdA",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "conform",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10672&did=2026D24149",
+    "toelichting": "",
+    "stemmen": {},
+    "archief": false
+  },
+  {
+    "id": "tk109f1a3546",
+    "titel": "Gewijzigde motie van de leden Diederik van Dijk en Becker over de effecten van EU-uitbreiding op de binnenlandse draagkracht expliciet meewegen inzake toetreding van nieuwe lidstaten (t.v.v. 23987-405) - Lidmaatschap van de Europese Unie",
+    "indiener": "SGP",
+    "datum": "2026-05-21",
+    "thema": "Bereikbaarheid",
+    "status": "in_behandeling",
+    "alignment": "strijdig",
+    "vergadering": "",
+    "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z10660&did=2026D24092",
     "toelichting": "",
     "stemmen": {},
     "archief": false
