@@ -46830,9 +46830,26 @@
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z11901&did=2026D27132",
     "toelichting": "",
-    "stemmen": {},
-    "archief": false,
-    "stemmen_na": true
+    "stemmen": {
+      "CU": "tegen",
+      "GL-PvdA": "tegen",
+      "50PLUS": "tegen",
+      "JA21": "voor",
+      "VVD": "tegen",
+      "PVV": "voor",
+      "Keijzer": "voor",
+      "PvdD": "tegen",
+      "SGP": "tegen",
+      "D66": "tegen",
+      "Gr.Markuszower": "voor",
+      "SP": "tegen",
+      "DENK": "tegen",
+      "BBB": "afwezig",
+      "Volt": "tegen",
+      "CDA": "tegen",
+      "FvD": "voor"
+    },
+    "archief": false
   },
   {
     "id": "tk8316363d76",
@@ -46845,9 +46862,26 @@
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z11900&did=2026D27131",
     "toelichting": "",
-    "stemmen": {},
-    "archief": false,
-    "stemmen_na": true
+    "stemmen": {
+      "D66": "tegen",
+      "GL-PvdA": "tegen",
+      "BBB": "afwezig",
+      "PvdD": "tegen",
+      "50PLUS": "tegen",
+      "SP": "tegen",
+      "Gr.Markuszower": "voor",
+      "CDA": "tegen",
+      "CU": "tegen",
+      "Keijzer": "voor",
+      "JA21": "voor",
+      "Volt": "tegen",
+      "FvD": "voor",
+      "VVD": "tegen",
+      "SGP": "tegen",
+      "PVV": "voor",
+      "DENK": "tegen"
+    },
+    "archief": false
   },
   {
     "id": "tk062b9f7074",
@@ -46860,9 +46894,26 @@
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z11899&did=2026D27130",
     "toelichting": "",
-    "stemmen": {},
-    "archief": false,
-    "stemmen_na": true
+    "stemmen": {
+      "DENK": "tegen",
+      "GL-PvdA": "tegen",
+      "PvdD": "tegen",
+      "PVV": "voor",
+      "Volt": "tegen",
+      "D66": "tegen",
+      "CU": "tegen",
+      "50PLUS": "tegen",
+      "CDA": "tegen",
+      "Keijzer": "voor",
+      "FvD": "voor",
+      "JA21": "tegen",
+      "SGP": "tegen",
+      "Gr.Markuszower": "voor",
+      "VVD": "tegen",
+      "SP": "tegen",
+      "BBB": "afwezig"
+    },
+    "archief": false
   },
   {
     "id": "tk9f5d468a1e",
@@ -47141,9 +47192,26 @@
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z12028&did=2026D27321",
     "toelichting": "",
-    "stemmen": {},
-    "archief": false,
-    "stemmen_na": true
+    "stemmen": {
+      "Gr.Markuszower": "voor",
+      "DENK": "voor",
+      "50PLUS": "voor",
+      "FvD": "tegen",
+      "CU": "voor",
+      "GL-PvdA": "voor",
+      "D66": "voor",
+      "CDA": "voor",
+      "VVD": "voor",
+      "Volt": "voor",
+      "BBB": "tegen",
+      "SP": "tegen",
+      "PVV": "tegen",
+      "SGP": "voor",
+      "JA21": "tegen",
+      "Keijzer": "tegen",
+      "PvdD": "voor"
+    },
+    "archief": false
   },
   {
     "id": "tk3ecf4ea717",
@@ -47156,9 +47224,26 @@
     "vergadering": "",
     "tk_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2026Z12013&did=2026D27291",
     "toelichting": "",
-    "stemmen": {},
-    "archief": false,
-    "stemmen_na": true
+    "stemmen": {
+      "Volt": "voor",
+      "SGP": "voor",
+      "DENK": "voor",
+      "CDA": "voor",
+      "CU": "voor",
+      "50PLUS": "voor",
+      "FvD": "tegen",
+      "GL-PvdA": "voor",
+      "BBB": "tegen",
+      "SP": "voor",
+      "Keijzer": "tegen",
+      "PVV": "tegen",
+      "PvdD": "voor",
+      "JA21": "voor",
+      "Gr.Markuszower": "voor",
+      "VVD": "voor",
+      "D66": "voor"
+    },
+    "archief": false
   },
   {
     "id": "tkaca42d8728",
@@ -47556,7 +47641,7 @@
     "id": "tkeb14537144",
     "titel": "Motie van de leden Van den Berg en Boomsma over uiterlijk 1 oktober 2026 een landelijke gedragscode natuurvriendelijk isoleren vaststellen - Voorzienings- en leveringszekerheid energie",
     "indiener": "CDA",
-    "datum": "2026-10-01",
+    "datum": "2026-06-03",
     "thema": "Klimaat & Energie",
     "status": "in_behandeling",
     "alignment": "conform",
